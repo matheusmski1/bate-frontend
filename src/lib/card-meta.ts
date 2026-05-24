@@ -11,7 +11,7 @@ export type CardMeta = {
   iconName?: 'Eye' | 'Search' | 'ArrowLeftRight' | 'Award' | 'Trophy'
 }
 
-export const CARD_BACK_IMAGE = '/cards/back.webp'
+export const CARD_BACK_IMAGE = '/cards/back.webp?v=2'
 
 export const CARD_META: Record<Rank, CardMeta> = {
   'A': { pointValue: 1, kind: 'numeric', image: '/cards/batinho-as.webp' },

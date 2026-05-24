@@ -35,21 +35,32 @@ export function CardFan() {
       ease: 'outBack',
     })
 
-    let idle: ReturnType<typeof animate> | null = null
+    let bob: ReturnType<typeof animate> | null = null
+    let sway: ReturnType<typeof animate> | null = null
     entrance.then?.(() => {
-      idle = animate(cards, {
+      bob = animate(cards, {
         translateY: [
-          { to: -5, duration: 2200, ease: 'inOutSine' },
+          { to: -6, duration: 2200, ease: 'inOutSine' },
           { to: 0,  duration: 2200, ease: 'inOutSine' },
         ],
         loop: true,
         delay: utils.stagger(180),
       })
+      sway = animate(cards, {
+        rotate: [
+          { to: 2.5,  duration: 2800, ease: 'inOutSine' },
+          { to: -2.5, duration: 2800, ease: 'inOutSine' },
+          { to: 0,    duration: 1400, ease: 'inOutSine' },
+        ],
+        loop: true,
+        delay: utils.stagger(240, { start: 200 }),
+      })
     })
 
     return () => {
       entrance.pause?.()
-      idle?.pause?.()
+      bob?.pause?.()
+      sway?.pause?.()
     }
   }, [])
 

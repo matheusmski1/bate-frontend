@@ -2,11 +2,10 @@
 
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ChevronDown, Eye, Search, ArrowLeftRight, Award, Trophy } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 import { CARD_META, formatPoints } from '@/lib/card-meta'
 import type { Rank } from '@/types/shared'
 
-const ICONS = { Eye, Search, ArrowLeftRight, Award, Trophy } as const
 const SPECIAL_RANKS: Rank[] = ['10', 'J', 'Q', 'K', 'JOKER']
 
 export function QuickRules() {
@@ -47,13 +46,17 @@ export function QuickRules() {
                 <ul className="space-y-2">
                   {SPECIAL_RANKS.map(rank => {
                     const meta = CARD_META[rank]
-                    const Icon = meta.iconName ? ICONS[meta.iconName] : null
                     const isNegative = meta.pointValue < 0
                     return (
                       <li key={rank} className="flex items-center gap-3">
-                        <span className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 border-[2px] border-bate-ink ${isNegative ? 'bg-bate-gold' : 'bg-bate-teal text-bate-paper'}`}>
-                          {Icon ? <Icon size={18} strokeWidth={2.5} /> : <span className="font-display text-xs">{rank}</span>}
-                        </span>
+                        <div className="w-10 h-14 rounded-md overflow-hidden border-[2px] border-bate-ink shadow-hard-sm flex-shrink-0 bg-bate-paper">
+                          <img
+                            src={meta.image}
+                            alt={meta.displayName ?? rank}
+                            className="w-full h-full object-cover"
+                            draggable={false}
+                          />
+                        </div>
                         <div className="flex-1 min-w-0">
                           <div className="font-display text-sm">
                             {meta.displayName} <span className={`font-body text-xs ml-1 ${isNegative ? 'text-bate-red font-bold' : 'text-bate-ink/60'}`}>({formatPoints(meta.pointValue)} pts)</span>
@@ -76,14 +79,6 @@ export function QuickRules() {
                 <p className="text-xs text-bate-ink/60 mt-2">Depois de chamar BATE, cada adversário tem 1 último turno antes da contagem.</p>
               </section>
 
-              <a
-                href="https://github.com/matheusmski1/bate-backend/blob/main/RULES.md"
-                target="_blank"
-                rel="noreferrer"
-                className="block text-center text-bate-red hover:text-bate-red-deep underline text-xs font-body"
-              >
-                Ver regras completas →
-              </a>
             </div>
           </motion.div>
         )}

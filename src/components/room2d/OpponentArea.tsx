@@ -6,6 +6,8 @@ import type { RedactedPlayer, Rank, Suit } from '@/types/shared'
 import { Card2D } from './Card2D'
 import { CardBack } from './CardBack'
 import { Nameplate } from './Nameplate'
+import { EmoteBubble } from './EmoteBubble'
+import { playSound } from '@/lib/sounds'
 
 type Props = {
   player: RedactedPlayer
@@ -17,9 +19,10 @@ type Props = {
   highlightedIds?: Set<string>
   victimEffects?: Map<string, 'peeked' | 'swapped'>
   holdingDrawn?: boolean
+  emote?: { id: number; key: string } | null
 }
 
-export function OpponentArea({ player, isCurrent, isHost = false, isLeader = false, onCardClick, tempReveals, highlightedIds, victimEffects, holdingDrawn = false }: Props) {
+export function OpponentArea({ player, isCurrent, isHost = false, isLeader = false, onCardClick, tempReveals, highlightedIds, victimEffects, holdingDrawn = false, emote = null }: Props) {
   const flyingRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -32,6 +35,7 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
     const startY = window.innerHeight / 2 - targetCy
     el.style.opacity = '0'
     el.style.transform = `translate(${startX}px, ${startY}px) rotate(-30deg) scale(0.55)`
+    playSound('card-fly')
     const tl = animate(el, {
       translateX: [startX, 0],
       translateY: [startY, 0],
@@ -58,7 +62,8 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
   }, [holdingDrawn])
 
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="relative flex flex-col items-center gap-2">
+      <EmoteBubble emote={emote?.key ?? null} id={emote?.id ?? 0} />
       <Nameplate
         name={player.name}
         score={player.score}

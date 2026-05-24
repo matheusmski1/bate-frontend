@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { animate } from 'animejs'
 import { Scissors, X } from 'lucide-react'
 import type { RedactedState, Rank } from '@/types/shared'
 import { CARD_META } from '@/lib/card-meta'
@@ -46,8 +47,51 @@ export function SnapToast({ state }: { state: RedactedState }) {
     return () => clearTimeout(t)
   }, [toast])
 
+  const particleRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (!toast || toast.kind !== 'snap' || !particleRef.current) return
+    const parent = particleRef.current
+    parent.innerHTML = ''
+    const colors = ['#ffb81c', '#4a7c4f', '#d63232', '#fff5d1', '#2c8a9c']
+    const pieces: HTMLDivElement[] = []
+    for (let i = 0; i < 14; i++) {
+      const p = document.createElement('div')
+      p.style.position = 'absolute'
+      p.style.left = '50%'
+      p.style.top = '50%'
+      p.style.width = '10px'
+      p.style.height = '14px'
+      p.style.borderRadius = '2px'
+      p.style.background = colors[i % colors.length]!
+      p.style.border = '2px solid #1a0e08'
+      p.style.transform = 'translate(-50%, -50%) scale(0)'
+      p.style.pointerEvents = 'none'
+      parent.appendChild(p)
+      pieces.push(p)
+    }
+    pieces.forEach((p, i) => {
+      const angle = (Math.PI * 2 * i) / pieces.length + (Math.random() - 0.5) * 0.5
+      const distance = 60 + Math.random() * 60
+      const dx = Math.cos(angle) * distance
+      const dy = Math.sin(angle) * distance
+      animate(p, {
+        translateX: [`-50%`, `calc(-50% + ${dx}px)`],
+        translateY: [`-50%`, `calc(-50% + ${dy}px)`],
+        rotate: [0, (Math.random() - 0.5) * 720],
+        scale: [0, 1, 0],
+        opacity: [1, 1, 0],
+        duration: 700 + Math.random() * 300,
+        ease: 'outCubic',
+      })
+    })
+    const t = setTimeout(() => { parent.innerHTML = '' }, 1200)
+    return () => clearTimeout(t)
+  }, [toast])
+
   return (
     <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[55] pointer-events-none">
+      <div ref={particleRef} className="absolute top-1/2 left-1/2 w-0 h-0 pointer-events-none" />
       <AnimatePresence>
         {toast && (
           <motion.div

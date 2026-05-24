@@ -1,4 +1,4 @@
-type SoundKey = 'card-flip' | 'card-discard' | 'snap-success' | 'snap-fail' | 'turn-yours' | 'cabo-called' | 'victory' | 'draw'
+type SoundKey = 'card-flip' | 'card-discard' | 'snap-success' | 'snap-fail' | 'turn-yours' | 'cabo-called' | 'victory' | 'draw' | 'card-fly' | 'emote-pop'
 
 const VOLUME_KEY = 'cabo:volume'
 let ctx: AudioContext | null = null
@@ -160,6 +160,39 @@ function playVictory(ac: AudioContext, master: GainNode) {
   })
 }
 
+function playCardFly(ac: AudioContext, master: GainNode) {
+  const src = ac.createBufferSource()
+  src.buffer = noiseBuffer(ac, 0.32, 0.12)
+  const filter = ac.createBiquadFilter()
+  filter.type = 'bandpass'
+  filter.frequency.setValueAtTime(700, ac.currentTime)
+  filter.frequency.exponentialRampToValueAtTime(2400, ac.currentTime + 0.28)
+  filter.Q.value = 1.6
+  const g = ac.createGain()
+  g.gain.setValueAtTime(0.0, ac.currentTime)
+  g.gain.linearRampToValueAtTime(0.35, ac.currentTime + 0.08)
+  g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.32)
+  src.connect(filter).connect(g).connect(master)
+  src.start()
+  src.stop(ac.currentTime + 0.34)
+}
+
+function playEmotePop(ac: AudioContext, master: GainNode) {
+  const t = ac.currentTime
+  const osc = ac.createOscillator()
+  osc.type = 'sine'
+  osc.frequency.setValueAtTime(520, t)
+  osc.frequency.exponentialRampToValueAtTime(880, t + 0.08)
+  osc.frequency.exponentialRampToValueAtTime(660, t + 0.16)
+  const g = ac.createGain()
+  g.gain.setValueAtTime(0.0, t)
+  g.gain.linearRampToValueAtTime(0.22, t + 0.02)
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.2)
+  osc.connect(g).connect(master)
+  osc.start(t)
+  osc.stop(t + 0.22)
+}
+
 function playDraw(ac: AudioContext, master: GainNode) {
   const src = ac.createBufferSource()
   src.buffer = noiseBuffer(ac, 0.1, 0.03)
@@ -180,6 +213,8 @@ export function playSound(key: SoundKey): void {
   switch (key) {
     case 'card-flip': return playCardFlip(ac, master)
     case 'draw': return playDraw(ac, master)
+    case 'card-fly': return playCardFly(ac, master)
+    case 'emote-pop': return playEmotePop(ac, master)
     case 'card-discard': return playCardDiscard(ac, master)
     case 'snap-success': return playSnapSuccess(ac, master)
     case 'snap-fail': return playSnapFail(ac, master)

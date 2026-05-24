@@ -3,6 +3,7 @@
 import type { RedactedPlayer, Rank, Suit } from '@/types/shared'
 import { Card2D } from './Card2D'
 import { Nameplate } from './Nameplate'
+import { EmoteBubble } from './EmoteBubble'
 
 type Props = {
   player: RedactedPlayer
@@ -14,11 +15,13 @@ type Props = {
   highlightedIds?: Set<string>
   victimEffects?: Map<string, 'peeked' | 'swapped'>
   snapHintIds?: Set<string>
+  emote?: { id: number; key: string } | null
 }
 
-export function PlayerHand2D({ player, isCurrent, isHost = false, isLeader = false, onCardClick, tempReveals, highlightedIds, victimEffects, snapHintIds }: Props) {
+export function PlayerHand2D({ player, isCurrent, isHost = false, isLeader = false, onCardClick, tempReveals, highlightedIds, victimEffects, snapHintIds, emote = null }: Props) {
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className="relative flex flex-col items-center gap-3">
+      <EmoteBubble emote={emote?.key ?? null} id={emote?.id ?? 0} />
       <Nameplate
         name={player.name}
         score={player.score}

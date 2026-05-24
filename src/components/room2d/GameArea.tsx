@@ -21,6 +21,8 @@ import { SnapToast } from './SnapToast'
 import { PenaltyPreview } from './PenaltyPreview'
 import { TurnTimer } from './TurnTimer'
 import { TurnArrow } from './TurnArrow'
+import { EmoteBar } from './EmoteBar'
+import { playSound } from '@/lib/sounds'
 
 const TEMP_REVEAL_MS = 3000
 
@@ -45,7 +47,30 @@ export function GameArea({ state }: { state: RedactedState }) {
   const [victimEffects, setVictimEffects] = useState<Map<string, 'peeked' | 'swapped'>>(new Map())
   const [opponentsHoldingDrawn, setOpponentsHoldingDrawn] = useState<Set<string>>(new Set())
   const [effectPromptDismissed, setEffectPromptDismissed] = useState(false)
+  const [emotes, setEmotes] = useState<Map<string, { id: number; key: string }>>(new Map())
+  const emoteCounterRef = useRef(0)
   const prevLogLenRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    const socket = getSocket()
+    function onEmote(payload: { playerId: string; emote: string }) {
+      emoteCounterRef.current += 1
+      const id = emoteCounterRef.current
+      setEmotes(prev => new Map(prev).set(payload.playerId, { id, key: payload.emote }))
+      playSound('emote-pop')
+      setTimeout(() => {
+        setEmotes(prev => {
+          const cur = prev.get(payload.playerId)
+          if (!cur || cur.id !== id) return prev
+          const next = new Map(prev)
+          next.delete(payload.playerId)
+          return next
+        })
+      }, 2400)
+    }
+    socket.on('room:emote', onEmote)
+    return () => { socket.off('room:emote', onEmote) }
+  }, [])
 
   useEffect(() => {
     if (!pendingEffect) setEffectPromptDismissed(false)
@@ -371,6 +396,7 @@ export function GameArea({ state }: { state: RedactedState }) {
             highlightedIds={highlightedIds}
             victimEffects={victimEffects}
             holdingDrawn={opponentsHoldingDrawn.has(p.id)}
+            emote={emotes.get(p.id) ?? null}
           />
         </div>
       ))}
@@ -409,6 +435,7 @@ export function GameArea({ state }: { state: RedactedState }) {
             highlightedIds={highlightedIds}
             victimEffects={victimEffects}
             snapHintIds={snapHintIds}
+            emote={emotes.get(me.id) ?? null}
           />
         )}
       </div>
@@ -422,6 +449,7 @@ export function GameArea({ state }: { state: RedactedState }) {
       <SnapToast state={state} />
       <PenaltyPreview state={state} />
       <BateAnnouncement state={state} />
+      <EmoteBar roomId={state.roomId} />
       {isMyEffect && pendingEffect && (() => {
         const effectName =
           pendingEffect.type === 'peek-own' ? 'OLHADINHA'

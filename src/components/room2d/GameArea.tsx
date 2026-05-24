@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import type { RedactedState, Card, Rank, Suit } from '@/types/shared'
 import { getPlayerId } from '@/lib/player-id'
 import { getSocket } from '@/lib/socket-client'
@@ -37,6 +37,7 @@ export function GameArea({ state }: { state: RedactedState }) {
   const isMyEffect = pendingEffect?.playerId === myId
 
   const [drawnCard, setDrawnCard] = useState<Card | null>(null)
+  const [drawnExit, setDrawnExit] = useState<'swap' | 'discard'>('discard')
   const [tempReveals, setTempReveals] = useState<Map<string, RevealValue>>(new Map())
   const [knownCards, setKnownCards] = useState<Map<string, RevealValue>>(new Map())
   const [revealModal, setRevealModal] = useState<RevealValue | null>(null)
@@ -236,6 +237,7 @@ export function GameArea({ state }: { state: RedactedState }) {
       { roomId: state.roomId, playerId: myId, action: 'discard', useEffect },
       (res: { ok?: true; error?: string }) => {
         if (res?.error) { alert(res.error); return }
+        setDrawnExit('discard')
         setDrawnCard(null)
       },
     )
@@ -272,6 +274,7 @@ export function GameArea({ state }: { state: RedactedState }) {
         { roomId: state.roomId, playerId: myId, action: 'keep', handIndex },
         (res: { ok?: true; error?: string }) => {
           if (res?.error) { alert(res.error); return }
+          setDrawnExit('swap')
           setDrawnCard(null)
         })
       return
@@ -395,13 +398,25 @@ export function GameArea({ state }: { state: RedactedState }) {
           </div>
           <div className="flex items-center gap-10 sm:gap-14">
             <DeckPile2D count={state.deckCount} onClick={canDraw ? handleDeckClick : undefined} />
-            {drawnCard && (
-              <DrawnCard2D
-                card={drawnCard}
-                onUseAction={() => handleDiscardDrawn(true)}
-                onDiscard={() => handleDiscardDrawn(false)}
-              />
-            )}
+            <AnimatePresence mode="wait">
+              {drawnCard && (
+                <motion.div
+                  key={drawnCard.id}
+                  exit={
+                    drawnExit === 'swap'
+                      ? { y: 260, x: 0, opacity: 0, scale: 0.5, rotate: -8 }
+                      : { y: 0, x: 180, opacity: 0, scale: 0.5, rotate: 12 }
+                  }
+                  transition={{ duration: 0.42, ease: [0.55, 0, 0.55, 1] }}
+                >
+                  <DrawnCard2D
+                    card={drawnCard}
+                    onUseAction={() => handleDiscardDrawn(true)}
+                    onDiscard={() => handleDiscardDrawn(false)}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
             <DiscardPile2D discard={state.discard} />
           </div>
         </div>

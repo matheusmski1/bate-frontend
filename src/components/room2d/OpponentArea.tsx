@@ -4,10 +4,12 @@ import { AnimatePresence, motion } from 'framer-motion'
 import type { RedactedPlayer, Rank, Suit } from '@/types/shared'
 import { Card2D } from './Card2D'
 import { CardBack } from './CardBack'
+import { Nameplate } from './Nameplate'
 
 type Props = {
   player: RedactedPlayer
   isCurrent: boolean
+  isHost?: boolean
   onCardClick?: (handIndex: number) => void
   tempReveals?: Map<string, { rank: Rank; suit: Suit | null }>
   highlightedIds?: Set<string>
@@ -15,12 +17,16 @@ type Props = {
   holdingDrawn?: boolean
 }
 
-export function OpponentArea({ player, isCurrent, onCardClick, tempReveals, highlightedIds, victimEffects, holdingDrawn = false }: Props) {
+export function OpponentArea({ player, isCurrent, isHost = false, onCardClick, tempReveals, highlightedIds, victimEffects, holdingDrawn = false }: Props) {
   return (
     <div className="flex flex-col items-center gap-2">
-      <div className={`px-4 py-1 rounded-full text-sm font-bold backdrop-blur ${isCurrent ? 'bg-bate-red text-white shadow-[0_0_18px_rgba(255,107,53,0.6)]' : 'bg-bate-paper/80 text-bate-ink'}`}>
-        {player.name} ({player.score}){!player.connected && ' • off'}
-      </div>
+      <Nameplate
+        name={player.name}
+        score={player.score}
+        isCurrent={isCurrent}
+        connected={player.connected}
+        isHost={isHost}
+      />
       <div className="flex gap-3 items-center">
         <div className="flex gap-2">
           {player.hand.map((c, i) => (

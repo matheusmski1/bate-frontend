@@ -293,6 +293,7 @@ export function GameArea({ state }: { state: RedactedState }) {
               key={p.id}
               player={p}
               isCurrent={p.id === currentPlayerId}
+              isHost={p.id === state.hostId}
               onCardClick={opponentCardsClickable ? (idx) => handleOpponentCardClick(p.id, idx) : undefined}
               tempReveals={tempReveals}
               highlightedIds={highlightedIds}
@@ -302,17 +303,22 @@ export function GameArea({ state }: { state: RedactedState }) {
           ))}
         </div>
 
-        {/* Middle: deck + drawn + discard */}
-        <div className="flex items-center gap-12">
-          <DeckPile2D count={state.deckCount} onClick={canDraw ? handleDeckClick : undefined} />
-          {drawnCard && (
-            <DrawnCard2D
-              card={drawnCard}
-              onUseAction={() => handleDiscardDrawn(true)}
-              onDiscard={() => handleDiscardDrawn(false)}
-            />
-          )}
-          <DiscardPile2D discard={state.discard} />
+        {/* Middle: deck + drawn + discard inside the table panel */}
+        <div className="relative px-8 sm:px-12 py-6 sm:py-8 rounded-3xl border-[4px] border-bate-ink bg-bate-paper/70 shadow-hard-lg backdrop-blur-sm">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-bate-ink text-bate-gold font-display text-[10px] tracking-[0.25em] uppercase whitespace-nowrap shadow-hard-sm rotate-[-1deg]">
+            ✦ MESA ✦
+          </div>
+          <div className="flex items-center gap-10 sm:gap-14">
+            <DeckPile2D count={state.deckCount} onClick={canDraw ? handleDeckClick : undefined} />
+            {drawnCard && (
+              <DrawnCard2D
+                card={drawnCard}
+                onUseAction={() => handleDiscardDrawn(true)}
+                onDiscard={() => handleDiscardDrawn(false)}
+              />
+            )}
+            <DiscardPile2D discard={state.discard} />
+          </div>
         </div>
 
         {/* Player hand */}
@@ -321,6 +327,7 @@ export function GameArea({ state }: { state: RedactedState }) {
             <PlayerHand2D
               player={me}
               isCurrent={isMyTurn}
+              isHost={me.id === state.hostId}
               onCardClick={ownCardsClickable ? handlePlayerCardClick : undefined}
               tempReveals={tempReveals}
               highlightedIds={highlightedIds}

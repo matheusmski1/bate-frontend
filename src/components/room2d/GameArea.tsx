@@ -197,8 +197,8 @@ export function GameArea({ state }: { state: RedactedState }) {
     if (!canSnap || !topDiscardRank || !me) return new Set<string>()
     const ids = new Set<string>()
     for (const c of me.hand) {
-      const known = knownCards.get(c.id)?.rank ?? (!('hidden' in c) ? c.rank : null)
-      if (known === topDiscardRank) ids.add(c.id)
+      const visibleRank = tempReveals.get(c.id)?.rank ?? (!('hidden' in c) ? c.rank : null)
+      if (visibleRank === topDiscardRank) ids.add(c.id)
     }
     return ids
   })()

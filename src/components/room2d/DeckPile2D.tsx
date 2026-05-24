@@ -12,7 +12,7 @@ export function DeckPile2D({ count, onClick }: { count: number; onClick?: () => 
         onClick={onClick}
         whileHover={onClick ? { scale: 1.08, y: -4 } : undefined}
         whileTap={onClick ? { scale: 0.96 } : undefined}
-        className={`relative w-24 h-36 ${onClick ? 'cursor-pointer' : 'cursor-default'}`}
+        className={`relative w-16 h-24 sm:w-24 sm:h-36 ${onClick ? 'cursor-pointer' : 'cursor-default'}`}
         disabled={!onClick}
       >
         {Array.from({ length: visibleStack }).map((_, i) => (

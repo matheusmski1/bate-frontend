@@ -50,20 +50,19 @@ export function DrawnCard2D({
 
   return (
     <div ref={wrapRef} className="flex flex-col items-center gap-3">
-      <div className="flex items-center gap-1.5 sm:gap-4">
+      <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-4">
         {isAction && (
           <button
             type="button"
             onClick={onUseAction}
-            className="drawn-card-btn opacity-0 px-2 py-2 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl bg-bate-gold border-[2px] sm:border-[3px] border-bate-ink shadow-hard sm:shadow-hard-lg text-bate-ink font-display uppercase whitespace-nowrap text-center leading-tight hover:scale-105 hover:-translate-y-1 active:scale-95 transition-transform"
+            className="drawn-card-btn opacity-0 order-2 sm:order-1 px-2 py-1.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl bg-bate-gold border-[2px] sm:border-[3px] border-bate-ink shadow-hard sm:shadow-hard-lg text-bate-ink font-display uppercase whitespace-nowrap text-center leading-tight hover:scale-105 hover:-translate-y-1 active:scale-95 transition-transform"
           >
-            <div className="text-[11px] sm:text-sm">🎯 USAR</div>
-            <div className="text-[9px] sm:text-[10px] mt-0.5">{meta.displayName}</div>
+            <div className="text-[11px] sm:text-sm">🎯 USAR {meta.displayName}</div>
           </button>
         )}
 
-        <div className="drawn-card-inner relative" style={{ willChange: 'transform, opacity' }}>
-          <div className="absolute -top-7 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-bate-gold text-bate-ink text-xs font-extrabold whitespace-nowrap shadow-lg">
+        <div className="drawn-card-inner relative order-1 sm:order-2" style={{ willChange: 'transform, opacity' }}>
+          <div className="absolute -top-6 sm:-top-7 left-1/2 -translate-x-1/2 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-bate-gold text-bate-ink text-[10px] sm:text-xs font-extrabold whitespace-nowrap shadow-lg">
             Comprou
           </div>
           <Card2D
@@ -77,10 +76,9 @@ export function DrawnCard2D({
         <button
           type="button"
           onClick={onDiscard}
-          className="drawn-card-btn opacity-0 px-2 py-2 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl bg-bate-paper border-[2px] sm:border-[3px] border-bate-ink shadow-hard-sm sm:shadow-hard text-bate-ink font-display uppercase whitespace-nowrap text-center leading-tight hover:scale-105 hover:-translate-y-1 active:scale-95 transition-transform"
+          className="drawn-card-btn opacity-0 order-3 sm:order-3 px-2 py-1.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl bg-bate-paper border-[2px] sm:border-[3px] border-bate-ink shadow-hard-sm sm:shadow-hard text-bate-ink font-display uppercase whitespace-nowrap text-center leading-tight hover:scale-105 hover:-translate-y-1 active:scale-95 transition-transform"
         >
-          <div className="text-[11px] sm:text-sm">🗑️ DESCARTAR</div>
-          {isAction && <div className="text-[9px] sm:text-[10px] mt-0.5 text-bate-ink/60">sem ação</div>}
+          <div className="text-[11px] sm:text-sm">🗑️ DESCARTAR{isAction && <span className="font-normal text-bate-ink/60"> sem ação</span>}</div>
         </button>
       </div>
 

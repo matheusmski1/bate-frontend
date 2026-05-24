@@ -392,11 +392,11 @@ export function GameArea({ state }: { state: RedactedState }) {
       ))}
 
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-        <div className="relative px-3 sm:px-12 py-3 sm:py-8 rounded-2xl sm:rounded-3xl border-[3px] sm:border-[4px] border-bate-ink bg-bate-paper/70 shadow-hard sm:shadow-hard-lg backdrop-blur-sm">
+        <div className="relative max-w-[calc(100vw-1rem)] px-2 sm:px-12 py-2 sm:py-8 rounded-2xl sm:rounded-3xl border-[3px] sm:border-[4px] border-bate-ink bg-bate-paper/70 shadow-hard sm:shadow-hard-lg backdrop-blur-sm">
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-bate-ink text-bate-gold font-display text-[10px] tracking-[0.25em] uppercase whitespace-nowrap shadow-hard-sm rotate-[-1deg]">
             ✦ MESA ✦
           </div>
-          <div className="flex items-center gap-3 sm:gap-14">
+          <div className="flex items-center gap-2 sm:gap-14">
             <DeckPile2D count={state.deckCount} onClick={canDraw ? handleDeckClick : undefined} />
             <AnimatePresence mode="wait">
               {drawnCard && (

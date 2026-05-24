@@ -5,15 +5,33 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { animate, utils } from 'animejs'
 import { getSocket } from '@/lib/socket-client'
 import { getPlayerId } from '@/lib/player-id'
-import type { RedactedState } from '@/types/shared'
+import { CARD_META, formatPoints } from '@/lib/card-meta'
+import { Card2D } from '@/components/room2d/Card2D'
+import type { RedactedState, RedactedPlayer, Rank } from '@/types/shared'
 
 type Stage = 'counting' | 'reveal'
+
+type Breakdown = {
+  player: RedactedPlayer
+  roundScore: number
+  parts: Array<{ rank: Rank; pts: number }>
+}
+
+function computeBreakdown(player: RedactedPlayer): Breakdown {
+  const parts: Array<{ rank: Rank; pts: number }> = []
+  for (const c of player.hand) {
+    if ('hidden' in c) continue
+    parts.push({ rank: c.rank, pts: CARD_META[c.rank].pointValue })
+  }
+  const roundScore = parts.reduce((sum, p) => sum + p.pts, 0)
+  return { player, roundScore, parts }
+}
 
 export function RoundEndScreen({ state }: { state: RedactedState }) {
   const myId = getPlayerId()
   const isHost = state.hostId === myId
   const [stage, setStage] = useState<Stage>('counting')
-  const sorted = [...state.players].sort((a, b) => a.score - b.score)
+  const breakdowns = state.players.map(computeBreakdown).sort((a, b) => a.roundScore - b.roundScore)
 
   useEffect(() => {
     const t = setTimeout(() => setStage('reveal'), 2400)
@@ -32,7 +50,7 @@ export function RoundEndScreen({ state }: { state: RedactedState }) {
         {stage === 'counting' ? (
           <CountingPhase key="counting" />
         ) : (
-          <RevealPhase key="reveal" players={sorted} isHost={isHost} onNext={next} />
+          <RevealPhase key="reveal" breakdowns={breakdowns} caboCallerId={state.caboCallerId} isHost={isHost} onNext={next} />
         )}
       </AnimatePresence>
     </main>
@@ -90,51 +108,97 @@ function CountingPhase() {
   )
 }
 
-function RevealPhase({ players, isHost, onNext }: { players: RedactedState['players']; isHost: boolean; onNext: () => void }) {
+function RevealPhase({ breakdowns, caboCallerId, isHost, onNext }: { breakdowns: Breakdown[]; caboCallerId: string | null; isHost: boolean; onNext: () => void }) {
+  const callerName = caboCallerId ? breakdowns.find(b => b.player.id === caboCallerId)?.player.name : null
+  const callerIsWinner = caboCallerId && breakdowns[0]?.player.id === caboCallerId
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="bg-cabo-surface/90 backdrop-blur p-8 rounded-3xl max-w-md w-full shadow-2xl border border-cabo-purple/30"
+      className="bg-cabo-surface/90 backdrop-blur p-6 sm:p-8 rounded-3xl max-w-2xl w-full shadow-2xl border border-cabo-purple/30 max-h-[90vh] overflow-y-auto"
     >
       <motion.h2
         initial={{ scale: 0.5, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.1, type: 'spring', stiffness: 280, damping: 15 }}
-        className="text-4xl font-extrabold text-cabo-gold mb-6 text-center"
+        className="text-3xl sm:text-4xl font-extrabold text-cabo-gold mb-2 text-center"
       >
         🎉 Fim da rodada
       </motion.h2>
-      <ul className="space-y-2 mb-8">
-        {players.map((p, i) => (
-          <motion.li
-            key={p.id}
-            initial={{ x: -40, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.4 + i * 0.18, ease: 'easeOut' }}
-            className={`flex justify-between items-center rounded-xl px-5 py-4 ${
-              i === 0
-                ? 'bg-gradient-to-br from-cabo-gold via-amber-400 to-amber-600 text-cabo-bg shadow-[0_0_24px_rgba(255,210,63,0.5)]'
-                : 'bg-cabo-bg/60'
-            }`}
-          >
-            <span className="font-extrabold text-lg flex items-center gap-2">
-              <span className="text-2xl">{i === 0 ? '🏆' : `${i + 1}º`}</span>
-              {p.name}
-            </span>
-            <span className="font-extrabold text-3xl">
-              <AnimatedScore target={p.score} delay={600 + i * 180} />
-            </span>
-          </motion.li>
-        ))}
+      {callerName && (
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.25 }}
+          className={`text-center mb-6 text-sm font-bold ${callerIsWinner ? 'text-cabo-gold' : 'text-cabo-danger'}`}
+        >
+          👑 {callerName} chamou BATE
+          {callerIsWinner ? ' e venceu a rodada!' : ' mas não fez o menor placar 🔥'}
+        </motion.p>
+      )}
+      <ul className="space-y-3 mb-6">
+        {breakdowns.map((b, i) => {
+          const isCaller = b.player.id === caboCallerId
+          const isWinner = i === 0
+          return (
+            <motion.li
+              key={b.player.id}
+              initial={{ x: -40, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.4 + i * 0.18, ease: 'easeOut' }}
+              className={`rounded-2xl px-4 py-3 sm:px-5 sm:py-4 ${
+                isWinner
+                  ? 'bg-gradient-to-br from-cabo-gold/30 via-amber-400/15 to-amber-600/20 border-2 border-cabo-gold/60 shadow-[0_0_24px_rgba(255,210,63,0.35)]'
+                  : 'bg-cabo-bg/60 border border-cabo-purple/20'
+              }`}
+            >
+              <div className="flex justify-between items-center mb-2 gap-2">
+                <span className="font-extrabold text-base sm:text-lg flex items-center gap-2 text-white">
+                  <span className="text-xl sm:text-2xl">{isWinner ? '🏆' : `${i + 1}º`}</span>
+                  {b.player.name}
+                  {isCaller && <span title="Chamou BATE">👑</span>}
+                </span>
+                <div className="flex flex-col items-end">
+                  <span className={`font-extrabold text-2xl sm:text-3xl ${isWinner ? 'text-cabo-gold' : 'text-white'}`}>
+                    <AnimatedScore target={b.roundScore} delay={600 + i * 180} />
+                    <span className="text-xs sm:text-sm font-normal opacity-70 ml-1">pts</span>
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-cabo-purple/80">
+                    Total: <AnimatedScore target={b.player.score} delay={600 + i * 180} />
+                  </span>
+                </div>
+              </div>
+              <div className="flex gap-1.5 sm:gap-2 items-end mb-1.5 flex-wrap">
+                {b.player.hand.map(card => (
+                  <Card2D key={card.id} card={card} size="sm" />
+                ))}
+              </div>
+              <div className="text-xs sm:text-sm font-mono text-cabo-purple/90">
+                {b.parts.map((p, idx) => {
+                  const meta = CARD_META[p.rank]
+                  const label = meta.displayName ?? p.rank
+                  return (
+                    <span key={idx}>
+                      {idx > 0 && ' + '}
+                      <span className={p.pts < 0 ? 'text-cabo-gold font-bold' : ''}>
+                        {label}({formatPoints(p.pts)})
+                      </span>
+                    </span>
+                  )
+                })}
+                <span className="text-white font-bold"> = {formatPoints(b.roundScore)}</span>
+              </div>
+            </motion.li>
+          )
+        })}
       </ul>
       {isHost ? (
         <motion.button
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 + players.length * 0.18 + 0.5 }}
+          transition={{ delay: 0.4 + breakdowns.length * 0.18 + 0.5 }}
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.97 }}
           onClick={onNext}
@@ -146,7 +210,7 @@ function RevealPhase({ players, isHost, onNext }: { players: RedactedState['play
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 + players.length * 0.18 + 0.5 }}
+          transition={{ delay: 0.4 + breakdowns.length * 0.18 + 0.5 }}
           className="text-center text-cabo-purple py-4"
         >
           Aguardando host…

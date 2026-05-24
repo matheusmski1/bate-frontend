@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { createTimeline } from 'animejs'
+import { createTimeline, animate } from 'animejs'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { RedactedState } from '@/types/shared'
+import { CARD_META } from '@/lib/card-meta'
 
 type Stage = 'announce' | 'message' | null
 
@@ -11,6 +12,7 @@ export function BateAnnouncement({ state }: { state: RedactedState }) {
   const [stage, setStage] = useState<Stage>(null)
   const [callerName, setCallerName] = useState('')
   const slamRef = useRef<HTMLDivElement | null>(null)
+  const batinhoRef = useRef<HTMLImageElement | null>(null)
   const prevCaller = useRef<string | null>(null)
 
   useEffect(() => {
@@ -41,6 +43,23 @@ export function BateAnnouncement({ state }: { state: RedactedState }) {
       duration: 500,
       ease: 'inOutSine',
     }, '-=150')
+
+    if (batinhoRef.current) {
+      animate(batinhoRef.current, {
+        scale: [0, 1.15, 1],
+        rotate: [-180, 12, 0],
+        opacity: [0, 0.55],
+        duration: 900,
+        ease: 'outBack',
+      })
+      animate(batinhoRef.current, {
+        translateY: [0, -18, 0],
+        duration: 1400,
+        delay: 900,
+        loop: true,
+        ease: 'inOutSine',
+      })
+    }
     return () => { tl.pause() }
   }, [stage])
 
@@ -55,19 +74,29 @@ export function BateAnnouncement({ state }: { state: RedactedState }) {
           className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm pointer-events-none"
         >
           {stage === 'announce' ? (
-            <div ref={slamRef} className="text-center" style={{ transformOrigin: 'center' }}>
-              <div
-                className="text-[10rem] font-display leading-none text-bate-red"
-                style={{
-                  WebkitTextStroke: '4px #1a0e08',
-                  textShadow: '8px 8px 0 #1a0e08, 8px 8px 0 #ffb81c, 10px 10px 0 #1a0e08',
-                  letterSpacing: '-0.04em',
-                }}
-              >
-                BATE!
-              </div>
-              <div className="font-display text-4xl text-bate-paper mt-6 tracking-widest uppercase">
-                🎯 {callerName} chamou
+            <div className="relative">
+              <img
+                ref={batinhoRef}
+                src={CARD_META['JOKER'].image}
+                alt=""
+                aria-hidden
+                className="absolute left-1/2 top-1/2 w-[420px] sm:w-[560px] -translate-x-1/2 -translate-y-1/2 opacity-0 pointer-events-none select-none"
+                style={{ filter: 'drop-shadow(0 24px 48px rgba(0,0,0,0.7))', willChange: 'transform, opacity' }}
+              />
+              <div ref={slamRef} className="relative text-center" style={{ transformOrigin: 'center' }}>
+                <div
+                  className="text-[7rem] sm:text-[10rem] font-display leading-none text-bate-red"
+                  style={{
+                    WebkitTextStroke: '4px #1a0e08',
+                    textShadow: '8px 8px 0 #1a0e08, 8px 8px 0 #ffb81c, 10px 10px 0 #1a0e08',
+                    letterSpacing: '-0.04em',
+                  }}
+                >
+                  BATE!
+                </div>
+                <div className="font-display text-2xl sm:text-4xl text-bate-paper mt-6 tracking-widest uppercase">
+                  🎯 {callerName} chamou
+                </div>
               </div>
             </div>
           ) : (

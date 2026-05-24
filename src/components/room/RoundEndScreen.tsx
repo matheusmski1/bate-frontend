@@ -111,6 +111,30 @@ function CountingPhase() {
 function RevealPhase({ breakdowns, caboCallerId, isHost, onNext }: { breakdowns: Breakdown[]; caboCallerId: string | null; isHost: boolean; onNext: () => void }) {
   const callerName = caboCallerId ? breakdowns.find(b => b.player.id === caboCallerId)?.player.name : null
   const callerIsWinner = caboCallerId && breakdowns[0]?.player.id === caboCallerId
+  const winnerBatinhoRef = useRef<HTMLImageElement | null>(null)
+
+  useEffect(() => {
+    if (!winnerBatinhoRef.current) return
+    const el = winnerBatinhoRef.current
+    const enterDelay = 600 + 180
+    animate(el, {
+      scale: [0, 1.2, 1],
+      rotate: [-220, 14, 0],
+      opacity: [0, 1],
+      duration: 800,
+      delay: enterDelay,
+      ease: 'outBack',
+    })
+    animate(el, {
+      translateY: [0, -10, 0, -6, 0],
+      rotate: [0, -8, 6, -4, 0],
+      duration: 1400,
+      delay: enterDelay + 800,
+      loop: true,
+      ease: 'inOutSine',
+    })
+  }, [])
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -149,12 +173,22 @@ function RevealPhase({ breakdowns, caboCallerId, isHost, onNext }: { breakdowns:
               initial={{ x: -40, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.4 + i * 0.18, ease: 'easeOut' }}
-              className={`rounded-2xl px-4 py-3 sm:px-5 sm:py-4 border-[3px] ${
+              className={`relative rounded-2xl px-4 py-3 sm:px-5 sm:py-4 border-[3px] ${
                 isWinner
                   ? 'bg-bate-gold/30 border-bate-gold shadow-hard'
                   : 'bg-bate-cream border-bate-ink/30 shadow-hard-sm'
               }`}
             >
+              {isWinner && (
+                <img
+                  ref={winnerBatinhoRef}
+                  src={CARD_META['JOKER'].image}
+                  alt=""
+                  aria-hidden
+                  className="absolute -top-14 sm:-top-16 -right-3 sm:-right-6 w-20 sm:w-28 opacity-0 pointer-events-none select-none z-10"
+                  style={{ filter: 'drop-shadow(0 12px 18px rgba(0,0,0,0.35))', willChange: 'transform, opacity' }}
+                />
+              )}
               <div className="flex justify-between items-center mb-2 gap-2">
                 <span className="font-display text-base sm:text-lg flex items-center gap-2 text-bate-ink">
                   <span className="text-xl sm:text-2xl">{isWinner ? '🏆' : `${i + 1}º`}</span>

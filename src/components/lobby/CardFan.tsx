@@ -37,6 +37,7 @@ export function CardFan() {
 
     let bob: ReturnType<typeof animate> | null = null
     let sway: ReturnType<typeof animate> | null = null
+    let burstTimer: ReturnType<typeof setInterval> | null = null
     entrance.then?.(() => {
       bob = animate(cards, {
         translateY: [
@@ -55,12 +56,44 @@ export function CardFan() {
         loop: true,
         delay: utils.stagger(240, { start: 200 }),
       })
+
+      const fireBurst = () => {
+        const pick = cards[Math.floor(Math.random() * cards.length)]
+        if (!pick) return
+        const variant = Math.random()
+        if (variant < 0.45) {
+          animate(pick, {
+            scale: [1, 1.28, 0.95, 1.08, 1],
+            duration: 760,
+            ease: 'outElastic(1, .55)',
+          })
+        } else if (variant < 0.8) {
+          animate(pick, {
+            translateY: [0, -28, 0],
+            scale: [1, 1.12, 1],
+            duration: 620,
+            ease: 'outBack',
+          })
+        } else {
+          animate(pick, {
+            rotate: '+=360',
+            scale: [1, 1.15, 1],
+            duration: 900,
+            ease: 'inOutBack',
+          })
+        }
+      }
+      burstTimer = setInterval(() => {
+        if (document.hidden) return
+        fireBurst()
+      }, 2800)
     })
 
     return () => {
       entrance.pause?.()
       bob?.pause?.()
       sway?.pause?.()
+      if (burstTimer) clearInterval(burstTimer)
     }
   }, [])
 

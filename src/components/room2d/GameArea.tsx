@@ -444,6 +444,20 @@ export function GameArea({ state }: { state: RedactedState }) {
       <PeekModal reveal={revealModal} onClose={() => setRevealModal(null)} />
       <ActionLog state={state} />
       <TurnTimer state={state} />
+      <button
+        type="button"
+        onClick={() => {
+          const sock = getSocket()
+          const name = (typeof window !== 'undefined' ? window.localStorage.getItem('cabo:name') : null) ?? me?.name ?? ''
+          sock.emit('room:join', { roomId: state.roomId, playerId: myId, playerName: name }, (res: { ok?: true; error?: string }) => {
+            if (res?.error) alert(`Resync falhou: ${res.error}`)
+          })
+        }}
+        title="Forçar resync com o servidor (se algo travar)"
+        className="fixed bottom-2 left-2 sm:bottom-4 sm:left-4 z-40 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-bate-paper border-[2px] sm:border-[3px] border-bate-ink shadow-hard-sm flex items-center justify-center text-bate-ink hover:bg-bate-gold text-sm"
+      >
+        🔄
+      </button>
       <SnapToast state={state} />
       <PenaltyPreview state={state} />
       <BateAnnouncement state={state} />

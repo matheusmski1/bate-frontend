@@ -24,12 +24,16 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
       router.push('/')
       return
     }
-    socket.emit('room:join', { roomId, playerId: getPlayerId(), playerName: name }, (res: { ok?: true; error?: string }) => {
-      if (res.error) {
-        alert(`Erro entrando: ${res.error}`)
-        router.push('/')
-      }
-    })
+    const doJoin = () => {
+      socket.emit('room:join', { roomId, playerId: getPlayerId(), playerName: name }, (res: { ok?: true; error?: string }) => {
+        if (res.error) {
+          alert(`Erro entrando: ${res.error}`)
+          router.push('/')
+        }
+      })
+    }
+    doJoin()
+    socket.on('connect', doJoin)
     socket.on('room:expired', ({ message }: { roomId: string; reason: string; message: string }) => {
       setRoom(null)
       alert(message)
@@ -54,6 +58,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
     return () => {
       socket.off('room:state')
       socket.off('room:expired')
+      socket.off('connect', doJoin)
       setRoom(null)
     }
   }, [roomId, router, setRoom])

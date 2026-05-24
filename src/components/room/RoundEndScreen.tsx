@@ -182,10 +182,10 @@ function RevealPhase({ breakdowns, caboCallerId, isHost, onNext }: { breakdowns:
               {isWinner && (
                 <img
                   ref={winnerBatinhoRef}
-                  src={CARD_META['JOKER'].image}
+                  src="/batinho/batinho-ouro.png"
                   alt=""
                   aria-hidden
-                  className="absolute -top-14 sm:-top-16 -right-3 sm:-right-6 w-20 sm:w-28 opacity-0 pointer-events-none select-none z-10"
+                  className="absolute -top-20 sm:-top-24 -right-4 sm:-right-8 w-28 sm:w-40 opacity-0 pointer-events-none select-none z-10"
                   style={{ filter: 'drop-shadow(0 12px 18px rgba(0,0,0,0.35))', willChange: 'transform, opacity' }}
                 />
               )}

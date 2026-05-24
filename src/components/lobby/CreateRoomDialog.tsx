@@ -4,9 +4,12 @@ import { useState } from 'react'
 import { getSocket } from '@/lib/socket-client'
 import { getPlayerId } from '@/lib/player-id'
 
+type TurnLimit = 30 | 60 | 90 | 120 | null
+
 export function CreateRoomDialog({ hostName, onCreated, onClose }: { hostName: string; onCreated: (roomId: string) => void; onClose: () => void }) {
   const [name, setName] = useState('')
   const [maxPlayers, setMaxPlayers] = useState<2 | 3 | 4>(4)
+  const [turnTimeLimitSec, setTurnTimeLimit] = useState<TurnLimit>(60)
   const [submitting, setSubmitting] = useState(false)
 
   function submit() {
@@ -14,7 +17,7 @@ export function CreateRoomDialog({ hostName, onCreated, onClose }: { hostName: s
     setSubmitting(true)
     getSocket().emit(
       'room:create',
-      { name: name.trim(), hostId: getPlayerId(), hostName, maxPlayers },
+      { name: name.trim(), hostId: getPlayerId(), hostName, maxPlayers, turnTimeLimitSec },
       (res: { roomId?: string; error?: string }) => {
         setSubmitting(false)
         if (res.error) {
@@ -40,7 +43,7 @@ export function CreateRoomDialog({ hostName, onCreated, onClose }: { hostName: s
           autoFocus
         />
         <label className="block mb-2 text-sm font-display text-bate-ink">MÁXIMO DE JOGADORES</label>
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-5">
           {([2, 3, 4] as const).map(n => (
             <button
               key={n}
@@ -48,6 +51,18 @@ export function CreateRoomDialog({ hostName, onCreated, onClose }: { hostName: s
               className={`flex-1 py-3 rounded-xl font-display border-[3px] border-bate-ink ${maxPlayers === n ? 'bg-bate-gold text-bate-ink shadow-hard-sm' : 'bg-bate-paper text-bate-ink/60'}`}
             >
               {n}
+            </button>
+          ))}
+        </div>
+        <label className="block mb-2 text-sm font-display text-bate-ink">TEMPO POR TURNO</label>
+        <div className="grid grid-cols-5 gap-1.5 mb-6">
+          {([30, 60, 90, 120, null] as const).map(t => (
+            <button
+              key={t ?? 'off'}
+              onClick={() => setTurnTimeLimit(t)}
+              className={`py-2.5 rounded-lg font-display text-xs border-[2px] border-bate-ink ${turnTimeLimitSec === t ? 'bg-bate-gold text-bate-ink shadow-hard-sm' : 'bg-bate-paper text-bate-ink/60'}`}
+            >
+              {t === null ? '∞' : `${t}s`}
             </button>
           ))}
         </div>

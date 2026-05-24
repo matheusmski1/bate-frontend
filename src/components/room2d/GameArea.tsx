@@ -19,6 +19,7 @@ import { ActionLog } from './ActionLog'
 import { BateAnnouncement } from './BateAnnouncement'
 import { SnapToast } from './SnapToast'
 import { PenaltyPreview } from './PenaltyPreview'
+import { TurnTimer } from './TurnTimer'
 
 const TEMP_REVEAL_MS = 3000
 
@@ -368,6 +369,7 @@ export function GameArea({ state }: { state: RedactedState }) {
       <InstructionBar text={instruction} />
       <PeekModal reveal={revealModal} onClose={() => setRevealModal(null)} />
       <ActionLog state={state} />
+      <TurnTimer state={state} />
       <SnapToast state={state} />
       <PenaltyPreview state={state} />
       <BateAnnouncement state={state} />

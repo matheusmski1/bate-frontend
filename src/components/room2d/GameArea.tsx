@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { motion } from 'framer-motion'
 import type { RedactedState, Card, Rank, Suit } from '@/types/shared'
 import { getPlayerId } from '@/lib/player-id'
 import { getSocket } from '@/lib/socket-client'
@@ -42,7 +43,12 @@ export function GameArea({ state }: { state: RedactedState }) {
   const [peekConfirmedLocal, setPeekConfirmedLocal] = useState(false)
   const [victimEffects, setVictimEffects] = useState<Map<string, 'peeked' | 'swapped'>>(new Map())
   const [opponentsHoldingDrawn, setOpponentsHoldingDrawn] = useState<Set<string>>(new Set())
+  const [effectPromptDismissed, setEffectPromptDismissed] = useState(false)
   const prevLogLenRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    if (!pendingEffect) setEffectPromptDismissed(false)
+  }, [pendingEffect])
 
   useEffect(() => {
     if (state.phase !== 'initial-peek') setPeekConfirmedLocal(false)
@@ -348,20 +354,59 @@ export function GameArea({ state }: { state: RedactedState }) {
       {state.phase === 'initial-peek' && (
         <InitialPeekConfirm confirmed={peekConfirmedLocal} onConfirm={confirmInitialPeek} />
       )}
-      {isMyEffect && (
-        <button
-          type="button"
-          onClick={() => {
-            setMySwapPickIndex(null)
-            getSocket().emit('game:skip-effect', { roomId: state.roomId, playerId: myId }, (res: { ok?: true; error?: string }) => {
-              if (res?.error) alert(res.error)
-            })
-          }}
-          className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 px-3 py-1.5 rounded-lg bg-bate-paper border-[2px] border-bate-ink shadow-hard-sm text-bate-ink/80 hover:text-bate-ink hover:bg-bate-cream text-xs font-body font-semibold tracking-wide whitespace-nowrap"
-        >
-          ✕ pular ação
-        </button>
-      )}
+      {isMyEffect && pendingEffect && (() => {
+        const effectName =
+          pendingEffect.type === 'peek-own' ? 'OLHADINHA'
+          : pendingEffect.type === 'peek-other' ? 'ESPIADINHA'
+          : 'TROCA'
+        const skipNow = () => {
+          setMySwapPickIndex(null)
+          setEffectPromptDismissed(false)
+          getSocket().emit('game:skip-effect', { roomId: state.roomId, playerId: myId }, (res: { ok?: true; error?: string }) => {
+            if (res?.error) alert(res.error)
+          })
+        }
+        if (!effectPromptDismissed) {
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 30, scale: 0.85 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 20 }}
+              className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 flex gap-4"
+            >
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.05, y: -3 }}
+                whileTap={{ scale: 0.96 }}
+                onClick={() => setEffectPromptDismissed(true)}
+                className="px-5 py-3 rounded-2xl bg-bate-gold border-[4px] border-bate-ink shadow-hard-lg text-bate-ink font-display uppercase whitespace-nowrap leading-tight text-center"
+              >
+                <div className="text-sm">🎯 USAR</div>
+                <div className="text-[10px] mt-0.5">{effectName}</div>
+              </motion.button>
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.05, y: -3 }}
+                whileTap={{ scale: 0.96 }}
+                onClick={skipNow}
+                className="px-5 py-3 rounded-2xl bg-bate-paper border-[4px] border-bate-ink shadow-hard text-bate-ink font-display uppercase whitespace-nowrap leading-tight text-center"
+              >
+                <div className="text-sm">✕ PULAR</div>
+                <div className="text-[10px] mt-0.5 text-bate-ink/60">sem ação</div>
+              </motion.button>
+            </motion.div>
+          )
+        }
+        return (
+          <button
+            type="button"
+            onClick={skipNow}
+            className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 px-3 py-1.5 rounded-lg bg-bate-paper border-[2px] border-bate-ink shadow-hard-sm text-bate-ink/80 hover:text-bate-ink hover:bg-bate-cream text-xs font-body font-semibold tracking-wide whitespace-nowrap"
+          >
+            ✕ pular ação
+          </button>
+        )
+      })()}
     </div>
   )
 }

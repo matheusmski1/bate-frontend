@@ -20,6 +20,7 @@ import { BateAnnouncement } from './BateAnnouncement'
 import { SnapToast } from './SnapToast'
 import { PenaltyPreview } from './PenaltyPreview'
 import { TurnTimer } from './TurnTimer'
+import { TurnArrow } from './TurnArrow'
 
 const TEMP_REVEAL_MS = 3000
 
@@ -319,6 +320,25 @@ export function GameArea({ state }: { state: RedactedState }) {
     return 'top-1/4 right-4 sm:right-8'
   }
 
+  const leaderId = (() => {
+    const playing = state.players.filter(p => p.connected || p.score > 0)
+    const pool = playing.length > 0 ? playing : state.players
+    if (pool.every(p => p.score === pool[0]?.score)) return null
+    return pool.reduce((best, p) => (p.score < best.score ? p : best), pool[0]!).id
+  })()
+
+  const currentSeat: 'me' | 'top' | 'left' | 'right' | 'top-left' | 'top-right' = (() => {
+    if (currentPlayerId === myId) return 'me'
+    const idx = opponents.findIndex(o => o.id === currentPlayerId)
+    if (idx === -1) return 'top'
+    const count = opponents.length
+    if (count === 1) return 'top'
+    if (count === 2) return idx === 0 ? 'top-left' : 'top-right'
+    if (idx === 0) return 'top'
+    if (idx === 1) return 'left'
+    return 'right'
+  })()
+
   return (
     <div className="relative w-screen h-screen overflow-hidden">
       <Background />
@@ -345,6 +365,7 @@ export function GameArea({ state }: { state: RedactedState }) {
             player={p}
             isCurrent={p.id === currentPlayerId}
             isHost={p.id === state.hostId}
+            isLeader={p.id === leaderId}
             onCardClick={opponentCardsClickable ? (idx) => handleOpponentCardClick(p.id, idx) : undefined}
             tempReveals={tempReveals}
             highlightedIds={highlightedIds}
@@ -358,6 +379,9 @@ export function GameArea({ state }: { state: RedactedState }) {
         <div className="relative px-8 sm:px-12 py-6 sm:py-8 rounded-3xl border-[4px] border-bate-ink bg-bate-paper/70 shadow-hard-lg backdrop-blur-sm">
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-bate-ink text-bate-gold font-display text-[10px] tracking-[0.25em] uppercase whitespace-nowrap shadow-hard-sm rotate-[-1deg]">
             ✦ MESA ✦
+          </div>
+          <div className="absolute -bottom-5 left-1/2 -translate-x-1/2">
+            <TurnArrow currentSeat={currentSeat} />
           </div>
           <div className="flex items-center gap-10 sm:gap-14">
             <DeckPile2D count={state.deckCount} onClick={canDraw ? handleDeckClick : undefined} />
@@ -379,6 +403,7 @@ export function GameArea({ state }: { state: RedactedState }) {
             player={me}
             isCurrent={isMyTurn}
             isHost={me.id === state.hostId}
+            isLeader={me.id === leaderId}
             onCardClick={ownCardsClickable ? handlePlayerCardClick : undefined}
             tempReveals={tempReveals}
             highlightedIds={highlightedIds}

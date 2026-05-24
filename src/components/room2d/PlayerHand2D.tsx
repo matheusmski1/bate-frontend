@@ -8,6 +8,7 @@ type Props = {
   player: RedactedPlayer
   isCurrent: boolean
   isHost?: boolean
+  isLeader?: boolean
   onCardClick?: (handIndex: number) => void
   tempReveals?: Map<string, { rank: Rank; suit: Suit | null }>
   highlightedIds?: Set<string>
@@ -15,7 +16,7 @@ type Props = {
   snapHintIds?: Set<string>
 }
 
-export function PlayerHand2D({ player, isCurrent, isHost = false, onCardClick, tempReveals, highlightedIds, victimEffects, snapHintIds }: Props) {
+export function PlayerHand2D({ player, isCurrent, isHost = false, isLeader = false, onCardClick, tempReveals, highlightedIds, victimEffects, snapHintIds }: Props) {
   return (
     <div className="flex flex-col items-center gap-3">
       <Nameplate
@@ -24,6 +25,7 @@ export function PlayerHand2D({ player, isCurrent, isHost = false, onCardClick, t
         isCurrent={isCurrent}
         connected={player.connected}
         isHost={isHost}
+        isLeader={isLeader}
         isMe
       />
       <div className="flex gap-3 items-end">

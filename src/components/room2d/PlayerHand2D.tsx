@@ -31,7 +31,7 @@ export function PlayerHand2D({ player, isCurrent, isHost = false, isLeader = fal
         isLeader={isLeader}
         isMe
       />
-      <div className="flex gap-3 items-end">
+      <div className="flex gap-1.5 sm:gap-3 items-end">
         {player.hand.map((c, i) => (
           <Card2D
             key={c.id}

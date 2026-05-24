@@ -336,14 +336,14 @@ export function GameArea({ state }: { state: RedactedState }) {
 
   const opponentPos = (idx: number): string => {
     const count = opponents.length
-    if (count === 1) return 'top-10 left-1/2 -translate-x-1/2'
+    if (count === 1) return 'top-4 sm:top-10 left-1/2 -translate-x-1/2'
     if (count === 2) {
-      if (idx === 0) return 'top-10 left-4 sm:left-10'
-      return 'top-10 right-4 sm:right-10'
+      if (idx === 0) return 'top-4 sm:top-10 left-2 sm:left-10'
+      return 'top-4 sm:top-10 right-2 sm:right-10'
     }
-    if (idx === 0) return 'top-6 left-1/2 -translate-x-1/2'
-    if (idx === 1) return 'top-1/4 left-4 sm:left-8'
-    return 'top-1/4 right-4 sm:right-8'
+    if (idx === 0) return 'top-2 sm:top-6 left-1/2 -translate-x-1/2'
+    if (idx === 1) return 'top-28 sm:top-1/4 left-1 sm:left-8'
+    return 'top-28 sm:top-1/4 right-1 sm:right-8'
   }
 
   const leaderId = (() => {
@@ -392,11 +392,11 @@ export function GameArea({ state }: { state: RedactedState }) {
       ))}
 
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-        <div className="relative px-8 sm:px-12 py-6 sm:py-8 rounded-3xl border-[4px] border-bate-ink bg-bate-paper/70 shadow-hard-lg backdrop-blur-sm">
+        <div className="relative px-3 sm:px-12 py-3 sm:py-8 rounded-2xl sm:rounded-3xl border-[3px] sm:border-[4px] border-bate-ink bg-bate-paper/70 shadow-hard sm:shadow-hard-lg backdrop-blur-sm">
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-bate-ink text-bate-gold font-display text-[10px] tracking-[0.25em] uppercase whitespace-nowrap shadow-hard-sm rotate-[-1deg]">
             ✦ MESA ✦
           </div>
-          <div className="flex items-center gap-10 sm:gap-14">
+          <div className="flex items-center gap-3 sm:gap-14">
             <DeckPile2D count={state.deckCount} onClick={canDraw ? handleDeckClick : undefined} />
             <AnimatePresence mode="wait">
               {drawnCard && (
@@ -422,7 +422,7 @@ export function GameArea({ state }: { state: RedactedState }) {
         </div>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20">
+      <div className="absolute bottom-16 sm:bottom-8 left-1/2 -translate-x-1/2 z-20">
         {me && (
           <PlayerHand2D
             player={me}

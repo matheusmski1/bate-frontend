@@ -30,17 +30,17 @@ export function EmoteBar({ roomId }: { roomId: string }) {
   const onCooldown = Date.now() - lastSentAt < COOLDOWN_MS
 
   return (
-    <div className="fixed bottom-6 right-4 z-40 flex flex-col gap-1.5 bg-bate-paper/80 backdrop-blur p-2 rounded-2xl border-[3px] border-bate-ink shadow-hard-sm">
+    <div className="fixed bottom-2 right-1/2 translate-x-1/2 sm:translate-x-0 sm:bottom-6 sm:right-4 z-40 flex flex-row sm:flex-col gap-1 sm:gap-1.5 bg-bate-paper/80 backdrop-blur p-1.5 sm:p-2 rounded-2xl border-[3px] border-bate-ink shadow-hard-sm">
       {EMOTES.map(e => (
         <motion.button
           key={e.key}
           type="button"
           onClick={() => send(e.key)}
           disabled={onCooldown}
-          whileHover={!onCooldown ? { scale: 1.15, x: -2 } : undefined}
+          whileHover={!onCooldown ? { scale: 1.15 } : undefined}
           whileTap={!onCooldown ? { scale: 0.9 } : undefined}
           title={e.label}
-          className={`w-10 h-10 rounded-xl border-[2px] border-bate-ink bg-bate-cream flex items-center justify-center text-xl ${onCooldown ? 'opacity-40 cursor-not-allowed' : 'hover:bg-bate-gold cursor-pointer'}`}
+          className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl border-[2px] border-bate-ink bg-bate-cream flex items-center justify-center text-base sm:text-xl ${onCooldown ? 'opacity-40 cursor-not-allowed' : 'hover:bg-bate-gold cursor-pointer'}`}
         >
           {e.char}
         </motion.button>

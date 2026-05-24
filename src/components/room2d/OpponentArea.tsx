@@ -72,8 +72,8 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
         isHost={isHost}
         isLeader={isLeader}
       />
-      <div className="flex gap-3 items-center">
-        <div className="flex gap-2">
+      <div className="flex gap-1.5 sm:gap-3 items-center">
+        <div className="flex gap-1 sm:gap-2">
           {player.hand.map((c, i) => (
             <Card2D
               key={c.id}

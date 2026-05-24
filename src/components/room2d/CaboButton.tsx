@@ -35,7 +35,7 @@ export function CaboButton({ state, drawnExists }: { state: RedactedState; drawn
       animate={{ scale: 1, opacity: enabled ? 1 : 0.45 }}
       whileHover={enabled ? { scale: 1.08 } : undefined}
       whileTap={enabled ? { scale: 0.95 } : undefined}
-      className={`fixed top-20 right-6 z-40 px-6 py-3 rounded-2xl font-display text-base border-[4px] border-bate-ink ${
+      className={`fixed top-2 right-2 sm:top-20 sm:right-6 z-40 px-3 py-1.5 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl font-display text-xs sm:text-base border-[3px] sm:border-[4px] border-bate-ink ${
         enabled
           ? 'bg-bate-red text-bate-paper cursor-pointer shadow-hard-lg'
           : 'bg-bate-paper text-bate-ink/60 cursor-not-allowed shadow-hard-sm'

@@ -50,15 +50,15 @@ export function DrawnCard2D({
 
   return (
     <div ref={wrapRef} className="flex flex-col items-center gap-3">
-      <div className="flex items-center gap-3 sm:gap-4">
+      <div className="flex items-center gap-1.5 sm:gap-4">
         {isAction && (
           <button
             type="button"
             onClick={onUseAction}
-            className="drawn-card-btn opacity-0 px-4 py-3 rounded-2xl bg-bate-gold border-[3px] border-bate-ink shadow-hard-lg text-bate-ink font-display uppercase whitespace-nowrap text-center leading-tight hover:scale-105 hover:-translate-y-1 active:scale-95 transition-transform"
+            className="drawn-card-btn opacity-0 px-2 py-2 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl bg-bate-gold border-[2px] sm:border-[3px] border-bate-ink shadow-hard sm:shadow-hard-lg text-bate-ink font-display uppercase whitespace-nowrap text-center leading-tight hover:scale-105 hover:-translate-y-1 active:scale-95 transition-transform"
           >
-            <div className="text-sm">🎯 USAR</div>
-            <div className="text-[10px] mt-0.5">{meta.displayName}</div>
+            <div className="text-[11px] sm:text-sm">🎯 USAR</div>
+            <div className="text-[9px] sm:text-[10px] mt-0.5">{meta.displayName}</div>
           </button>
         )}
 
@@ -77,14 +77,14 @@ export function DrawnCard2D({
         <button
           type="button"
           onClick={onDiscard}
-          className="drawn-card-btn opacity-0 px-4 py-3 rounded-2xl bg-bate-paper border-[3px] border-bate-ink shadow-hard text-bate-ink font-display uppercase whitespace-nowrap text-center leading-tight hover:scale-105 hover:-translate-y-1 active:scale-95 transition-transform"
+          className="drawn-card-btn opacity-0 px-2 py-2 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl bg-bate-paper border-[2px] sm:border-[3px] border-bate-ink shadow-hard-sm sm:shadow-hard text-bate-ink font-display uppercase whitespace-nowrap text-center leading-tight hover:scale-105 hover:-translate-y-1 active:scale-95 transition-transform"
         >
-          <div className="text-sm">🗑️ DESCARTAR</div>
-          {isAction && <div className="text-[10px] mt-0.5 text-bate-ink/60">sem ação</div>}
+          <div className="text-[11px] sm:text-sm">🗑️ DESCARTAR</div>
+          {isAction && <div className="text-[9px] sm:text-[10px] mt-0.5 text-bate-ink/60">sem ação</div>}
         </button>
       </div>
 
-      <div className="drawn-card-btn opacity-0 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-bate-paper border-[2px] border-bate-ink shadow-hard-sm font-display text-[11px] text-bate-ink uppercase whitespace-nowrap">
+      <div className="drawn-card-btn opacity-0 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-bate-paper border-[2px] border-bate-ink shadow-hard-sm font-display text-[9px] sm:text-[11px] text-bate-ink uppercase text-center max-w-[280px] sm:max-w-none sm:whitespace-nowrap">
         🔄 OU TROCA: clica uma carta SUA pra colocar esta no lugar
       </div>
     </div>

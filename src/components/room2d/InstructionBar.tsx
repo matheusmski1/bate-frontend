@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 
 export function InstructionBar({ text }: { text: string | null }) {
   return (
-    <div className="fixed top-32 left-4 z-40 pointer-events-none max-w-[260px]">
+    <div className="fixed top-16 sm:top-32 left-2 sm:left-4 z-40 pointer-events-none max-w-[180px] sm:max-w-[260px]">
       <AnimatePresence>
         {text && (
           <motion.div

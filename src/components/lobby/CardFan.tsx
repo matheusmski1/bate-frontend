@@ -6,9 +6,9 @@ import type { Rank } from '@/types/shared'
 type FanItem = { rank: Rank; transform: string; z: number; shadow: string }
 
 const FAN: FanItem[] = [
-  { rank: 'JOKER', transform: '-translate-x-[110%] md:-translate-x-[120%] rotate-[-22deg] translate-y-[20%]', z: 10, shadow: 'shadow-hard' },
+  { rank: 'K',     transform: '-translate-x-[110%] md:-translate-x-[120%] rotate-[-22deg] translate-y-[20%]', z: 10, shadow: 'shadow-hard' },
   { rank: '10',    transform: '-translate-x-[55%] md:-translate-x-[60%] rotate-[-11deg] translate-y-[5%]',     z: 20, shadow: 'shadow-hard' },
-  { rank: 'K',     transform: 'scale-110 md:scale-125',                                                        z: 30, shadow: 'shadow-hard-lg' },
+  { rank: 'JOKER', transform: 'scale-110 md:scale-125',                                                        z: 30, shadow: 'shadow-hard-lg' },
   { rank: 'J',     transform: 'translate-x-[55%] md:translate-x-[60%] rotate-[11deg] translate-y-[5%]',        z: 20, shadow: 'shadow-hard' },
   { rank: 'Q',     transform: 'translate-x-[110%] md:translate-x-[120%] rotate-[22deg] translate-y-[20%]',     z: 10, shadow: 'shadow-hard' },
 ]
@@ -22,7 +22,7 @@ export function CardFan() {
           <div
             key={item.rank}
             style={{ zIndex: item.z }}
-            className={`card-fan-item absolute inset-0 bg-bate-cream border-[3px] md:border-[4px] border-bate-ink rounded-xl md:rounded-2xl transition-all duration-300 cursor-pointer overflow-hidden transform ${item.transform} ${item.shadow}`}
+            className={`card-fan-item absolute inset-0 bg-bate-cream border-[3px] md:border-[4px] border-bate-ink rounded-xl md:rounded-2xl overflow-hidden transform ${item.transform} ${item.shadow}`}
           >
             <img
               src={CARD_META[item.rank].image}

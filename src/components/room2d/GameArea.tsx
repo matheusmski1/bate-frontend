@@ -340,9 +340,9 @@ export function GameArea({ state }: { state: RedactedState }) {
               if (res?.error) alert(res.error)
             })
           }}
-          className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-7 py-4 rounded-2xl bg-red-500/90 hover:bg-red-500 backdrop-blur text-white font-extrabold shadow-2xl border-2 border-red-300/60 transition-all hover:scale-105 text-base tracking-wide animate-pulse"
+          className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 px-3 py-1.5 rounded-lg bg-bate-paper border-[2px] border-bate-ink shadow-hard-sm text-bate-ink/80 hover:text-bate-ink hover:bg-bate-cream text-xs font-body font-semibold tracking-wide whitespace-nowrap"
         >
-          ✕ PULAR AÇÃO
+          ✕ pular ação
         </button>
       )}
     </div>

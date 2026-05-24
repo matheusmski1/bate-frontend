@@ -1,6 +1,7 @@
 'use client'
 
 import { motion, type HTMLMotionProps } from 'framer-motion'
+import { Eye, ArrowLeftRight } from 'lucide-react'
 import type { RedactedCard, Rank, Suit } from '@/types/shared'
 import { CardFace } from './CardFace'
 import { CardBack } from './CardBack'
@@ -13,11 +14,14 @@ function tooltipFor(rank: Rank): string {
   return `${rank} (${points} pts)`
 }
 
+type VictimEffect = 'peeked' | 'swapped'
+
 type Props = {
   card: RedactedCard
   tempRevealedAs?: { rank: Rank; suit: Suit | null } | null
   onClick?: () => void
   highlighted?: boolean
+  victimEffect?: VictimEffect | null
   size?: 'sm' | 'md' | 'lg'
   draggable?: boolean
 } & Omit<HTMLMotionProps<'button'>, 'onClick' | 'children'>
@@ -28,7 +32,12 @@ const SIZE_CLASSES: Record<NonNullable<Props['size']>, string> = {
   lg: 'w-28 h-40',
 }
 
-export function Card2D({ card, tempRevealedAs = null, onClick, highlighted = false, size = 'md', ...rest }: Props) {
+const VICTIM_SHADOW: Record<VictimEffect, string> = {
+  peeked: '0 0 28px 8px rgba(255, 210, 63, 0.85), 0 10px 22px rgba(0,0,0,0.55)',
+  swapped: '0 0 28px 8px rgba(239, 68, 68, 0.85), 0 10px 22px rgba(0,0,0,0.55)',
+}
+
+export function Card2D({ card, tempRevealedAs = null, onClick, highlighted = false, victimEffect = null, size = 'md', ...rest }: Props) {
   const isHidden = 'hidden' in card
   const effectiveRank = tempRevealedAs?.rank ?? (!isHidden ? card.rank : null)
   const effectiveSuit = tempRevealedAs ? tempRevealedAs.suit : (!isHidden ? card.suit : null)
@@ -45,15 +54,17 @@ export function Card2D({ card, tempRevealedAs = null, onClick, highlighted = fal
       whileTap={onClick ? { scale: 0.97 } : undefined}
       animate={{
         rotateY: showFace ? 0 : 180,
-        boxShadow: highlighted
-          ? '0 0 22px 6px rgba(255, 210, 63, 0.65), 0 10px 22px rgba(0,0,0,0.55)'
-          : isSpecial
-            ? '0 0 12px 1px rgba(255, 210, 63, 0.35), 0 8px 18px rgba(0,0,0,0.55)'
-            : '0 6px 16px rgba(0,0,0,0.55)',
+        boxShadow: victimEffect
+          ? VICTIM_SHADOW[victimEffect]
+          : highlighted
+            ? '0 0 22px 6px rgba(255, 210, 63, 0.65), 0 10px 22px rgba(0,0,0,0.55)'
+            : isSpecial
+              ? '0 0 12px 1px rgba(255, 210, 63, 0.35), 0 8px 18px rgba(0,0,0,0.55)'
+              : '0 6px 16px rgba(0,0,0,0.55)',
       }}
       transition={{ rotateY: { duration: 0.45, ease: 'easeOut' }, boxShadow: { duration: 0.25 } }}
       style={{ transformStyle: 'preserve-3d' }}
-      className={`relative ${SIZE_CLASSES[size]} rounded-xl select-none ${onClick ? 'cursor-pointer' : 'cursor-default'} disabled:cursor-default`}
+      className={`relative ${SIZE_CLASSES[size]} rounded-xl select-none ${onClick ? 'cursor-pointer' : 'cursor-default'} disabled:cursor-default ${victimEffect ? 'animate-pulse' : ''}`}
       disabled={!onClick}
       title={tooltip}
       {...rest}
@@ -74,6 +85,16 @@ export function Card2D({ card, tempRevealedAs = null, onClick, highlighted = fal
       >
         <CardBack />
       </div>
+      {victimEffect && (
+        <motion.div
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: [0, 1.3, 1], opacity: 1 }}
+          transition={{ duration: 0.4 }}
+          className={`absolute -top-3 -right-3 w-10 h-10 rounded-full flex items-center justify-center shadow-xl z-10 ${victimEffect === 'peeked' ? 'bg-cabo-gold text-cabo-bg' : 'bg-red-500 text-white'}`}
+        >
+          {victimEffect === 'peeked' ? <Eye size={20} strokeWidth={3} /> : <ArrowLeftRight size={20} strokeWidth={3} />}
+        </motion.div>
+      )}
     </motion.button>
   )
 }

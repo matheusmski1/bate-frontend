@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import type { RedactedState, Card, Rank, Suit } from '@/types/shared'
 import { getPlayerId } from '@/lib/player-id'
 import { getSocket } from '@/lib/socket-client'
@@ -38,6 +38,8 @@ export function GameArea({ state }: { state: RedactedState }) {
   const [revealModal, setRevealModal] = useState<RevealValue | null>(null)
   const [mySwapPickIndex, setMySwapPickIndex] = useState<number | null>(null)
   const [peekConfirmedLocal, setPeekConfirmedLocal] = useState(false)
+  const [victimEffects, setVictimEffects] = useState<Map<string, 'peeked' | 'swapped'>>(new Map())
+  const prevLogLenRef = useRef<number | null>(null)
 
   useEffect(() => {
     if (state.phase !== 'initial-peek') setPeekConfirmedLocal(false)
@@ -77,6 +79,52 @@ export function GameArea({ state }: { state: RedactedState }) {
       return next
     })
   }, [drawnCard])
+
+  const markVictimEffect = useCallback((cardId: string, kind: 'peeked' | 'swapped') => {
+    setVictimEffects(prev => new Map(prev).set(cardId, kind))
+    setTimeout(() => {
+      setVictimEffects(prev => {
+        const next = new Map(prev)
+        next.delete(cardId)
+        return next
+      })
+    }, TEMP_REVEAL_MS)
+  }, [])
+
+  useEffect(() => {
+    if (prevLogLenRef.current === null) {
+      prevLogLenRef.current = state.log.length
+      return
+    }
+    if (state.log.length <= prevLogLenRef.current) {
+      prevLogLenRef.current = state.log.length
+      return
+    }
+    const newEntries = state.log.slice(prevLogLenRef.current)
+    prevLogLenRef.current = state.log.length
+    for (const entry of newEntries) {
+      if (entry.actorId === myId) continue
+      if (entry.type === 'peek') {
+        const p = entry.payload as { targetPlayerId?: string; cardIndex?: number; skipped?: boolean } | undefined
+        if (!p || p.skipped || p.targetPlayerId === undefined || p.cardIndex === undefined) continue
+        const targetPlayer = state.players.find(pl => pl.id === p.targetPlayerId)
+        const card = targetPlayer?.hand[p.cardIndex]
+        if (card) markVictimEffect(card.id, 'peeked')
+      }
+      if (entry.type === 'swap') {
+        const p = entry.payload as { targetPlayerId?: string; targetCardIndex?: number; myCardIndex?: number } | undefined
+        if (!p || p.targetPlayerId === undefined || p.targetCardIndex === undefined) continue
+        const targetPlayer = state.players.find(pl => pl.id === p.targetPlayerId)
+        const card = targetPlayer?.hand[p.targetCardIndex]
+        if (card) markVictimEffect(card.id, 'swapped')
+        if (p.myCardIndex !== undefined) {
+          const actorPlayer = state.players.find(pl => pl.id === entry.actorId)
+          const actorCard = actorPlayer?.hand[p.myCardIndex]
+          if (actorCard) markVictimEffect(actorCard.id, 'swapped')
+        }
+      }
+    }
+  }, [state.log, state.players, myId, markVictimEffect])
 
   const tempReveal = useCallback((cardId: string, value: RevealValue) => {
     setTempReveals(prev => new Map(prev).set(cardId, value))
@@ -229,6 +277,7 @@ export function GameArea({ state }: { state: RedactedState }) {
               onCardClick={opponentCardsClickable ? (idx) => handleOpponentCardClick(p.id, idx) : undefined}
               tempReveals={tempReveals}
               highlightedIds={highlightedIds}
+              victimEffects={victimEffects}
             />
           ))}
         </div>
@@ -249,6 +298,7 @@ export function GameArea({ state }: { state: RedactedState }) {
               onCardClick={ownCardsClickable ? handlePlayerCardClick : undefined}
               tempReveals={tempReveals}
               highlightedIds={highlightedIds}
+              victimEffects={victimEffects}
             />
           )}
         </div>

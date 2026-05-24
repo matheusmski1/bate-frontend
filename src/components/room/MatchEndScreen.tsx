@@ -7,22 +7,37 @@ export function MatchEndScreen({ state }: { state: RedactedState }) {
   const router = useRouter()
   const sorted = [...state.players].sort((a, b) => a.score - b.score)
   const loser = sorted[sorted.length - 1]
+  const winner = sorted[0]
 
   return (
     <main className="min-h-screen flex items-center justify-center p-6">
-      <div className="bg-cabo-surface p-8 rounded-2xl max-w-md w-full text-center">
-        <h2 className="text-4xl font-bold text-cabo-accent mb-2">Fim de partida</h2>
-        <p className="text-cabo-purple mb-6">{loser?.name} chegou a 100 pontos</p>
+      <div className="bg-bate-paper p-8 rounded-3xl max-w-md w-full text-center border-[4px] border-bate-ink shadow-hard-lg">
+        <h2
+          className="font-display text-5xl text-bate-red mb-2"
+          style={{
+            WebkitTextStroke: '2px #1a0e08',
+            textShadow: '4px 4px 0 #1a0e08, 4px 4px 0 #ffb81c, 6px 6px 0 #1a0e08',
+          }}
+        >
+          FIM DE PARTIDA
+        </h2>
+        <p className="font-display text-bate-ink mb-6 text-sm">🏆 {winner?.name} venceu — {loser?.name} chegou a 100 pontos</p>
         <ul className="space-y-2 mb-8">
           {sorted.map((p, i) => (
-            <li key={p.id} className={`flex justify-between rounded-lg px-4 py-3 ${i === 0 ? 'bg-cabo-gold text-cabo-bg' : 'bg-cabo-bg'}`}>
-              <span className="font-bold">{i + 1}. {p.name}</span>
-              <span className="font-bold">{p.score}</span>
+            <li
+              key={p.id}
+              className={`flex justify-between rounded-xl px-4 py-3 border-[3px] border-bate-ink shadow-hard-sm ${i === 0 ? 'bg-bate-gold text-bate-ink' : 'bg-bate-cream text-bate-ink'}`}
+            >
+              <span className="font-display text-sm">{i === 0 ? '🏆' : `${i + 1}º`} {p.name}</span>
+              <span className="font-display">{p.score}</span>
             </li>
           ))}
         </ul>
-        <button onClick={() => router.push('/')} className="w-full py-3 rounded-xl bg-cabo-purple font-bold">
-          Voltar pro lobby
+        <button
+          onClick={() => router.push('/')}
+          className="w-full py-3 rounded-2xl bg-bate-red text-bate-paper border-[4px] border-bate-ink font-display shadow-hard hover:scale-[1.02] transition-transform"
+        >
+          VOLTAR PRO LOBBY
         </button>
       </div>
     </main>

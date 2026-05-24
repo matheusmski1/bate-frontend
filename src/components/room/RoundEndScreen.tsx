@@ -45,7 +45,7 @@ export function RoundEndScreen({ state }: { state: RedactedState }) {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-cabo-bg via-cabo-surface to-black">
+    <main className="min-h-screen flex items-center justify-center p-6 bg-bate-cream">
       <AnimatePresence mode="wait">
         {stage === 'counting' ? (
           <CountingPhase key="counting" />
@@ -88,18 +88,18 @@ function CountingPhase() {
       ref={wrapRef}
     >
       <div className="flex gap-3 justify-center mb-8">
-        <div className="counting-card w-14 h-20 rounded-xl bg-gradient-to-br from-cabo-red to-red-700 border-2 border-cabo-cream shadow-2xl flex items-center justify-center">
-          <span className="text-cabo-cream font-extrabold text-lg">A</span>
+        <div className="counting-card w-14 h-20 rounded-xl bg-gradient-to-br from-bate-red-deep to-red-700 border-[3px] border-bate-ink shadow-hard flex items-center justify-center">
+          <span className="text-bate-paper font-extrabold text-lg">A</span>
         </div>
-        <div className="counting-card w-14 h-20 rounded-xl bg-gradient-to-br from-cabo-red to-red-700 border-2 border-cabo-cream shadow-2xl flex items-center justify-center">
-          <span className="text-cabo-cream font-extrabold text-lg">K</span>
+        <div className="counting-card w-14 h-20 rounded-xl bg-gradient-to-br from-bate-red-deep to-red-700 border-[3px] border-bate-ink shadow-hard flex items-center justify-center">
+          <span className="text-bate-paper font-extrabold text-lg">K</span>
         </div>
-        <div className="counting-card w-14 h-20 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 border-2 border-cabo-cream shadow-2xl flex items-center justify-center">
-          <span className="text-cabo-bg font-extrabold text-lg">★</span>
+        <div className="counting-card w-14 h-20 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 border-[3px] border-bate-ink shadow-hard flex items-center justify-center">
+          <span className="text-bate-ink font-extrabold text-lg">★</span>
         </div>
       </div>
-      <div className="text-3xl font-extrabold text-cabo-gold tracking-wide drop-shadow-[0_4px_12px_rgba(255,210,63,0.5)]">
-        Contando pontos
+      <div className="font-display text-3xl text-bate-red" style={{ WebkitTextStroke: '2px #1a0e08', textShadow: '4px 4px 0 #1a0e08' }}>
+        CONTANDO PONTOS
         <span className="counting-dot">.</span>
         <span className="counting-dot">.</span>
         <span className="counting-dot">.</span>
@@ -117,22 +117,23 @@ function RevealPhase({ breakdowns, caboCallerId, isHost, onNext }: { breakdowns:
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="bg-cabo-surface/90 backdrop-blur p-6 sm:p-8 rounded-3xl max-w-2xl w-full shadow-2xl border border-cabo-purple/30 max-h-[90vh] overflow-y-auto"
+      className="bg-bate-paper p-6 sm:p-8 rounded-3xl max-w-2xl w-full shadow-hard-lg border-[4px] border-bate-ink max-h-[90vh] overflow-y-auto"
     >
       <motion.h2
         initial={{ scale: 0.5, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.1, type: 'spring', stiffness: 280, damping: 15 }}
-        className="text-3xl sm:text-4xl font-extrabold text-cabo-gold mb-2 text-center"
+        className="font-display text-3xl sm:text-4xl text-bate-red mb-2 text-center"
+        style={{ WebkitTextStroke: '2px #1a0e08', textShadow: '4px 4px 0 #1a0e08, 4px 4px 0 #ffb81c, 6px 6px 0 #1a0e08' }}
       >
-        🎉 Fim da rodada
+        🎉 FIM DA RODADA
       </motion.h2>
       {callerName && (
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.25 }}
-          className={`text-center mb-6 text-sm font-bold ${callerIsWinner ? 'text-cabo-gold' : 'text-cabo-danger'}`}
+          className={`text-center mb-6 text-sm font-bold ${callerIsWinner ? 'text-bate-red' : 'text-bate-red'}`}
         >
           👑 {callerName} chamou BATE
           {callerIsWinner ? ' e venceu a rodada!' : ' mas não fez o menor placar 🔥'}
@@ -148,24 +149,24 @@ function RevealPhase({ breakdowns, caboCallerId, isHost, onNext }: { breakdowns:
               initial={{ x: -40, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.4 + i * 0.18, ease: 'easeOut' }}
-              className={`rounded-2xl px-4 py-3 sm:px-5 sm:py-4 ${
+              className={`rounded-2xl px-4 py-3 sm:px-5 sm:py-4 border-[3px] ${
                 isWinner
-                  ? 'bg-gradient-to-br from-cabo-gold/30 via-amber-400/15 to-amber-600/20 border-2 border-cabo-gold/60 shadow-[0_0_24px_rgba(255,210,63,0.35)]'
-                  : 'bg-cabo-bg/60 border border-cabo-purple/20'
+                  ? 'bg-bate-gold/30 border-bate-gold shadow-hard'
+                  : 'bg-bate-cream border-bate-ink/30 shadow-hard-sm'
               }`}
             >
               <div className="flex justify-between items-center mb-2 gap-2">
-                <span className="font-extrabold text-base sm:text-lg flex items-center gap-2 text-white">
+                <span className="font-display text-base sm:text-lg flex items-center gap-2 text-bate-ink">
                   <span className="text-xl sm:text-2xl">{isWinner ? '🏆' : `${i + 1}º`}</span>
                   {b.player.name}
                   {isCaller && <span title="Chamou BATE">👑</span>}
                 </span>
                 <div className="flex flex-col items-end">
-                  <span className={`font-extrabold text-2xl sm:text-3xl ${isWinner ? 'text-cabo-gold' : 'text-white'}`}>
+                  <span className={`font-display text-2xl sm:text-3xl ${isWinner ? 'text-bate-red' : 'text-bate-ink'}`}>
                     <AnimatedScore target={b.roundScore} delay={600 + i * 180} />
-                    <span className="text-xs sm:text-sm font-normal opacity-70 ml-1">pts</span>
+                    <span className="text-xs sm:text-sm font-body font-normal opacity-70 ml-1">pts</span>
                   </span>
-                  <span className="text-[10px] sm:text-xs text-cabo-purple/80">
+                  <span className="text-[10px] sm:text-xs text-bate-ink/70 font-body">
                     Total: <AnimatedScore target={b.player.score} delay={600 + i * 180} />
                   </span>
                 </div>
@@ -175,20 +176,20 @@ function RevealPhase({ breakdowns, caboCallerId, isHost, onNext }: { breakdowns:
                   <Card2D key={card.id} card={card} size="sm" />
                 ))}
               </div>
-              <div className="text-xs sm:text-sm font-mono text-cabo-purple/90">
+              <div className="text-xs sm:text-sm font-mono text-bate-ink/80">
                 {b.parts.map((p, idx) => {
                   const meta = CARD_META[p.rank]
                   const label = meta.displayName ?? p.rank
                   return (
                     <span key={idx}>
                       {idx > 0 && ' + '}
-                      <span className={p.pts < 0 ? 'text-cabo-gold font-bold' : ''}>
+                      <span className={p.pts < 0 ? 'text-bate-red font-bold' : ''}>
                         {label}({formatPoints(p.pts)})
                       </span>
                     </span>
                   )
                 })}
-                <span className="text-white font-bold"> = {formatPoints(b.roundScore)}</span>
+                <span className="text-bate-ink font-bold"> = {formatPoints(b.roundScore)}</span>
               </div>
             </motion.li>
           )
@@ -202,16 +203,16 @@ function RevealPhase({ breakdowns, caboCallerId, isHost, onNext }: { breakdowns:
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.97 }}
           onClick={onNext}
-          className="w-full py-4 rounded-2xl bg-gradient-to-br from-cabo-accent via-orange-500 to-red-600 font-extrabold text-lg text-white shadow-[0_0_20px_rgba(255,107,53,0.5)]"
+          className="w-full py-4 rounded-2xl bg-bate-red text-bate-paper font-display text-lg border-[4px] border-bate-ink shadow-hard"
         >
-          Próxima rodada →
+          PRÓXIMA RODADA →
         </motion.button>
       ) : (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 + breakdowns.length * 0.18 + 0.5 }}
-          className="text-center text-cabo-purple py-4"
+          className="text-center text-bate-ink py-4"
         >
           Aguardando host…
         </motion.div>

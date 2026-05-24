@@ -17,30 +17,34 @@ export function WaitingRoom({ state }: { state: RedactedState }) {
 
   return (
     <main className="min-h-screen px-6 py-12 max-w-3xl mx-auto">
-      <h1 className="text-4xl font-bold mb-2">{state.name}</h1>
-      <p className="text-cabo-purple mb-8">Código: <span className="text-white font-mono">{state.roomId}</span></p>
-      <h2 className="text-xl font-bold mb-4">Jogadores ({state.players.length}/{state.maxPlayers})</h2>
-      <ul className="space-y-2 mb-8">
-        {state.players.map(p => (
-          <li key={p.id} className="bg-cabo-surface rounded-lg px-4 py-3 flex justify-between">
-            <span>{p.name}{p.id === state.hostId && ' (host)'}</span>
-            <span className={p.connected ? 'text-cabo-success' : 'text-cabo-danger'}>
-              {p.connected ? 'online' : 'offline'}
-            </span>
-          </li>
-        ))}
-      </ul>
-      {isHost ? (
-        <button
-          onClick={start}
-          disabled={!canStart}
-          className="w-full py-4 rounded-xl bg-cabo-accent font-bold text-lg disabled:opacity-40"
-        >
-          {canStart ? 'Iniciar partida' : 'Aguarde mais jogadores…'}
-        </button>
-      ) : (
-        <div className="text-center text-cabo-purple py-4">Aguardando host iniciar…</div>
-      )}
+      <div className="bg-bate-paper rounded-3xl p-8 border-[4px] border-bate-ink shadow-hard-lg">
+        <h1 className="font-display text-4xl text-bate-red mb-2">{state.name}</h1>
+        <p className="text-bate-ink/70 mb-8 font-body">
+          Código: <span className="text-bate-ink font-mono font-bold">{state.roomId}</span>
+        </p>
+        <h2 className="font-display text-xl text-bate-ink mb-4">JOGADORES ({state.players.length}/{state.maxPlayers})</h2>
+        <ul className="space-y-2 mb-8">
+          {state.players.map(p => (
+            <li key={p.id} className="bg-bate-cream rounded-lg px-4 py-3 flex justify-between items-center border-[2px] border-bate-ink shadow-hard-sm">
+              <span className="font-display text-sm text-bate-ink">{p.name}{p.id === state.hostId && ' 👑'}</span>
+              <span className={`font-display text-xs ${p.connected ? 'text-bate-green' : 'text-bate-red'}`}>
+                {p.connected ? 'ONLINE' : 'OFFLINE'}
+              </span>
+            </li>
+          ))}
+        </ul>
+        {isHost ? (
+          <button
+            onClick={start}
+            disabled={!canStart}
+            className="w-full py-4 rounded-2xl bg-bate-gold text-bate-ink font-display text-lg border-[4px] border-bate-ink shadow-hard hover:scale-[1.02] transition-transform disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+          >
+            {canStart ? '▶ INICIAR PARTIDA' : 'AGUARDE MAIS JOGADORES…'}
+          </button>
+        ) : (
+          <div className="text-center text-bate-ink/70 py-4 font-display">AGUARDANDO HOST INICIAR…</div>
+        )}
+      </div>
     </main>
   )
 }

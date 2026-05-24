@@ -59,7 +59,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
   }, [roomId, router, setRoom])
 
   if (!room) {
-    return <main className="min-h-screen flex items-center justify-center text-cabo-purple">Carregando sala…</main>
+    return <main className="min-h-screen flex items-center justify-center text-bate-ink font-display text-xl">CARREGANDO SALA…</main>
   }
 
   if (room.phase === 'waiting') return <WaitingRoom state={room} />

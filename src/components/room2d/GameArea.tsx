@@ -232,12 +232,12 @@ export function GameArea({ state }: { state: RedactedState }) {
 
   function handleDiscardDrawn(useEffect: boolean) {
     if (!drawnCard) return
+    setDrawnExit('discard')
     getSocket().emit(
       'game:keep-or-discard',
       { roomId: state.roomId, playerId: myId, action: 'discard', useEffect },
       (res: { ok?: true; error?: string }) => {
         if (res?.error) { alert(res.error); return }
-        setDrawnExit('discard')
         setDrawnCard(null)
       },
     )
@@ -270,11 +270,11 @@ export function GameArea({ state }: { state: RedactedState }) {
     const wouldMatchSnap = topDiscardRank !== null && knownRank !== null && knownRank === topDiscardRank
 
     if (drawnCard && isMyTurn && !wouldMatchSnap) {
+      setDrawnExit('swap')
       getSocket().emit('game:keep-or-discard',
         { roomId: state.roomId, playerId: myId, action: 'keep', handIndex },
         (res: { ok?: true; error?: string }) => {
           if (res?.error) { alert(res.error); return }
-          setDrawnExit('swap')
           setDrawnCard(null)
         })
       return

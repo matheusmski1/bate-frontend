@@ -18,6 +18,7 @@ import { InitialPeekConfirm } from './InitialPeekConfirm'
 import { ActionLog } from './ActionLog'
 import { BateAnnouncement } from './BateAnnouncement'
 import { SnapToast } from './SnapToast'
+import { PenaltyPreview } from './PenaltyPreview'
 
 const TEMP_REVEAL_MS = 3000
 
@@ -329,6 +330,7 @@ export function GameArea({ state }: { state: RedactedState }) {
       <PeekModal reveal={revealModal} onClose={() => setRevealModal(null)} />
       <ActionLog state={state} />
       <SnapToast state={state} />
+      <PenaltyPreview state={state} />
       <BateAnnouncement state={state} />
       {state.phase === 'initial-peek' && (
         <InitialPeekConfirm confirmed={peekConfirmedLocal} onConfirm={confirmInitialPeek} />

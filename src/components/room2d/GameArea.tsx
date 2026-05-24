@@ -198,7 +198,17 @@ export function GameArea({ state }: { state: RedactedState }) {
   }
 
   let instruction: string | null = null
-  if (state.phase === 'playing' && isMyTurn && !drawnCard) {
+  if (isMyEffect && pendingEffect) {
+    if (pendingEffect.type === 'peek-own') {
+      instruction = 'OLHADINHA — clica em UMA das suas cartas pra espiar (ou pula)'
+    } else if (pendingEffect.type === 'peek-other') {
+      instruction = 'ESPIADINHA — clica em UMA carta de um adversário pra espiar (ou pula)'
+    } else if (pendingEffect.type === 'swap') {
+      instruction = mySwapPickIndex === null
+        ? 'TROCA — escolhe UMA das suas cartas pra trocar (ou pula)'
+        : 'TROCA — agora escolhe UMA carta do adversário pra trocar com a sua'
+    }
+  } else if (state.phase === 'playing' && isMyTurn && !drawnCard) {
     instruction = '👆 Clica no baralho pra comprar'
   } else if (drawnCard && isMyTurn) {
     instruction = 'Clica na carta comprada pra descartar, ou em uma das 4 pra trocar'
@@ -262,9 +272,9 @@ export function GameArea({ state }: { state: RedactedState }) {
               if (res?.error) alert(res.error)
             })
           }}
-          className="fixed bottom-10 left-10 z-40 px-5 py-3 rounded-2xl bg-cabo-surface/95 backdrop-blur text-cabo-purple hover:text-white hover:bg-cabo-bg font-bold shadow-2xl border border-cabo-purple/40 transition-colors text-sm"
+          className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-7 py-4 rounded-2xl bg-red-500/90 hover:bg-red-500 backdrop-blur text-white font-extrabold shadow-2xl border-2 border-red-300/60 transition-all hover:scale-105 text-base tracking-wide animate-pulse"
         >
-          ✕ Pular ação
+          ✕ PULAR AÇÃO
         </button>
       )}
     </div>

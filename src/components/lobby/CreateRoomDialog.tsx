@@ -27,33 +27,43 @@ export function CreateRoomDialog({ hostName, onCreated, onClose }: { hostName: s
   }
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50" onClick={onClose}>
-      <div className="bg-cabo-surface rounded-2xl p-8 w-full max-w-md" onClick={e => e.stopPropagation()}>
-        <h3 className="text-2xl font-bold mb-6">Criar sala</h3>
-        <label className="block mb-2 text-sm font-bold text-cabo-purple">Nome da sala</label>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div className="bg-bate-cream rounded-2xl p-7 w-full max-w-md border-[4px] border-bate-ink shadow-hard-lg" onClick={e => e.stopPropagation()}>
+        <h3 className="font-display text-2xl text-bate-red mb-6">CRIAR SALA</h3>
+        <label className="block mb-2 text-sm font-display text-bate-ink">NOME DA SALA</label>
         <input
           type="text"
           value={name}
           onChange={e => setName(e.target.value)}
-          className="w-full px-4 py-3 mb-4 rounded-xl bg-cabo-bg text-white"
+          className="w-full px-4 py-3 mb-4 rounded-xl bg-bate-paper text-bate-ink border-[3px] border-bate-ink shadow-hard-sm font-body font-semibold focus:outline-none focus:bg-white"
           maxLength={30}
+          autoFocus
         />
-        <label className="block mb-2 text-sm font-bold text-cabo-purple">Máximo de jogadores</label>
+        <label className="block mb-2 text-sm font-display text-bate-ink">MÁXIMO DE JOGADORES</label>
         <div className="flex gap-2 mb-6">
           {([2, 3, 4] as const).map(n => (
             <button
               key={n}
               onClick={() => setMaxPlayers(n)}
-              className={`flex-1 py-3 rounded-xl font-bold ${maxPlayers === n ? 'bg-cabo-accent' : 'bg-cabo-bg'}`}
+              className={`flex-1 py-3 rounded-xl font-display border-[3px] border-bate-ink ${maxPlayers === n ? 'bg-bate-gold text-bate-ink shadow-hard-sm' : 'bg-bate-paper text-bate-ink/60'}`}
             >
               {n}
             </button>
           ))}
         </div>
         <div className="flex gap-3">
-          <button onClick={onClose} className="flex-1 py-3 rounded-xl bg-cabo-bg font-bold">Cancelar</button>
-          <button onClick={submit} disabled={submitting} className="flex-1 py-3 rounded-xl bg-cabo-success font-bold disabled:opacity-50">
-            {submitting ? 'Criando…' : 'Criar'}
+          <button
+            onClick={onClose}
+            className="flex-1 py-3 rounded-xl bg-bate-paper border-[3px] border-bate-ink text-bate-ink font-display shadow-hard-sm hover:scale-[1.02] transition-transform"
+          >
+            CANCELAR
+          </button>
+          <button
+            onClick={submit}
+            disabled={submitting || !name.trim()}
+            className="flex-1 py-3 rounded-xl bg-bate-red text-bate-paper border-[3px] border-bate-ink font-display shadow-hard-sm hover:scale-[1.02] transition-transform disabled:opacity-50"
+          >
+            {submitting ? 'CRIANDO…' : 'CRIAR'}
           </button>
         </div>
       </div>

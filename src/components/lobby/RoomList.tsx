@@ -6,17 +6,17 @@ import type { RoomSummary } from '@/types/shared'
 export function RoomList({ rooms, onJoin, onCreate }: { rooms: RoomSummary[]; onJoin: (id: string) => void; onCreate?: () => void }) {
   if (rooms.length === 0) {
     return (
-      <div className="text-center py-12 bg-cabo-surface/40 rounded-2xl border-2 border-dashed border-cabo-purple/30">
-        <div className="text-5xl mb-3 opacity-60">🃏</div>
-        <p className="text-cabo-purple font-bold mb-1">Nenhuma sala aberta</p>
-        <p className="text-cabo-purple/60 text-sm mb-5">Seja o primeiro a abrir uma mesa!</p>
+      <div className="text-center py-12 bg-bate-paper rounded-2xl border-[3px] border-dashed border-bate-ink/40 shadow-hard">
+        <div className="text-5xl mb-3">🃏</div>
+        <p className="font-display text-bate-ink mb-1">NENHUMA SALA ABERTA</p>
+        <p className="text-bate-ink/60 text-sm mb-5 font-body">Seja o primeiro a abrir uma mesa!</p>
         {onCreate && (
           <button
             type="button"
             onClick={onCreate}
-            className="px-5 py-2 rounded-xl bg-cabo-accent font-bold hover:opacity-90"
+            className="px-5 py-3 rounded-xl bg-bate-gold border-[3px] border-bate-ink shadow-hard-sm font-display text-bate-ink hover:scale-105 transition-transform"
           >
-            + Criar a primeira sala
+            + CRIAR A PRIMEIRA SALA
           </button>
         )}
       </div>
@@ -29,13 +29,13 @@ export function RoomList({ rooms, onJoin, onCreate }: { rooms: RoomSummary[]; on
         const inGame = room.phase !== 'waiting'
         const disabled = isFull || inGame
         return (
-          <li key={room.roomId} className="flex justify-between items-center bg-cabo-surface rounded-xl px-5 py-4 border border-cabo-purple/20">
+          <li key={room.roomId} className="flex justify-between items-center bg-bate-paper rounded-xl px-5 py-4 border-[3px] border-bate-ink shadow-hard-sm">
             <div>
-              <div className="font-bold text-lg">{room.name}</div>
-              <div className="text-sm text-cabo-purple flex items-center gap-2">
+              <div className="font-display text-bate-ink text-lg">{room.name}</div>
+              <div className="text-sm text-bate-ink/70 flex items-center gap-2 font-body">
                 <Users size={14} /> {room.playerCount}/{room.maxPlayers}
                 <span>•</span>
-                <span className={inGame ? 'text-cabo-accent' : 'text-cabo-success'}>
+                <span className={inGame ? 'text-bate-red font-bold' : 'text-bate-green font-bold'}>
                   {inGame ? 'em jogo' : 'aguardando'}
                 </span>
               </div>
@@ -43,9 +43,9 @@ export function RoomList({ rooms, onJoin, onCreate }: { rooms: RoomSummary[]; on
             <button
               onClick={() => onJoin(room.roomId)}
               disabled={disabled}
-              className="px-5 py-2 rounded-lg bg-cabo-purple font-bold hover:bg-cabo-purple/80 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-5 py-2 rounded-lg bg-bate-green text-bate-paper border-[3px] border-bate-ink font-display shadow-hard-sm hover:scale-105 transition-transform disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:bg-bate-ink/30"
             >
-              {isFull ? 'Cheia' : inGame ? 'Em jogo' : 'Entrar'}
+              {isFull ? 'CHEIA' : inGame ? 'EM JOGO' : 'ENTRAR'}
             </button>
           </li>
         )

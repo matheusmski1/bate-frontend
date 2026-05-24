@@ -104,7 +104,7 @@ export default function Home() {
       <Hero />
 
       <div className="mb-6">
-        <label className="block text-sm font-bold mb-2 text-cabo-purple">Seu nome</label>
+        <label className="block text-sm font-display text-bate-ink mb-2">SEU NOME</label>
         <div className="flex items-center gap-3">
           <Avatar name={name} size={52} />
           <input
@@ -115,7 +115,7 @@ export default function Home() {
             onKeyDown={e => {
               if (e.key === 'Enter' && name.trim()) openCreate()
             }}
-            className="flex-1 px-4 py-3 rounded-xl bg-cabo-surface text-white text-lg border border-transparent focus:border-cabo-gold focus:outline-none transition-colors"
+            className="flex-1 px-4 py-3 rounded-xl bg-bate-paper text-bate-ink text-lg border-[3px] border-bate-ink shadow-hard-sm font-body font-semibold focus:outline-none focus:bg-white transition-colors"
             placeholder="Como te chamam?"
             maxLength={20}
             autoComplete="off"
@@ -128,18 +128,18 @@ export default function Home() {
       <button
         type="button"
         onClick={handleQuickPlay}
-        className="w-full mb-6 py-4 rounded-2xl bg-gradient-to-br from-cabo-accent via-orange-500 to-red-600 text-white font-extrabold text-lg shadow-[0_0_24px_rgba(255,107,53,0.4)] hover:scale-[1.02] active:scale-[0.99] transition-transform flex items-center justify-center gap-2"
+        className="w-full mb-6 py-4 rounded-2xl bg-bate-red text-bate-paper border-[4px] border-bate-ink shadow-hard-lg font-display text-lg hover:scale-[1.02] active:scale-[0.99] transition-transform flex items-center justify-center gap-2"
       >
-        <Zap size={20} fill="currentColor" /> Jogar agora
+        <Zap size={20} fill="currentColor" /> JOGAR AGORA
       </button>
 
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Salas abertas</h2>
+        <h2 className="font-display text-2xl text-bate-ink">SALAS ABERTAS</h2>
         <button
           onClick={openCreate}
-          className="px-5 py-2.5 rounded-xl bg-cabo-purple/30 border border-cabo-purple/50 font-bold hover:bg-cabo-purple/50 transition-colors flex items-center gap-2"
+          className="px-5 py-2.5 rounded-xl bg-bate-paper border-[3px] border-bate-ink shadow-hard-sm font-display text-bate-ink hover:scale-105 transition-transform flex items-center gap-2"
         >
-          <Plus size={16} /> Criar
+          <Plus size={16} /> CRIAR
         </button>
       </div>
 

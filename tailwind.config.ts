@@ -5,21 +5,28 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        cabo: {
-          bg: '#0d1b2a',
-          surface: '#1b3050',
-          accent: '#ff6b35',
-          gold: '#ffd23f',
-          purple: '#7c5db8',
-          felt: '#1d4d35',
-          red: '#c8102e',
-          cream: '#fdf6e3',
-          success: '#06d6a0',
-          danger: '#ef476f',
+        bate: {
+          cream: '#f5e9c9',
+          paper: '#fff5d1',
+          ink: '#1a0e08',
+          red: '#d63232',
+          'red-deep': '#8b1a1a',
+          gold: '#ffb81c',
+          green: '#4a7c4f',
+          teal: '#2c8a9c',
+          silver: '#d3d3d3',
         },
       },
       fontFamily: {
-        display: ['var(--font-fredoka)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['var(--font-bowlby)', 'system-ui', 'sans-serif'],
+        body: ['var(--font-fredoka)', 'system-ui', 'sans-serif'],
+        hand: ['var(--font-caveat)', 'cursive'],
+      },
+      boxShadow: {
+        'hard-sm': '3px 3px 0 #1a0e08',
+        'hard': '5px 5px 0 #1a0e08',
+        'hard-lg': '6px 7px 0 #1a0e08',
+        'hard-red': '5px 5px 0 #d63232',
       },
     },
   },

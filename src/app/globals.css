@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 html, body {
-  background: theme('colors.cabo.bg');
-  color: white;
+  background: theme('colors.bate.cream');
+  color: theme('colors.bate.ink');
   min-height: 100vh;
 }

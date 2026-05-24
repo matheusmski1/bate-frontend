@@ -182,12 +182,16 @@ export function GameArea({ state }: { state: RedactedState }) {
     })
   }
 
-  function handleDiscardDrawn() {
+  function handleDiscardDrawn(useEffect: boolean) {
     if (!drawnCard) return
-    getSocket().emit('game:keep-or-discard', { roomId: state.roomId, playerId: myId, action: 'discard' }, (res: { ok?: true; error?: string }) => {
-      if (res?.error) { alert(res.error); return }
-      setDrawnCard(null)
-    })
+    getSocket().emit(
+      'game:keep-or-discard',
+      { roomId: state.roomId, playerId: myId, action: 'discard', useEffect },
+      (res: { ok?: true; error?: string }) => {
+        if (res?.error) { alert(res.error); return }
+        setDrawnCard(null)
+      },
+    )
   }
 
   function handlePlayerCardClick(handIndex: number) {
@@ -272,7 +276,7 @@ export function GameArea({ state }: { state: RedactedState }) {
   } else if (isPlayPhase && isMyTurn && !drawnCard) {
     instruction = '👆 Clica no baralho pra comprar'
   } else if (drawnCard && isMyTurn) {
-    instruction = 'Clica na carta comprada pra descartar, ou em uma das 4 pra trocar'
+    instruction = null
   } else if (isPlayPhase && !isMyTurn && state.discard.length > 0) {
     instruction = '✂️ Vez de outro — clica uma carta SUA pra cortar (se bater com o descarte)'
   }
@@ -301,7 +305,13 @@ export function GameArea({ state }: { state: RedactedState }) {
         {/* Middle: deck + drawn + discard */}
         <div className="flex items-center gap-12">
           <DeckPile2D count={state.deckCount} onClick={canDraw ? handleDeckClick : undefined} />
-          {drawnCard && <DrawnCard2D card={drawnCard} onClick={handleDiscardDrawn} />}
+          {drawnCard && (
+            <DrawnCard2D
+              card={drawnCard}
+              onUseAction={() => handleDiscardDrawn(true)}
+              onDiscard={() => handleDiscardDrawn(false)}
+            />
+          )}
           <DiscardPile2D discard={state.discard} />
         </div>
 

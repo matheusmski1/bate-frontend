@@ -39,6 +39,7 @@ export function GameArea({ state }: { state: RedactedState }) {
   const [mySwapPickIndex, setMySwapPickIndex] = useState<number | null>(null)
   const [peekConfirmedLocal, setPeekConfirmedLocal] = useState(false)
   const [victimEffects, setVictimEffects] = useState<Map<string, 'peeked' | 'swapped'>>(new Map())
+  const [opponentsHoldingDrawn, setOpponentsHoldingDrawn] = useState<Set<string>>(new Set())
   const prevLogLenRef = useRef<number | null>(null)
 
   useEffect(() => {
@@ -52,6 +53,7 @@ export function GameArea({ state }: { state: RedactedState }) {
   useEffect(() => {
     if (state.phase === 'round-end' || state.phase === 'match-end' || state.phase === 'waiting') {
       setKnownCards(new Map())
+      setOpponentsHoldingDrawn(new Set())
     }
   }, [state.phase])
 
@@ -103,6 +105,21 @@ export function GameArea({ state }: { state: RedactedState }) {
     const newEntries = state.log.slice(prevLogLenRef.current)
     prevLogLenRef.current = state.log.length
     for (const entry of newEntries) {
+      if (entry.type === 'draw' && entry.actorId !== myId) {
+        setOpponentsHoldingDrawn(prev => {
+          const next = new Set(prev)
+          next.add(entry.actorId)
+          return next
+        })
+      }
+      if (entry.type === 'discard' && entry.actorId !== myId) {
+        setOpponentsHoldingDrawn(prev => {
+          if (!prev.has(entry.actorId)) return prev
+          const next = new Set(prev)
+          next.delete(entry.actorId)
+          return next
+        })
+      }
       if (entry.actorId === myId) continue
       if (entry.type === 'peek') {
         const p = entry.payload as { targetPlayerId?: string; cardIndex?: number; skipped?: boolean } | undefined
@@ -278,6 +295,7 @@ export function GameArea({ state }: { state: RedactedState }) {
               tempReveals={tempReveals}
               highlightedIds={highlightedIds}
               victimEffects={victimEffects}
+              holdingDrawn={opponentsHoldingDrawn.has(p.id)}
             />
           ))}
         </div>

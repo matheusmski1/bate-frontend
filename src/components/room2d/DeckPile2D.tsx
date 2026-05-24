@@ -25,12 +25,12 @@ export function DeckPile2D({ count, onClick }: { count: number; onClick?: () => 
           </div>
         ))}
         {onClick && (
-          <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 text-xs font-bold text-cabo-gold whitespace-nowrap animate-pulse">
+          <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 text-xs font-bold text-bate-red whitespace-nowrap animate-pulse">
             ↑ Comprar
           </span>
         )}
       </motion.button>
-      <span className="text-xs font-bold text-cabo-purple mt-1">{count}</span>
+      <span className="text-xs font-bold text-bate-ink mt-1">{count}</span>
     </div>
   )
 }

@@ -58,17 +58,16 @@ export function BateAnnouncement({ state }: { state: RedactedState }) {
           {stage === 'announce' ? (
             <div ref={slamRef} className="text-center" style={{ transformOrigin: 'center' }}>
               <div
-                className="text-[10rem] font-extrabold leading-none text-cabo-gold"
+                className="text-[10rem] font-display leading-none text-bate-red"
                 style={{
-                  textShadow:
-                    '0 0 30px rgba(255,210,63,0.7), 0 8px 24px rgba(255,107,53,0.6), -4px 4px 0 #c8102e, 4px -4px 0 #c8102e',
-                  WebkitTextStroke: '3px #0d1b2a',
-                  letterSpacing: '-0.05em',
+                  WebkitTextStroke: '4px #1a0e08',
+                  textShadow: '8px 8px 0 #1a0e08, 8px 8px 0 #ffb81c, 10px 10px 0 #1a0e08',
+                  letterSpacing: '-0.04em',
                 }}
               >
                 BATE!
               </div>
-              <div className="text-4xl font-extrabold text-white mt-2 tracking-widest uppercase">
+              <div className="font-display text-4xl text-bate-paper mt-6 tracking-widest uppercase">
                 🎯 {callerName} chamou
               </div>
             </div>
@@ -80,10 +79,10 @@ export function BateAnnouncement({ state }: { state: RedactedState }) {
               transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
               className="text-center"
             >
-              <div className="text-6xl font-extrabold text-white drop-shadow-[0_6px_18px_rgba(255,107,53,0.5)]">
+              <div className="font-display text-6xl text-bate-paper" style={{ WebkitTextStroke: '3px #1a0e08', textShadow: '6px 6px 0 #1a0e08' }}>
                 ⏳ Última volta!
               </div>
-              <div className="text-2xl font-bold text-cabo-gold mt-4">
+              <div className="font-display text-2xl text-bate-gold mt-4">
                 Cada player joga mais 1 turno, aí conta os pontos
               </div>
             </motion.div>

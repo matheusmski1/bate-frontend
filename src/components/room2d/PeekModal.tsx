@@ -31,7 +31,7 @@ export function PeekModal({ reveal, onClose }: { reveal: { rank: Rank; suit: Sui
           <div ref={cardRef} className="relative w-44 h-64 rounded-xl border-[4px] border-bate-ink overflow-hidden shadow-hard-lg" style={{ transformStyle: 'preserve-3d' }}>
             <img src={CARD_META[reveal.rank].image} alt={reveal.rank} className="w-full h-full object-cover" draggable={false} />
           </div>
-          <div className="absolute bottom-12 text-cabo-gold font-bold text-sm tracking-wide">click pra fechar</div>
+          <div className="absolute bottom-12 text-bate-red font-bold text-sm tracking-wide">click pra fechar</div>
         </motion.div>
       )}
     </AnimatePresence>

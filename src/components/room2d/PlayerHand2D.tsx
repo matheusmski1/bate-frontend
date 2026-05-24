@@ -15,7 +15,7 @@ type Props = {
 export function PlayerHand2D({ player, isCurrent, onCardClick, tempReveals, highlightedIds, victimEffects }: Props) {
   return (
     <div className="flex flex-col items-center gap-2">
-      <div className={`px-4 py-1 rounded-full text-sm font-bold backdrop-blur ${isCurrent ? 'bg-cabo-accent text-white shadow-[0_0_18px_rgba(255,107,53,0.6)]' : 'bg-cabo-surface/80 text-cabo-purple'}`}>
+      <div className={`px-4 py-1 rounded-full text-sm font-bold backdrop-blur ${isCurrent ? 'bg-bate-red text-white shadow-[0_0_18px_rgba(255,107,53,0.6)]' : 'bg-bate-paper/80 text-bate-ink'}`}>
         {player.name} ({player.score})
       </div>
       <div className="flex gap-3 items-end">

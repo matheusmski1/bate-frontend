@@ -35,10 +35,10 @@ export function CaboButton({ state, drawnExists }: { state: RedactedState; drawn
       animate={{ scale: 1, opacity: enabled ? 1 : 0.45 }}
       whileHover={enabled ? { scale: 1.08 } : undefined}
       whileTap={enabled ? { scale: 0.95 } : undefined}
-      className={`fixed top-20 right-6 z-40 px-5 py-3 rounded-2xl font-extrabold text-base shadow-2xl ${
+      className={`fixed top-20 right-6 z-40 px-6 py-3 rounded-2xl font-display text-base border-[4px] border-bate-ink ${
         enabled
-          ? 'bg-gradient-to-br from-cabo-gold via-amber-400 to-amber-600 text-cabo-bg cursor-pointer shadow-[0_0_20px_rgba(255,210,63,0.6)]'
-          : 'bg-cabo-surface text-cabo-purple cursor-not-allowed'
+          ? 'bg-bate-red text-bate-paper cursor-pointer shadow-hard-lg'
+          : 'bg-bate-paper text-bate-ink/60 cursor-not-allowed shadow-hard-sm'
       }`}
       title={disabledReason ?? 'Chamar BATE'}
       disabled={!enabled}

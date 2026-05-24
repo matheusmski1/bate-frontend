@@ -32,10 +32,10 @@ function describe(action: GameAction, state: RedactedState): string {
 }
 
 const COLORS: Partial<Record<GameAction['type'], string>> = {
-  snap: 'text-cabo-gold',
-  'snap-fail': 'text-cabo-danger',
-  cabo: 'text-cabo-accent font-bold',
-  'round-end': 'text-cabo-success font-bold',
+  snap: 'text-bate-red',
+  'snap-fail': 'text-bate-red',
+  cabo: 'text-bate-red font-bold',
+  'round-end': 'text-bate-green font-bold',
 }
 
 export function ActionLog({ state }: { state: RedactedState }) {
@@ -47,24 +47,24 @@ export function ActionLog({ state }: { state: RedactedState }) {
     <>
       <button
         onClick={() => setOpen(v => !v)}
-        className="fixed top-4 right-4 z-50 w-12 h-12 rounded-full bg-cabo-surface/90 backdrop-blur text-cabo-gold text-xl shadow-2xl hover:scale-110 transition-transform border border-cabo-purple/40 flex items-center justify-center"
+        className="fixed top-4 right-4 z-50 w-12 h-12 rounded-full bg-bate-paper/90 backdrop-blur text-bate-red text-xl shadow-2xl hover:scale-110 transition-transform border border-bate-ink/40 flex items-center justify-center"
         title="Histórico"
       >
         {open ? '✕' : '📜'}
         {!open && count > 0 && (
-          <span className="absolute -top-1 -right-1 bg-cabo-accent text-white text-[10px] font-bold rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 bg-bate-red text-white text-[10px] font-bold rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center">
             {count > 99 ? '99+' : count}
           </span>
         )}
       </button>
       <div
-        className={`fixed top-0 right-0 h-screen w-72 bg-cabo-surface/95 backdrop-blur z-40 shadow-2xl overflow-y-auto p-4 pt-20 transition-transform duration-300 ${
+        className={`fixed top-0 right-0 h-screen w-72 bg-bate-paper/95 backdrop-blur z-40 shadow-2xl overflow-y-auto p-4 pt-20 transition-transform duration-300 ${
           open ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <h4 className="font-bold mb-3 text-cabo-purple text-sm uppercase">Histórico</h4>
+        <h4 className="font-bold mb-3 text-bate-ink text-sm uppercase">Histórico</h4>
         {recent.length === 0 ? (
-          <p className="text-cabo-purple/60 text-sm">Nada ainda…</p>
+          <p className="text-bate-ink/60 text-sm">Nada ainda…</p>
         ) : (
           <ul className="space-y-1 text-sm">
             {recent.map((a, i) => (

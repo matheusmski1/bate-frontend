@@ -12,7 +12,7 @@ export function DrawnCard2D({ card, onClick }: { card: CardType; onClick: () => 
       transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
       className="relative"
     >
-      <div className="absolute -top-7 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-cabo-gold text-cabo-bg text-xs font-extrabold whitespace-nowrap shadow-lg">
+      <div className="absolute -top-7 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-bate-gold text-bate-ink text-xs font-extrabold whitespace-nowrap shadow-lg">
         Comprou
       </div>
       <Card2D card={{ id: card.id, rank: card.rank, suit: card.suit }} size="lg" onClick={onClick} highlighted />

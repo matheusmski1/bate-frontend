@@ -33,8 +33,8 @@ export function TurnBanner({ state, isMyTurn, myId }: { state: RedactedState; is
           transition={{ duration: 0.25 }}
           className={`px-6 py-2.5 rounded-full font-extrabold text-lg shadow-2xl backdrop-blur border ${
             highlight
-              ? 'bg-cabo-accent text-white border-cabo-accent/40 shadow-[0_0_20px_rgba(255,107,53,0.6)]'
-              : 'bg-cabo-surface/85 text-cabo-purple border-cabo-purple/40'
+              ? 'bg-bate-red text-white border-bate-red/40 shadow-[0_0_20px_rgba(255,107,53,0.6)]'
+              : 'bg-bate-paper/85 text-bate-ink border-bate-ink/40'
           }`}
         >
           {label}

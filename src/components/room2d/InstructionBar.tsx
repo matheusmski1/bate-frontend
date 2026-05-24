@@ -12,7 +12,7 @@ export function InstructionBar({ text }: { text: string | null }) {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 30, opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="bg-cabo-bg/90 backdrop-blur px-6 py-3 rounded-2xl text-cabo-gold font-bold text-sm shadow-2xl border border-cabo-purple/30 whitespace-nowrap"
+            className="bg-bate-paper px-6 py-3 rounded-2xl text-bate-ink font-display text-sm shadow-hard border-[3px] border-bate-ink whitespace-nowrap"
           >
             {text}
           </motion.div>

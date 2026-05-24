@@ -3,7 +3,6 @@
 import { motion, type HTMLMotionProps } from 'framer-motion'
 import { Eye, ArrowLeftRight } from 'lucide-react'
 import type { RedactedCard, Rank, Suit } from '@/types/shared'
-import { CardFace } from './CardFace'
 import { CardBack } from './CardBack'
 import { CARD_META, formatPoints } from '@/lib/card-meta'
 
@@ -33,48 +32,49 @@ const SIZE_CLASSES: Record<NonNullable<Props['size']>, string> = {
 }
 
 const VICTIM_SHADOW: Record<VictimEffect, string> = {
-  peeked: '0 0 28px 8px rgba(255, 210, 63, 0.85), 0 10px 22px rgba(0,0,0,0.55)',
-  swapped: '0 0 28px 8px rgba(239, 68, 68, 0.85), 0 10px 22px rgba(0,0,0,0.55)',
+  peeked: '0 0 28px 8px rgba(255, 184, 28, 0.85), 5px 5px 0 #1a0e08',
+  swapped: '0 0 28px 8px rgba(214, 50, 50, 0.85), 5px 5px 0 #1a0e08',
 }
 
 export function Card2D({ card, tempRevealedAs = null, onClick, highlighted = false, victimEffect = null, size = 'md', ...rest }: Props) {
   const isHidden = 'hidden' in card
-  const effectiveRank = tempRevealedAs?.rank ?? (!isHidden ? card.rank : null)
-  const effectiveSuit = tempRevealedAs ? tempRevealedAs.suit : (!isHidden ? card.suit : null)
+  const effectiveRank: Rank | null = tempRevealedAs?.rank ?? (!isHidden ? card.rank : null)
   const showFace = !!effectiveRank
-  const meta = effectiveRank ? CARD_META[effectiveRank] : null
-  const isSpecial = !!meta && meta.kind !== 'numeric'
+  const imageSrc = effectiveRank ? CARD_META[effectiveRank].image : null
   const tooltip = effectiveRank ? tooltipFor(effectiveRank) : undefined
 
   return (
     <motion.button
       type="button"
       onClick={onClick}
-      whileHover={onClick ? { scale: 1.12, y: -10 } : undefined}
+      whileHover={onClick ? { scale: 1.08, y: -8 } : undefined}
       whileTap={onClick ? { scale: 0.97 } : undefined}
       animate={{
         rotateY: showFace ? 0 : 180,
         boxShadow: victimEffect
           ? VICTIM_SHADOW[victimEffect]
           : highlighted
-            ? '0 0 22px 6px rgba(255, 210, 63, 0.65), 0 10px 22px rgba(0,0,0,0.55)'
-            : isSpecial
-              ? '0 0 12px 1px rgba(255, 210, 63, 0.35), 0 8px 18px rgba(0,0,0,0.55)'
-              : '0 6px 16px rgba(0,0,0,0.55)',
+            ? '0 0 18px 4px rgba(255, 184, 28, 0.7), 5px 5px 0 #1a0e08'
+            : '5px 5px 0 #1a0e08',
       }}
       transition={{ rotateY: { duration: 0.45, ease: 'easeOut' }, boxShadow: { duration: 0.25 } }}
       style={{ transformStyle: 'preserve-3d' }}
-      className={`relative ${SIZE_CLASSES[size]} rounded-xl select-none ${onClick ? 'cursor-pointer' : 'cursor-default'} disabled:cursor-default ${victimEffect ? 'animate-pulse' : ''}`}
+      className={`relative ${SIZE_CLASSES[size]} rounded-xl select-none border-[3px] border-bate-ink bg-bate-paper overflow-hidden ${onClick ? 'cursor-pointer' : 'cursor-default'} disabled:cursor-default ${victimEffect ? 'animate-pulse' : ''}`}
       disabled={!onClick}
       title={tooltip}
       {...rest}
     >
       <div
-        className="absolute inset-0 backface-hidden"
+        className="absolute inset-0"
         style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(0deg)' }}
       >
-        {showFace && effectiveRank ? (
-          <CardFace rank={effectiveRank} suit={effectiveSuit} />
+        {showFace && imageSrc ? (
+          <img
+            src={imageSrc}
+            alt={effectiveRank ?? ''}
+            className="w-full h-full object-cover"
+            draggable={false}
+          />
         ) : (
           <CardBack />
         )}
@@ -90,9 +90,9 @@ export function Card2D({ card, tempRevealedAs = null, onClick, highlighted = fal
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: [0, 1.3, 1], opacity: 1 }}
           transition={{ duration: 0.4 }}
-          className={`absolute -top-3 -right-3 w-10 h-10 rounded-full flex items-center justify-center shadow-xl z-10 ${victimEffect === 'peeked' ? 'bg-cabo-gold text-cabo-bg' : 'bg-red-500 text-white'}`}
+          className={`absolute -top-3 -right-3 w-10 h-10 rounded-full flex items-center justify-center shadow-hard-sm border-[3px] border-bate-ink z-10 ${victimEffect === 'peeked' ? 'bg-bate-gold text-bate-ink' : 'bg-bate-red text-white'}`}
         >
-          {victimEffect === 'peeked' ? <Eye size={20} strokeWidth={3} /> : <ArrowLeftRight size={20} strokeWidth={3} />}
+          {victimEffect === 'peeked' ? <Eye size={18} strokeWidth={3} /> : <ArrowLeftRight size={18} strokeWidth={3} />}
         </motion.div>
       )}
     </motion.button>

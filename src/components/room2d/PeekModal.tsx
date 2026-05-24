@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import { createTimeline } from 'animejs'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Rank, Suit } from '@/types/shared'
-import { CardFace } from './CardFace'
+import { CARD_META } from '@/lib/card-meta'
 
 export function PeekModal({ reveal, onClose }: { reveal: { rank: Rank; suit: Suit | null } | null; onClose: () => void }) {
   const cardRef = useRef<HTMLDivElement | null>(null)
@@ -28,8 +28,8 @@ export function PeekModal({ reveal, onClose }: { reveal: { rank: Rank; suit: Sui
           className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center cursor-pointer"
           onClick={onClose}
         >
-          <div ref={cardRef} className="relative w-44 h-64" style={{ transformStyle: 'preserve-3d' }}>
-            <CardFace rank={reveal.rank} suit={reveal.suit} />
+          <div ref={cardRef} className="relative w-44 h-64 rounded-xl border-[4px] border-bate-ink overflow-hidden shadow-hard-lg" style={{ transformStyle: 'preserve-3d' }}>
+            <img src={CARD_META[reveal.rank].image} alt={reveal.rank} className="w-full h-full object-cover" draggable={false} />
           </div>
           <div className="absolute bottom-12 text-cabo-gold font-bold text-sm tracking-wide">click pra fechar</div>
         </motion.div>

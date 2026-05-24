@@ -11,7 +11,6 @@ import { PlayerHand2D } from './PlayerHand2D'
 import { DeckPile2D } from './DeckPile2D'
 import { DiscardPile2D } from './DiscardPile2D'
 import { DrawnCard2D } from './DrawnCard2D'
-import { TurnBanner } from './TurnBanner'
 import { CaboButton } from './CaboButton'
 import { InstructionBar } from './InstructionBar'
 import { PeekModal } from './PeekModal'
@@ -20,7 +19,6 @@ import { BateAnnouncement } from './BateAnnouncement'
 import { SnapToast } from './SnapToast'
 import { PenaltyPreview } from './PenaltyPreview'
 import { TurnTimer } from './TurnTimer'
-import { TurnArrow } from './TurnArrow'
 import { EmoteBar } from './EmoteBar'
 import { playSound } from '@/lib/sounds'
 
@@ -352,17 +350,6 @@ export function GameArea({ state }: { state: RedactedState }) {
     return pool.reduce((best, p) => (p.score < best.score ? p : best), pool[0]!).id
   })()
 
-  const currentSeat: 'me' | 'top' | 'left' | 'right' | 'top-left' | 'top-right' = (() => {
-    if (currentPlayerId === myId) return 'me'
-    const idx = opponents.findIndex(o => o.id === currentPlayerId)
-    if (idx === -1) return 'top'
-    const count = opponents.length
-    if (count === 1) return 'top'
-    if (count === 2) return idx === 0 ? 'top-left' : 'top-right'
-    if (idx === 0) return 'top'
-    if (idx === 1) return 'left'
-    return 'right'
-  })()
 
   return (
     <div className="relative w-screen h-screen overflow-hidden">
@@ -385,7 +372,7 @@ export function GameArea({ state }: { state: RedactedState }) {
       />
 
       {opponents.map((p, i) => (
-        <div key={p.id} className={`absolute ${opponentPos(i)}`}>
+        <div key={p.id} className={`absolute z-20 ${opponentPos(i)}`}>
           <OpponentArea
             player={p}
             isCurrent={p.id === currentPlayerId}
@@ -406,9 +393,6 @@ export function GameArea({ state }: { state: RedactedState }) {
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-bate-ink text-bate-gold font-display text-[10px] tracking-[0.25em] uppercase whitespace-nowrap shadow-hard-sm rotate-[-1deg]">
             ✦ MESA ✦
           </div>
-          <div className="absolute -bottom-5 left-1/2 -translate-x-1/2">
-            <TurnArrow currentSeat={currentSeat} />
-          </div>
           <div className="flex items-center gap-10 sm:gap-14">
             <DeckPile2D count={state.deckCount} onClick={canDraw ? handleDeckClick : undefined} />
             {drawnCard && (
@@ -423,7 +407,7 @@ export function GameArea({ state }: { state: RedactedState }) {
         </div>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20">
         {me && (
           <PlayerHand2D
             player={me}
@@ -440,7 +424,6 @@ export function GameArea({ state }: { state: RedactedState }) {
         )}
       </div>
 
-      <TurnBanner state={state} isMyTurn={isMyTurn} myId={myId} />
       <CaboButton state={state} drawnExists={!!drawnCard} />
       <InstructionBar text={instruction} />
       <PeekModal reveal={revealModal} onClose={() => setRevealModal(null)} />

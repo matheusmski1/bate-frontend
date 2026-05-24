@@ -307,29 +307,54 @@ export function GameArea({ state }: { state: RedactedState }) {
     instruction = '✂️ Vez de outro — clica uma carta SUA pra cortar (se bater com o descarte)'
   }
 
+  const opponentPos = (idx: number): string => {
+    const count = opponents.length
+    if (count === 1) return 'top-10 left-1/2 -translate-x-1/2'
+    if (count === 2) {
+      if (idx === 0) return 'top-10 left-4 sm:left-10'
+      return 'top-10 right-4 sm:right-10'
+    }
+    if (idx === 0) return 'top-6 left-1/2 -translate-x-1/2'
+    if (idx === 1) return 'top-1/4 left-4 sm:left-8'
+    return 'top-1/4 right-4 sm:right-8'
+  }
+
   return (
     <div className="relative w-screen h-screen overflow-hidden">
       <Background />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(ellipse 55% 45% at 50% 52%, rgba(255, 184, 28, 0.30) 0%, rgba(255, 184, 28, 0.10) 40%, transparent 75%)',
+        }}
+      />
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
+        style={{
+          width: 'min(720px, 80vw)',
+          height: 'min(420px, 50vh)',
+          background: 'radial-gradient(ellipse, rgba(26, 14, 8, 0.10) 0%, transparent 70%)',
+          boxShadow: 'inset 0 0 60px rgba(26, 14, 8, 0.12)',
+        }}
+      />
 
-      <div className="absolute inset-0 flex flex-col items-center justify-between py-12 px-6">
-        {/* Opponents area */}
-        <div className="flex gap-12 justify-center">
-          {opponents.map(p => (
-            <OpponentArea
-              key={p.id}
-              player={p}
-              isCurrent={p.id === currentPlayerId}
-              isHost={p.id === state.hostId}
-              onCardClick={opponentCardsClickable ? (idx) => handleOpponentCardClick(p.id, idx) : undefined}
-              tempReveals={tempReveals}
-              highlightedIds={highlightedIds}
-              victimEffects={victimEffects}
-              holdingDrawn={opponentsHoldingDrawn.has(p.id)}
-            />
-          ))}
+      {opponents.map((p, i) => (
+        <div key={p.id} className={`absolute ${opponentPos(i)}`}>
+          <OpponentArea
+            player={p}
+            isCurrent={p.id === currentPlayerId}
+            isHost={p.id === state.hostId}
+            onCardClick={opponentCardsClickable ? (idx) => handleOpponentCardClick(p.id, idx) : undefined}
+            tempReveals={tempReveals}
+            highlightedIds={highlightedIds}
+            victimEffects={victimEffects}
+            holdingDrawn={opponentsHoldingDrawn.has(p.id)}
+          />
         </div>
+      ))}
 
-        {/* Middle: deck + drawn + discard inside the table panel */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
         <div className="relative px-8 sm:px-12 py-6 sm:py-8 rounded-3xl border-[4px] border-bate-ink bg-bate-paper/70 shadow-hard-lg backdrop-blur-sm">
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-bate-ink text-bate-gold font-display text-[10px] tracking-[0.25em] uppercase whitespace-nowrap shadow-hard-sm rotate-[-1deg]">
             ✦ MESA ✦
@@ -346,22 +371,21 @@ export function GameArea({ state }: { state: RedactedState }) {
             <DiscardPile2D discard={state.discard} />
           </div>
         </div>
+      </div>
 
-        {/* Player hand */}
-        <div>
-          {me && (
-            <PlayerHand2D
-              player={me}
-              isCurrent={isMyTurn}
-              isHost={me.id === state.hostId}
-              onCardClick={ownCardsClickable ? handlePlayerCardClick : undefined}
-              tempReveals={tempReveals}
-              highlightedIds={highlightedIds}
-              victimEffects={victimEffects}
-              snapHintIds={snapHintIds}
-            />
-          )}
-        </div>
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+        {me && (
+          <PlayerHand2D
+            player={me}
+            isCurrent={isMyTurn}
+            isHost={me.id === state.hostId}
+            onCardClick={ownCardsClickable ? handlePlayerCardClick : undefined}
+            tempReveals={tempReveals}
+            highlightedIds={highlightedIds}
+            victimEffects={victimEffects}
+            snapHintIds={snapHintIds}
+          />
+        )}
       </div>
 
       <TurnBanner state={state} isMyTurn={isMyTurn} myId={myId} />

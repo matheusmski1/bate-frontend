@@ -7,3 +7,33 @@ html, body {
   color: theme('colors.bate.ink');
   min-height: 100vh;
 }
+
+.text-stamped {
+  -webkit-text-stroke: 3px #1a0e08;
+  text-shadow:
+    5px 5px 0px #1a0e08,
+    10px 10px 0px #ffb81c,
+    14px 14px 0px #1a0e08;
+}
+
+@media (min-width: 768px) {
+  .text-stamped {
+    -webkit-text-stroke: 4px #1a0e08;
+    text-shadow:
+      6px 6px 0px #1a0e08,
+      12px 12px 0px #ffb81c,
+      16px 16px 0px #1a0e08;
+  }
+}
+
+.card-fan-item:hover {
+  z-index: 50 !important;
+  transform: translateY(-40px) scale(1.05) rotate(0deg) !important;
+  box-shadow: 12px 16px 0px #1a0e08 !important;
+}
+
+@media (max-width: 639px) {
+  .card-fan-item:hover {
+    transform: translateY(-20px) scale(1.05) rotate(0deg) !important;
+  }
+}

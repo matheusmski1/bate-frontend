@@ -2,15 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Zap } from 'lucide-react'
+import { Play, Plus, User } from 'lucide-react'
 import { getSocket } from '@/lib/socket-client'
 import { getPlayerId, getStoredName, setStoredName } from '@/lib/player-id'
 import { useGameStore } from '@/lib/store'
 import { RoomList } from '@/components/lobby/RoomList'
 import { CreateRoomDialog } from '@/components/lobby/CreateRoomDialog'
 import { Hero } from '@/components/lobby/Hero'
+import { CardFan } from '@/components/lobby/CardFan'
+import { SuitBackground } from '@/components/lobby/SuitBackground'
 import { QuickRules } from '@/components/lobby/QuickRules'
-import { Avatar } from '@/components/lobby/Avatar'
 import { MuteToggle } from '@/components/lobby/MuteToggle'
 import { Footer } from '@/components/lobby/Footer'
 
@@ -44,7 +45,7 @@ export default function Home() {
   function requireName(): boolean {
     if (!name.trim()) {
       inputRef.current?.focus()
-      alert('Coloca um nome primeiro')
+      alert('Coloca um apelido primeiro')
       return false
     }
     return true
@@ -96,56 +97,69 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen px-4 sm:px-6 py-8 sm:py-12 max-w-3xl mx-auto">
+    <main className="relative min-h-screen overflow-x-hidden flex flex-col items-center text-bate-ink selection:bg-bate-red selection:text-bate-paper">
+      <SuitBackground />
+
       <div className="fixed top-4 right-4 z-50">
         <MuteToggle />
       </div>
 
       <Hero />
+      <CardFan />
 
-      <div className="mb-6">
-        <label className="block text-sm font-display text-bate-ink mb-2">SEU NOME</label>
-        <div className="flex items-center gap-3">
-          <Avatar name={name} size={52} />
-          <input
-            ref={inputRef}
-            type="text"
-            value={name}
-            onChange={e => setName(e.target.value)}
-            onKeyDown={e => {
-              if (e.key === 'Enter' && name.trim()) openCreate()
-            }}
-            className="flex-1 px-4 py-3 rounded-xl bg-bate-paper text-bate-ink text-lg border-[3px] border-bate-ink shadow-hard-sm font-body font-semibold focus:outline-none focus:bg-white transition-colors"
-            placeholder="Como te chamam?"
-            maxLength={20}
-            autoComplete="off"
-          />
+      <section className="relative z-40 w-full max-w-md px-4 -mt-2 mb-10">
+        <div className="bg-bate-paper border-[4px] border-bate-ink shadow-hard-lg rounded-2xl p-6 md:p-8" style={{ transform: 'rotate(-1deg)' }}>
+          <div className="flex flex-col gap-5">
+            <div className="relative">
+              <input
+                ref={inputRef}
+                type="text"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && name.trim()) handleQuickPlay()
+                }}
+                placeholder="Seu apelido aqui..."
+                maxLength={20}
+                autoComplete="off"
+                className="w-full bg-bate-cream border-[4px] border-bate-ink shadow-hard-sm rounded-xl h-16 px-5 font-body font-bold text-xl placeholder-bate-ink/40 focus:outline-none focus:translate-y-[2px] focus:translate-x-[2px] focus:shadow-[2px_2px_0_#1a0e08] transition-all duration-200 pr-12"
+              />
+              <User size={22} className="absolute right-5 top-1/2 -translate-y-1/2 text-bate-ink opacity-30" />
+            </div>
+
+            <button
+              type="button"
+              onClick={handleQuickPlay}
+              className="relative bg-bate-gold border-[4px] border-bate-ink shadow-hard-sm rounded-xl h-16 flex items-center justify-center gap-2 hover:-translate-y-1 hover:-translate-x-1 hover:shadow-hard active:translate-y-[4px] active:translate-x-[4px] active:shadow-none transition-all duration-200"
+            >
+              <Play size={22} fill="currentColor" className="text-bate-ink" />
+              <span className="font-display text-xl md:text-2xl uppercase tracking-wide text-bate-ink pt-1">
+                Entrar na Sala
+              </span>
+            </button>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <QuickRules />
+      <section className="relative z-40 w-full max-w-md px-4 pb-20 space-y-6">
+        <QuickRules />
 
-      <button
-        type="button"
-        onClick={handleQuickPlay}
-        className="w-full mb-6 py-4 rounded-2xl bg-bate-red text-bate-paper border-[4px] border-bate-ink shadow-hard-lg font-display text-lg hover:scale-[1.02] active:scale-[0.99] transition-transform flex items-center justify-center gap-2"
-      >
-        <Zap size={20} fill="currentColor" /> JOGAR AGORA
-      </button>
+        <div>
+          <div className="flex justify-between items-center mb-3">
+            <h2 className="font-display text-xl text-bate-ink">SALAS ABERTAS</h2>
+            <button
+              type="button"
+              onClick={openCreate}
+              className="px-4 py-2 rounded-xl bg-bate-paper border-[3px] border-bate-ink shadow-hard-sm font-display text-sm text-bate-ink hover:scale-105 transition-transform flex items-center gap-2"
+            >
+              <Plus size={14} /> CRIAR
+            </button>
+          </div>
+          <RoomList rooms={rooms} onJoin={handleJoin} onCreate={openCreate} />
+        </div>
 
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="font-display text-2xl text-bate-ink">SALAS ABERTAS</h2>
-        <button
-          onClick={openCreate}
-          className="px-5 py-2.5 rounded-xl bg-bate-paper border-[3px] border-bate-ink shadow-hard-sm font-display text-bate-ink hover:scale-105 transition-transform flex items-center gap-2"
-        >
-          <Plus size={16} /> CRIAR
-        </button>
-      </div>
-
-      <RoomList rooms={rooms} onJoin={handleJoin} onCreate={openCreate} />
-
-      <Footer />
+        <Footer />
+      </section>
 
       {showCreate && (
         <CreateRoomDialog

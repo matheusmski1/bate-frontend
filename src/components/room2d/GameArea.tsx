@@ -208,7 +208,11 @@ export function GameArea({ state }: { state: RedactedState }) {
       return
     }
 
-    if (drawnCard && isMyTurn) {
+    const topDiscard = state.discard[state.discard.length - 1]
+    const knownRank = knownCards.get(card.id)?.rank ?? (!('hidden' in card) ? card.rank : null)
+    const wouldMatchSnap = !!topDiscard && knownRank !== null && knownRank === topDiscard.rank
+
+    if (drawnCard && isMyTurn && !wouldMatchSnap) {
       getSocket().emit('game:keep-or-discard',
         { roomId: state.roomId, playerId: myId, action: 'keep', handIndex },
         (res: { ok?: true; error?: string }) => {

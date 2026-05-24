@@ -30,6 +30,11 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
         router.push('/')
       }
     })
+    socket.on('room:expired', ({ message }: { roomId: string; reason: string; message: string }) => {
+      setRoom(null)
+      alert(message)
+      router.push('/')
+    })
     let prevLogLength = 0
     socket.on('room:state', ({ state }: { state: import('@/types/shared').RedactedState }) => {
       if (state.log.length > prevLogLength) {
@@ -48,6 +53,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
     })
     return () => {
       socket.off('room:state')
+      socket.off('room:expired')
       setRoom(null)
     }
   }, [roomId, router, setRoom])

@@ -83,9 +83,7 @@ export function Card2D({ card, tempRevealedAs = null, onClick, highlighted = fal
         className="absolute inset-0"
         style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
       >
-        <div className="w-full h-full" style={{ transform: 'scaleX(-1)' }}>
-          <CardBack />
-        </div>
+        <CardBack />
       </div>
       {victimEffect && (
         <motion.div

@@ -1,0 +1,272 @@
+'use client'
+
+import { useState, useEffect, useCallback } from 'react'
+import type { RedactedState, Card, Rank, Suit } from '@/types/shared'
+import { getPlayerId } from '@/lib/player-id'
+import { getSocket } from '@/lib/socket-client'
+import { Background } from './Background'
+import { OpponentArea } from './OpponentArea'
+import { PlayerHand2D } from './PlayerHand2D'
+import { DeckPile2D } from './DeckPile2D'
+import { DiscardPile2D } from './DiscardPile2D'
+import { DrawnCard2D } from './DrawnCard2D'
+import { TurnBanner } from './TurnBanner'
+import { CaboButton } from './CaboButton'
+import { InstructionBar } from './InstructionBar'
+import { PeekModal } from './PeekModal'
+import { InitialPeekConfirm } from './InitialPeekConfirm'
+import { ActionLog } from './ActionLog'
+import { BateAnnouncement } from './BateAnnouncement'
+
+const TEMP_REVEAL_MS = 3000
+
+type RevealValue = { rank: Rank; suit: Suit | null }
+
+export function GameArea({ state }: { state: RedactedState }) {
+  const myId = getPlayerId()
+  const me = state.players.find(p => p.id === myId)
+  const opponents = state.players.filter(p => p.id !== myId)
+  const currentPlayerId = state.players[state.turn]?.id
+  const isMyTurn = currentPlayerId === myId
+  const isPlayPhase = state.phase === 'playing' || state.phase === 'cabo-called'
+  const pendingEffect = state.phase === 'effect-pending' ? state.pendingEffect : null
+  const isMyEffect = pendingEffect?.playerId === myId
+
+  const [drawnCard, setDrawnCard] = useState<Card | null>(null)
+  const [tempReveals, setTempReveals] = useState<Map<string, RevealValue>>(new Map())
+  const [knownCards, setKnownCards] = useState<Map<string, RevealValue>>(new Map())
+  const [revealModal, setRevealModal] = useState<RevealValue | null>(null)
+  const [mySwapPickIndex, setMySwapPickIndex] = useState<number | null>(null)
+  const [peekConfirmedLocal, setPeekConfirmedLocal] = useState(false)
+
+  useEffect(() => {
+    if (state.phase !== 'initial-peek') setPeekConfirmedLocal(false)
+  }, [state.phase])
+
+  useEffect(() => {
+    if (!pendingEffect) setMySwapPickIndex(null)
+  }, [pendingEffect])
+
+  useEffect(() => {
+    if (state.phase === 'round-end' || state.phase === 'match-end' || state.phase === 'waiting') {
+      setKnownCards(new Map())
+    }
+  }, [state.phase])
+
+  useEffect(() => {
+    if (!me) return
+    setKnownCards(prev => {
+      let changed = false
+      const next = new Map(prev)
+      for (const c of me.hand) {
+        if (!('hidden' in c) && !next.has(c.id)) {
+          next.set(c.id, { rank: c.rank, suit: c.suit })
+          changed = true
+        }
+      }
+      return changed ? next : prev
+    })
+  }, [me])
+
+  useEffect(() => {
+    if (!drawnCard) return
+    setKnownCards(prev => {
+      if (prev.has(drawnCard.id)) return prev
+      const next = new Map(prev)
+      next.set(drawnCard.id, { rank: drawnCard.rank, suit: drawnCard.suit })
+      return next
+    })
+  }, [drawnCard])
+
+  const tempReveal = useCallback((cardId: string, value: RevealValue) => {
+    setTempReveals(prev => new Map(prev).set(cardId, value))
+    setKnownCards(prev => new Map(prev).set(cardId, value))
+    setRevealModal(value)
+    setTimeout(() => {
+      setTempReveals(prev => {
+        const next = new Map(prev)
+        next.delete(cardId)
+        return next
+      })
+    }, TEMP_REVEAL_MS)
+  }, [])
+
+  const canDraw = isMyTurn && isPlayPhase && !drawnCard
+  const ownCardsClickable = isPlayPhase || (isMyEffect && (pendingEffect?.type === 'peek-own' || pendingEffect?.type === 'swap'))
+  const opponentCardsClickable = isMyEffect && (pendingEffect?.type === 'peek-other' || (pendingEffect?.type === 'swap' && mySwapPickIndex !== null))
+
+  function confirmInitialPeek() {
+    setPeekConfirmedLocal(true)
+    getSocket().emit('game:initial-peek-done', { roomId: state.roomId, playerId: myId }, (res: { ok?: true; error?: string }) => {
+      if (res?.error) { alert(res.error); setPeekConfirmedLocal(false) }
+    })
+  }
+
+  function handleDeckClick() {
+    if (!canDraw) return
+    getSocket().emit('game:draw', { roomId: state.roomId, playerId: myId }, (res: { ok?: true; error?: string; payload?: { card: Card } }) => {
+      if (res?.error) { alert(res.error); return }
+      if (res.payload?.card) setDrawnCard(res.payload.card)
+    })
+  }
+
+  function handleDiscardDrawn() {
+    if (!drawnCard) return
+    getSocket().emit('game:keep-or-discard', { roomId: state.roomId, playerId: myId, action: 'discard' }, (res: { ok?: true; error?: string }) => {
+      if (res?.error) { alert(res.error); return }
+      setDrawnCard(null)
+    })
+  }
+
+  function handlePlayerCardClick(handIndex: number) {
+    if (!me) return
+    const card = me.hand[handIndex]
+    if (!card) return
+
+    if (isMyEffect && pendingEffect) {
+      if (pendingEffect.type === 'peek-own') {
+        getSocket().emit('game:effect-target',
+          { roomId: state.roomId, playerId: myId, targetPlayerId: myId, targetCardIndex: handIndex },
+          (res: { ok?: true; error?: string; payload?: { revealed?: Array<{ card: { id: string; rank: Rank; suit: Suit | null } }> } }) => {
+            if (res?.error) { alert(res.error); return }
+            const r = res.payload?.revealed?.[0]
+            if (r) tempReveal(r.card.id, { rank: r.card.rank, suit: r.card.suit })
+          })
+        return
+      }
+      if (pendingEffect.type === 'swap' && mySwapPickIndex === null) {
+        setMySwapPickIndex(handIndex)
+        return
+      }
+      return
+    }
+
+    if (drawnCard && isMyTurn) {
+      getSocket().emit('game:keep-or-discard',
+        { roomId: state.roomId, playerId: myId, action: 'keep', handIndex },
+        (res: { ok?: true; error?: string }) => {
+          if (res?.error) { alert(res.error); return }
+          setDrawnCard(null)
+        })
+      return
+    }
+
+    const knownRank = knownCards.get(card.id)?.rank ?? (!('hidden' in card) ? card.rank : null)
+    const isKnownSpecial = knownRank ? ['10', 'J', 'Q'].includes(knownRank) : false
+    if (isKnownSpecial && isMyTurn && isPlayPhase) {
+      getSocket().emit('game:use-hand-effect',
+        { roomId: state.roomId, playerId: myId, handIndex },
+        (res: { ok?: true; error?: string }) => {
+          if (res?.error) alert(res.error)
+        })
+      return
+    }
+
+    if (isPlayPhase && state.discard.length > 0) {
+      getSocket().emit('game:snap', { roomId: state.roomId, playerId: myId, handIndex }, (res: { ok?: true; error?: string }) => {
+        if (res?.error) alert(res.error)
+      })
+    }
+  }
+
+  function handleOpponentCardClick(opponentId: string, handIndex: number) {
+    if (!isMyEffect || !pendingEffect) return
+    if (pendingEffect.type === 'peek-other') {
+      getSocket().emit('game:effect-target',
+        { roomId: state.roomId, playerId: myId, targetPlayerId: opponentId, targetCardIndex: handIndex },
+        (res: { ok?: true; error?: string; payload?: { revealed?: Array<{ card: { id: string; rank: Rank; suit: Suit | null } }> } }) => {
+          if (res?.error) { alert(res.error); return }
+          const r = res.payload?.revealed?.[0]
+          if (r) tempReveal(r.card.id, { rank: r.card.rank, suit: r.card.suit })
+        })
+      return
+    }
+    if (pendingEffect.type === 'swap' && mySwapPickIndex !== null) {
+      getSocket().emit('game:effect-target',
+        { roomId: state.roomId, playerId: myId, targetPlayerId: opponentId, targetCardIndex: handIndex, myCardIndex: mySwapPickIndex },
+        (res: { ok?: true; error?: string }) => {
+          if (res?.error) { alert(res.error); return }
+          setMySwapPickIndex(null)
+        })
+    }
+  }
+
+  const highlightedIds = new Set<string>()
+  if (mySwapPickIndex !== null && me) {
+    const c = me.hand[mySwapPickIndex]
+    if (c) highlightedIds.add(c.id)
+  }
+
+  let instruction: string | null = null
+  if (state.phase === 'playing' && isMyTurn && !drawnCard) {
+    instruction = '👆 Clica no baralho pra comprar'
+  } else if (drawnCard && isMyTurn) {
+    instruction = 'Clica na carta comprada pra descartar, ou em uma das 4 pra trocar'
+  }
+
+  return (
+    <div className="relative w-screen h-screen overflow-hidden">
+      <Background />
+
+      <div className="absolute inset-0 flex flex-col items-center justify-between py-12 px-6">
+        {/* Opponents area */}
+        <div className="flex gap-12 justify-center">
+          {opponents.map(p => (
+            <OpponentArea
+              key={p.id}
+              player={p}
+              isCurrent={p.id === currentPlayerId}
+              onCardClick={opponentCardsClickable ? (idx) => handleOpponentCardClick(p.id, idx) : undefined}
+              tempReveals={tempReveals}
+              highlightedIds={highlightedIds}
+            />
+          ))}
+        </div>
+
+        {/* Middle: deck + drawn + discard */}
+        <div className="flex items-center gap-12">
+          <DeckPile2D count={state.deckCount} onClick={canDraw ? handleDeckClick : undefined} />
+          {drawnCard && <DrawnCard2D card={drawnCard} onClick={handleDiscardDrawn} />}
+          <DiscardPile2D discard={state.discard} />
+        </div>
+
+        {/* Player hand */}
+        <div>
+          {me && (
+            <PlayerHand2D
+              player={me}
+              isCurrent={isMyTurn}
+              onCardClick={ownCardsClickable ? handlePlayerCardClick : undefined}
+              tempReveals={tempReveals}
+              highlightedIds={highlightedIds}
+            />
+          )}
+        </div>
+      </div>
+
+      <TurnBanner state={state} isMyTurn={isMyTurn} myId={myId} />
+      <CaboButton state={state} drawnExists={!!drawnCard} />
+      <InstructionBar text={instruction} />
+      <PeekModal reveal={revealModal} onClose={() => setRevealModal(null)} />
+      <ActionLog state={state} />
+      <BateAnnouncement state={state} />
+      {state.phase === 'initial-peek' && (
+        <InitialPeekConfirm confirmed={peekConfirmedLocal} onConfirm={confirmInitialPeek} />
+      )}
+      {isMyEffect && (
+        <button
+          type="button"
+          onClick={() => {
+            setMySwapPickIndex(null)
+            getSocket().emit('game:skip-effect', { roomId: state.roomId, playerId: myId }, (res: { ok?: true; error?: string }) => {
+              if (res?.error) alert(res.error)
+            })
+          }}
+          className="fixed bottom-10 left-10 z-40 px-5 py-3 rounded-2xl bg-cabo-surface/95 backdrop-blur text-cabo-purple hover:text-white hover:bg-cabo-bg font-bold shadow-2xl border border-cabo-purple/40 transition-colors text-sm"
+        >
+          ✕ Pular ação
+        </button>
+      )}
+    </div>
+  )
+}

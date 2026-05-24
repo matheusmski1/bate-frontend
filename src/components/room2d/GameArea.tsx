@@ -15,7 +15,6 @@ import { TurnBanner } from './TurnBanner'
 import { CaboButton } from './CaboButton'
 import { InstructionBar } from './InstructionBar'
 import { PeekModal } from './PeekModal'
-import { InitialPeekConfirm } from './InitialPeekConfirm'
 import { ActionLog } from './ActionLog'
 import { BateAnnouncement } from './BateAnnouncement'
 import { SnapToast } from './SnapToast'
@@ -166,7 +165,17 @@ export function GameArea({ state }: { state: RedactedState }) {
 
   const canDraw = isMyTurn && isPlayPhase && !drawnCard
   const canSwapDrawn = isMyTurn && !!drawnCard
-  const canSnap = !isMyTurn && isPlayPhase && state.discard.length > 0
+  const canSnap = isPlayPhase && state.discard.length > 0 && (!isMyTurn || !!drawnCard)
+  const topDiscardRank = state.discard[state.discard.length - 1]?.rank ?? null
+  const snapHintIds = (() => {
+    if (!canSnap || !topDiscardRank || !me) return new Set<string>()
+    const ids = new Set<string>()
+    for (const c of me.hand) {
+      const known = knownCards.get(c.id)?.rank ?? (!('hidden' in c) ? c.rank : null)
+      if (known === topDiscardRank) ids.add(c.id)
+    }
+    return ids
+  })()
   const ownCardsClickable =
     canSwapDrawn ||
     canSnap ||
@@ -179,6 +188,13 @@ export function GameArea({ state }: { state: RedactedState }) {
       if (res?.error) { alert(res.error); setPeekConfirmedLocal(false) }
     })
   }
+
+  useEffect(() => {
+    if (state.phase !== 'initial-peek' || peekConfirmedLocal) return
+    const t = setTimeout(() => { confirmInitialPeek() }, 4000)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.phase, peekConfirmedLocal])
 
   function handleDeckClick() {
     if (!canDraw) return
@@ -223,7 +239,10 @@ export function GameArea({ state }: { state: RedactedState }) {
       return
     }
 
-    if (drawnCard && isMyTurn) {
+    const knownRank = knownCards.get(card.id)?.rank ?? (!('hidden' in card) ? card.rank : null)
+    const wouldMatchSnap = topDiscardRank !== null && knownRank !== null && knownRank === topDiscardRank
+
+    if (drawnCard && isMyTurn && !wouldMatchSnap) {
       getSocket().emit('game:keep-or-discard',
         { roomId: state.roomId, playerId: myId, action: 'keep', handIndex },
         (res: { ok?: true; error?: string }) => {
@@ -233,7 +252,7 @@ export function GameArea({ state }: { state: RedactedState }) {
       return
     }
 
-    if (!isMyTurn && isPlayPhase && state.discard.length > 0) {
+    if (canSnap) {
       getSocket().emit('game:snap', { roomId: state.roomId, playerId: myId, handIndex }, (res: { ok?: true; error?: string }) => {
         if (res?.error) alert(res.error)
       })
@@ -338,6 +357,7 @@ export function GameArea({ state }: { state: RedactedState }) {
               tempReveals={tempReveals}
               highlightedIds={highlightedIds}
               victimEffects={victimEffects}
+              snapHintIds={snapHintIds}
             />
           )}
         </div>
@@ -351,9 +371,6 @@ export function GameArea({ state }: { state: RedactedState }) {
       <SnapToast state={state} />
       <PenaltyPreview state={state} />
       <BateAnnouncement state={state} />
-      {state.phase === 'initial-peek' && (
-        <InitialPeekConfirm confirmed={peekConfirmedLocal} onConfirm={confirmInitialPeek} />
-      )}
       {isMyEffect && pendingEffect && (() => {
         const effectName =
           pendingEffect.type === 'peek-own' ? 'OLHADINHA'

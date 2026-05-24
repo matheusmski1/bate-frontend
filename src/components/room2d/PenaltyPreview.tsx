@@ -3,13 +3,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { CARD_META, formatPoints } from '@/lib/card-meta'
+import { getPlayerId } from '@/lib/player-id'
 import type { RedactedState, Rank } from '@/types/shared'
 
 const PREVIEW_MS = 2600
 
-type Preview = { id: number; rank: Rank; player: string }
+type Preview = { id: number; rank: Rank }
 
 export function PenaltyPreview({ state }: { state: RedactedState }) {
+  const myId = getPlayerId()
   const [preview, setPreview] = useState<Preview | null>(null)
   const prevLogLenRef = useRef<number | null>(null)
   const counterRef = useRef(0)
@@ -27,13 +29,13 @@ export function PenaltyPreview({ state }: { state: RedactedState }) {
     prevLogLenRef.current = state.log.length
     for (const entry of newEntries) {
       if (entry.type !== 'snap-fail') continue
-      const payload = entry.payload as { penaltyRank?: Rank } | undefined
-      if (!payload?.penaltyRank) continue
-      const actor = state.players.find(p => p.id === entry.actorId)
+      if (entry.actorId !== myId) continue
+      const payload = entry.payload as { attemptedRank?: Rank } | undefined
+      if (!payload?.attemptedRank) continue
       counterRef.current += 1
-      setPreview({ id: counterRef.current, rank: payload.penaltyRank, player: actor?.name ?? 'alguém' })
+      setPreview({ id: counterRef.current, rank: payload.attemptedRank })
     }
-  }, [state.log, state.players])
+  }, [state.log, myId])
 
   useEffect(() => {
     if (!preview) return
@@ -64,7 +66,7 @@ export function PenaltyPreview({ state }: { state: RedactedState }) {
             className="text-center"
           >
             <div className="font-display text-bate-paper text-xs sm:text-sm tracking-[0.2em] uppercase mb-3">
-              💀 Penalidade pra {preview.player}
+              ❌ Ops! Essa carta era...
             </div>
             <div className="w-40 h-56 sm:w-48 sm:h-64 rounded-2xl border-[4px] border-bate-ink overflow-hidden shadow-hard-lg mx-auto bg-bate-paper">
               <img

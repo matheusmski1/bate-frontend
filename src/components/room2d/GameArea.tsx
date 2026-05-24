@@ -218,17 +218,6 @@ export function GameArea({ state }: { state: RedactedState }) {
       return
     }
 
-    const knownRank = knownCards.get(card.id)?.rank ?? (!('hidden' in card) ? card.rank : null)
-    const isKnownSpecial = knownRank ? ['10', 'J', 'Q'].includes(knownRank) : false
-    if (isKnownSpecial && isMyTurn && isPlayPhase) {
-      getSocket().emit('game:use-hand-effect',
-        { roomId: state.roomId, playerId: myId, handIndex },
-        (res: { ok?: true; error?: string }) => {
-          if (res?.error) alert(res.error)
-        })
-      return
-    }
-
     if (isPlayPhase && state.discard.length > 0) {
       getSocket().emit('game:snap', { roomId: state.roomId, playerId: myId, handIndex }, (res: { ok?: true; error?: string }) => {
         if (res?.error) alert(res.error)

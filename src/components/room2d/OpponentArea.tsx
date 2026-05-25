@@ -130,6 +130,7 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
           isHost={isHost}
           isLeader={isLeader}
           skin={player.skin}
+          dataAttribute={{ key: 'data-opponent-nameplate', value: player.id }}
         />
         <div className="flex gap-3 items-center">
           <div className="flex gap-2">

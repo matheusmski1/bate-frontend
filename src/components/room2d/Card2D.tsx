@@ -48,6 +48,7 @@ export function Card2D({ card, tempRevealedAs = null, onClick, highlighted = fal
   return (
     <motion.button
       type="button"
+      data-card-id={card.id}
       onClick={onClick}
       whileHover={onClick ? { scale: 1.08, y: -8 } : undefined}
       whileTap={onClick ? { scale: 0.97 } : undefined}

@@ -416,33 +416,41 @@ export function createController(): Controller {
     },
 
     attachLoop(opts) {
+      // Loops são ambientes — não participam da fila runningCount; podem coexistir
+      // com outras anims e com outros loops simultaneamente.
       if (!opts.anchorRect) return NOOP
       if (reducedMotionPreferred()) return NOOP
 
       const { anchorRect, asset, box, overlay } = opts
       const pos = opts.position ?? 'top-right'
-      const x =
-        pos === 'top-right'
-          ? anchorRect.right - box.width * 0.3
-          : anchorRect.left + anchorRect.width / 2 - box.width / 2
+      const x = pos === 'top-right'
+        ? anchorRect.right - box.width * 0.3
+        : anchorRect.left + anchorRect.width / 2 - box.width / 2
       const y = anchorRect.top - box.height * 0.6
 
       const { wrap } = makeMascot(asset, x, y, box)
       overlay.appendChild(wrap)
 
-      let loop: { pause: () => void } | null = null
+      let loop: ReturnType<typeof createTimeline> | null = null
       let cancelled = false
 
       try {
         const entry = createTimeline({
           onComplete: () => {
             if (cancelled) return
-            loop = createTimeline({ loop: true, defaults: { ease: 'inOutSine' } })
-            ;(loop as ReturnType<typeof createTimeline>).add(wrap, {
+            const newLoop = createTimeline({ loop: true, defaults: { ease: 'inOutSine' } })
+            newLoop.add(wrap, {
               translateY: [0, -10, 0],
               rotate: [-6, 6, -6],
               duration: 1200,
             })
+            // Race: cancel pode ter rodado entre o check acima e este ponto.
+            // Se sim, pausa o newLoop e abandona em vez de promovê-lo.
+            if (cancelled) {
+              try { newLoop.pause() } catch { /* ignore */ }
+              return
+            }
+            loop = newLoop
           },
         })
         entry.add(wrap, {

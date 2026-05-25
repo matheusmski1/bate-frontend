@@ -5,7 +5,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { animate } from 'animejs'
 import type { RedactedState, Rank } from '@/types/shared'
 import { CARD_META } from '@/lib/card-meta'
-import { MASCOT } from '@/lib/mascot'
+import { getMascot } from '@/lib/mascot'
+import { getPlayerId } from '@/lib/player-id'
 
 type ToastKind = 'snap' | 'snap-fail'
 type Toast = { id: number; kind: ToastKind; name: string; rank?: Rank }
@@ -13,6 +14,8 @@ type Toast = { id: number; kind: ToastKind; name: string; rank?: Rank }
 const DURATION_MS = 2400
 
 export function SnapToast({ state }: { state: RedactedState }) {
+  const myId = getPlayerId()
+  const arenaId = state.players.find(p => p.id === myId)?.arena ?? 'default'
   const [toast, setToast] = useState<Toast | null>(null)
   const prevLogLenRef = useRef<number | null>(null)
   const counterRef = useRef(0)
@@ -107,7 +110,7 @@ export function SnapToast({ state }: { state: RedactedState }) {
             }`}
           >
             <img
-              src={toast.kind === 'snap' ? MASCOT.feliz : MASCOT.confuso}
+              src={toast.kind === 'snap' ? getMascot('feliz', arenaId) : getMascot('confuso', arenaId)}
               alt=""
               aria-hidden
               className="w-10 h-10 sm:w-12 sm:h-12 select-none"

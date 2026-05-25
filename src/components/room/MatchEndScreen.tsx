@@ -2,10 +2,13 @@
 
 import { useRouter } from 'next/navigation'
 import type { RedactedState } from '@/types/shared'
-import { MASCOT } from '@/lib/mascot'
+import { getMascot } from '@/lib/mascot'
+import { getPlayerId } from '@/lib/player-id'
 
 export function MatchEndScreen({ state }: { state: RedactedState }) {
   const router = useRouter()
+  const myId = getPlayerId()
+  const arenaId = state.players.find(p => p.id === myId)?.arena ?? 'default'
   const sorted = [...state.players].sort((a, b) => a.score - b.score)
   const loser = sorted[sorted.length - 1]
   const winner = sorted[0]
@@ -14,7 +17,7 @@ export function MatchEndScreen({ state }: { state: RedactedState }) {
     <main className="min-h-screen flex items-center justify-center p-6">
       <div className="bg-bate-paper p-8 rounded-3xl max-w-md w-full text-center border-[4px] border-bate-ink shadow-hard-lg">
         <img
-          src={MASCOT.trofeu}
+          src={getMascot('trofeu', arenaId)}
           alt=""
           aria-hidden
           className="w-32 sm:w-40 mx-auto mb-2 select-none"

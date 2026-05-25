@@ -11,8 +11,13 @@ import { useTempoAcabandoTrigger } from '@/lib/mascot-overlay/triggers/tempo-aca
 
 export type LocalMascotActions = {
   peekRevealed: { cardId: string; reveal: { rank: Rank; suit: Suit | null }; kind: 'own' | 'other' } | null
-  snapResult: { handIndex: number; ok: boolean } | null
-  swapResolved: { myCardId: string; opponentCardId: string } | null
+  snapResult: { ok: boolean } | null
+  swapResolved: {
+    actorPlayerId: string
+    actorCardIndex: number
+    targetPlayerId: string
+    targetCardIndex: number
+  } | null
 }
 
 export type MascotOverlayProps = {

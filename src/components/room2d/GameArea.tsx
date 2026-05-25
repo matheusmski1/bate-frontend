@@ -301,7 +301,7 @@ export function GameArea({ state }: { state: RedactedState }) {
         if (res?.error && res.error !== 'INVALID_HAND_INDEX') toast.error(res.error)
         setLocalActions(prev => ({
           ...prev,
-          snapResult: { handIndex, ok: !res?.error },
+          snapResult: { ok: !res?.error },
         }))
       })
     }
@@ -320,20 +320,21 @@ export function GameArea({ state }: { state: RedactedState }) {
       return
     }
     if (pendingEffect.type === 'swap' && mySwapPickIndex !== null) {
-      const myCard = me?.hand[mySwapPickIndex]
-      const targetPlayer = state.players.find(p => p.id === opponentId)
-      const targetCard = targetPlayer?.hand[handIndex]
+      const actorCardIndex = mySwapPickIndex
       getSocket().emit('game:effect-target',
-        { roomId: state.roomId, playerId: myId, targetPlayerId: opponentId, targetCardIndex: handIndex, myCardIndex: mySwapPickIndex },
+        { roomId: state.roomId, playerId: myId, targetPlayerId: opponentId, targetCardIndex: handIndex, myCardIndex: actorCardIndex },
         (res: { ok?: true; error?: string }) => {
           if (res?.error) { toast.error(res.error); return }
           setMySwapPickIndex(null)
-          if (myCard && targetCard) {
-            setLocalActions(prev => ({
-              ...prev,
-              swapResolved: { myCardId: myCard.id, opponentCardId: targetCard.id },
-            }))
-          }
+          setLocalActions(prev => ({
+            ...prev,
+            swapResolved: {
+              actorPlayerId: myId,
+              actorCardIndex,
+              targetPlayerId: opponentId,
+              targetCardIndex: handIndex,
+            },
+          }))
         })
     }
   }

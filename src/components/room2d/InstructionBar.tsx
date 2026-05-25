@@ -4,15 +4,15 @@ import { AnimatePresence, motion } from 'framer-motion'
 
 export function InstructionBar({ text }: { text: string | null }) {
   return (
-    <div className="fixed top-16 sm:top-32 left-2 sm:left-4 z-40 pointer-events-none max-w-[180px] sm:max-w-[260px]">
+    <div className="fixed bottom-[10.5rem] sm:bottom-32 left-1/2 -translate-x-1/2 z-40 pointer-events-none max-w-[calc(100vw-1rem)] sm:max-w-[420px]">
       <AnimatePresence>
         {text && (
           <motion.div
-            initial={{ x: -30, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -30, opacity: 0 }}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 20, opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="bg-bate-paper px-4 py-2 rounded-2xl text-bate-ink font-display text-xs shadow-hard border-[3px] border-bate-ink"
+            className="bg-bate-paper px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl text-bate-ink font-display text-[11px] sm:text-xs shadow-hard border-[2px] sm:border-[3px] border-bate-ink text-center whitespace-nowrap overflow-hidden text-ellipsis"
           >
             {text}
           </motion.div>

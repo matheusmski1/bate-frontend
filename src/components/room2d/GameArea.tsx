@@ -18,8 +18,8 @@ import { ActionLog } from './ActionLog'
 import { BateAnnouncement } from './BateAnnouncement'
 import { SnapToast } from './SnapToast'
 import { PenaltyPreview } from './PenaltyPreview'
-import { TurnTimer } from './TurnTimer'
-import { TurnCounter } from './TurnCounter'
+import { TopChrome } from './TopChrome'
+import { LeaveButton } from './LeaveButton'
 import { EmoteBar } from './EmoteBar'
 import { playSound } from '@/lib/sounds'
 
@@ -342,12 +342,12 @@ export function GameArea({ state }: { state: RedactedState }) {
 
   const opponentPos = (idx: number): string => {
     const count = opponents.length
-    if (count === 1) return 'top-12 sm:top-10 left-1/2 -translate-x-1/2'
+    if (count === 1) return 'top-12 sm:top-14 left-1/2 -translate-x-1/2'
     if (count === 2) {
-      if (idx === 0) return 'top-32 sm:top-40 left-2 sm:left-10'
-      return 'top-32 sm:top-40 right-2 sm:right-10'
+      if (idx === 0) return 'top-12 sm:top-14 left-2 sm:left-10'
+      return 'top-12 sm:top-14 right-2 sm:right-10'
     }
-    if (idx === 0) return 'top-12 sm:top-6 left-1/2 -translate-x-1/2'
+    if (idx === 0) return 'top-12 sm:top-14 left-1/2 -translate-x-1/2'
     if (idx === 1) return 'top-40 sm:top-1/4 left-1 sm:left-8'
     return 'top-40 sm:top-1/4 right-1 sm:right-8'
   }
@@ -449,8 +449,8 @@ export function GameArea({ state }: { state: RedactedState }) {
       <InstructionBar text={instruction} />
       <PeekModal reveal={revealModal} onClose={() => setRevealModal(null)} />
       <ActionLog state={state} />
-      <TurnTimer state={state} />
-      <TurnCounter state={state} />
+      <TopChrome state={state} />
+      <LeaveButton roomId={state.roomId} inGame={state.phase !== 'waiting'} />
       <button
         type="button"
         onClick={() => {

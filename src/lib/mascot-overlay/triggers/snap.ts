@@ -25,16 +25,23 @@ export function useSnapTrigger({ state, myId, overlayRef, controller, localSnap,
     onConsumedRef.current = onConsumed
   })
 
+  // ref pra ler players atuais sem incluir state.players nas deps
+  const statePlayersRef = useRef(state.players)
+  statePlayersRef.current = state.players
+
   // ---- caso A: EU sou o ator ----
   const lastLocalKeyRef = useRef<string | null>(null)
   useEffect(() => {
     const overlay = overlayRef.current
-    if (!overlay || !localSnap) return
-    const key = `${localSnap.handIndex}:${localSnap.ok}:${Date.now()}`
+    if (!overlay || !localSnap) {
+      if (!localSnap) lastLocalKeyRef.current = null
+      return
+    }
+    const key = `${localSnap.handIndex}:${localSnap.ok}`
     if (lastLocalKeyRef.current === key) return
     lastLocalKeyRef.current = key
 
-    const me = state.players.find((p) => p.id === myId)
+    const me = statePlayersRef.current.find((p) => p.id === myId)
     const card = me?.hand[localSnap.handIndex]
     const targetRect = card
       ? getRect(`[data-card-id="${CSS.escape(card.id)}"]`)
@@ -49,7 +56,7 @@ export function useSnapTrigger({ state, myId, overlayRef, controller, localSnap,
       box: boxFor(130, [asset]),
       onComplete: () => onConsumedRef.current(),
     })
-  }, [overlayRef, controller, localSnap, state.players, myId])
+  }, [overlayRef, controller, localSnap, myId])
 
   // ---- caso B: OUTRO é o ator ----
   const prevLogLenRef = useRef<number | null>(null)

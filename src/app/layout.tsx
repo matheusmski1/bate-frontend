@@ -1,8 +1,9 @@
 import './globals.css'
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Fredoka, Bowlby_One, Caveat } from 'next/font/google'
 import { ToastHost } from '@/components/ui/ToastHost'
 import { ConfirmHost } from '@/components/ui/ConfirmHost'
+import { ServiceWorkerRegister } from '@/components/system/ServiceWorkerRegister'
 
 const fredoka = Fredoka({
   subsets: ['latin'],
@@ -28,6 +29,28 @@ const caveat = Caveat({
 export const metadata: Metadata = {
   title: 'Batinho',
   description: 'Os Batinhos são malandros: memorizam, espiam, trocam e cortam. Menor placar leva. 2-4 jogadores, grátis.',
+  applicationName: 'Batinho',
+  appleWebApp: {
+    capable: true,
+    title: 'Batinho',
+    statusBarStyle: 'default',
+  },
+  openGraph: {
+    title: 'Batinho',
+    description: 'Memorize, espie, troque, corte. Menor placar leva.',
+    url: 'https://www.batinho.com.br',
+    siteName: 'Batinho',
+    locale: 'pt_BR',
+    type: 'website',
+  },
+}
+
+export const viewport: Viewport = {
+  themeColor: '#e23744',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -37,6 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <ToastHost />
         <ConfirmHost />
+        <ServiceWorkerRegister />
       </body>
     </html>
   )

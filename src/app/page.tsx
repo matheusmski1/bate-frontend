@@ -32,6 +32,7 @@ export default function Home() {
   const [name, setName] = useState('')
   const [showCreate, setShowCreate] = useState(false)
   const [showSkins, setShowSkins] = useState(false)
+  const [roomsLoaded, setRoomsLoaded] = useState(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
@@ -41,7 +42,10 @@ export default function Home() {
     ensureSocketConnected().then(socket => {
       if (cancelled) return
       socket.emit('lobby:subscribe')
-      const onUpdate = ({ rooms }: { rooms: import('@/types/shared').RoomSummary[] }) => setRooms(rooms)
+      const onUpdate = ({ rooms }: { rooms: import('@/types/shared').RoomSummary[] }) => {
+        setRooms(rooms)
+        setRoomsLoaded(true)
+      }
       socket.on('lobby:update', onUpdate)
       cleanup = () => {
         socket.emit('lobby:unsubscribe')
@@ -203,7 +207,7 @@ export default function Home() {
               <Plus size={14} /> CRIAR
             </button>
           </div>
-          <RoomList rooms={rooms} onJoin={handleJoin} onCreate={openCreate} />
+          <RoomList rooms={rooms} onJoin={handleJoin} onCreate={openCreate} loaded={roomsLoaded} />
         </div>
 
         <Footer />

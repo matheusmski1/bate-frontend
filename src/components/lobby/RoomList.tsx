@@ -3,7 +3,19 @@
 import { Users } from 'lucide-react'
 import type { RoomSummary } from '@/types/shared'
 
-export function RoomList({ rooms, onJoin, onCreate }: { rooms: RoomSummary[]; onJoin: (id: string) => void; onCreate?: () => void }) {
+export function RoomList({ rooms, onJoin, onCreate, loaded = true }: { rooms: RoomSummary[]; onJoin: (id: string) => void; onCreate?: () => void; loaded?: boolean }) {
+  if (!loaded) {
+    return (
+      <div className="text-center py-12 bg-bate-paper rounded-2xl border-[3px] border-dashed border-bate-ink/30 shadow-hard">
+        <div className="inline-flex gap-1 mb-3">
+          <span className="w-2 h-2 rounded-full bg-bate-ink/50 animate-pulse" style={{ animationDelay: '0ms' }} />
+          <span className="w-2 h-2 rounded-full bg-bate-ink/50 animate-pulse" style={{ animationDelay: '150ms' }} />
+          <span className="w-2 h-2 rounded-full bg-bate-ink/50 animate-pulse" style={{ animationDelay: '300ms' }} />
+        </div>
+        <p className="font-display text-bate-ink/60 text-sm">CARREGANDO SALAS…</p>
+      </div>
+    )
+  }
   if (rooms.length === 0) {
     return (
       <div className="text-center py-12 bg-bate-paper rounded-2xl border-[3px] border-dashed border-bate-ink/40 shadow-hard">

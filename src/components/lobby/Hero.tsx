@@ -28,18 +28,20 @@ export function Hero() {
   }, [])
 
   return (
-    <header className="relative z-20 w-full max-w-4xl mx-auto px-4 pt-10 md:pt-16 flex flex-col items-center text-center">
-      <img
-        ref={mascotRef}
-        src={MASCOT.bate}
-        alt="Batinho"
-        className="w-32 sm:w-40 md:w-52 lg:w-64 mb-2 opacity-0 select-none pointer-events-none"
-        style={{ filter: 'drop-shadow(0 12px 24px rgba(0,0,0,0.35))', willChange: 'transform, opacity' }}
-        draggable={false}
-      />
-      <h1 className="font-display text-[68px] sm:text-[92px] md:text-[128px] lg:text-[164px] text-bate-red uppercase leading-none tracking-tighter text-stamped select-none relative z-10">
-        BATINHO
-      </h1>
+    <header className="relative z-20 w-full max-w-5xl mx-auto px-4 pt-10 md:pt-16 flex flex-col items-center text-center">
+      <div className="flex items-center justify-center gap-2 sm:gap-4 md:gap-6">
+        <img
+          ref={mascotRef}
+          src={MASCOT.bate}
+          alt="Batinho"
+          className="w-20 sm:w-28 md:w-40 lg:w-52 opacity-0 select-none pointer-events-none shrink-0"
+          style={{ filter: 'drop-shadow(0 12px 24px rgba(0,0,0,0.35))', willChange: 'transform, opacity' }}
+          draggable={false}
+        />
+        <h1 className="font-display text-[56px] sm:text-[84px] md:text-[120px] lg:text-[160px] text-bate-red uppercase leading-none tracking-tighter text-stamped select-none relative z-10">
+          BATINHO
+        </h1>
+      </div>
       <p className="font-body text-sm sm:text-base md:text-lg text-bate-ink/80 mt-3 sm:mt-4 max-w-md font-medium leading-snug">
         Os Batinhos são malandros — <span className="font-bold text-bate-red">memorizam</span>, <span className="font-bold text-bate-red">espiam</span>, <span className="font-bold text-bate-red">trocam</span> e <span className="font-bold text-bate-red">cortam</span> no momento certo.
         <br className="hidden sm:block" />

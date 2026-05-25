@@ -7,6 +7,7 @@ import { usePeekOwnTrigger } from '@/lib/mascot-overlay/triggers/peek-own'
 import { usePeekOtherTrigger } from '@/lib/mascot-overlay/triggers/peek-other'
 import { useSnapTrigger } from '@/lib/mascot-overlay/triggers/snap'
 import { useSwapTrigger } from '@/lib/mascot-overlay/triggers/swap'
+import { useTempoAcabandoTrigger } from '@/lib/mascot-overlay/triggers/tempo-acabando'
 
 export type LocalMascotActions = {
   peekRevealed: { cardId: string; reveal: { rank: Rank; suit: Suit | null }; kind: 'own' | 'other' } | null
@@ -67,6 +68,8 @@ export function MascotOverlay({ state, myId, localActions, onPeekArrived, onSnap
     localSwap: localActions.swapResolved,
     onConsumed: onSwapConsumed ?? (() => {}),
   })
+
+  useTempoAcabandoTrigger({ state, myId, overlayRef, controller })
 
   return <div ref={overlayRef} className="fixed inset-0 pointer-events-none z-40" aria-hidden />
 }

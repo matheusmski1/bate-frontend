@@ -7,6 +7,7 @@ import type { RedactedState, Card, Rank, Suit } from '@/types/shared'
 import { getPlayerId } from '@/lib/player-id'
 import { getSocket } from '@/lib/socket-client'
 import { Background } from './Background'
+import { ArenaDecorationsLayer } from './ArenaDecorationsLayer'
 import { OpponentArea } from './OpponentArea'
 import { PlayerHand2D } from './PlayerHand2D'
 import { DeckPile2D } from './DeckPile2D'
@@ -33,6 +34,7 @@ type RevealValue = { rank: Rank; suit: Suit | null }
 export function GameArea({ state }: { state: RedactedState }) {
   const myId = getPlayerId()
   const me = state.players.find(p => p.id === myId)
+  const arenaId = me?.arena ?? 'default'
   const opponents = state.players.filter(p => p.id !== myId)
   const currentPlayerId = state.players[state.turn]?.id
   const isMyTurn = currentPlayerId === myId
@@ -387,7 +389,8 @@ export function GameArea({ state }: { state: RedactedState }) {
 
   return (
     <div className="relative w-screen h-screen overflow-hidden">
-      <Background />
+      <Background arenaId={arenaId} />
+      <ArenaDecorationsLayer arenaId={arenaId} />
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -423,7 +426,7 @@ export function GameArea({ state }: { state: RedactedState }) {
       ))}
 
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-        <div className="relative max-w-[calc(100vw-1rem)] px-2 sm:px-12 py-2 sm:py-8 rounded-2xl sm:rounded-3xl border-[3px] sm:border-[4px] border-bate-ink bg-bate-paper/70 shadow-hard sm:shadow-hard-lg backdrop-blur-sm">
+        <div className={`relative max-w-[calc(100vw-1rem)] px-2 sm:px-12 py-2 sm:py-8 rounded-2xl sm:rounded-3xl border-[3px] sm:border-[4px] border-bate-ink bg-bate-paper/70 shadow-hard sm:shadow-hard-lg backdrop-blur-sm table-surface table-surface-${arenaId}`}>
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-bate-ink text-bate-gold font-display text-[10px] tracking-[0.25em] uppercase whitespace-nowrap shadow-hard-sm rotate-[-1deg]">
             ✦ MESA ✦
           </div>

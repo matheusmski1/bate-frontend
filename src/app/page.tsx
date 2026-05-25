@@ -70,16 +70,26 @@ export default function Home() {
   async function handleJoin(roomId: string) {
     if (!requireName()) return
     setStoredName(name)
-    const socket = await ensureSocketConnected()
-    const playerId = getPlayerId()
-    if (!playerId) { toast.error('Sessão ainda não pronta — tenta de novo'); return }
-    socket.emit('room:join', { roomId, playerId, playerName: name }, (res: { ok?: true; error?: string }) => {
-      if (res?.error) {
-        toast.error(`Erro: ${res.error}`)
-        return
+    try {
+      const socket = await ensureSocketConnected()
+      const playerId = getPlayerId()
+      if (!playerId) { toast.error('Sessão ainda não pronta — tenta de novo'); return }
+      if (!socket.connected) {
+        console.warn('[lobby] socket not connected yet, waiting…')
+        await new Promise<void>((resolve, reject) => {
+          const t = setTimeout(() => reject(new Error('socket connect timeout')), 5000)
+          socket.once('connect', () => { clearTimeout(t); resolve() })
+          socket.once('connect_error', err => { clearTimeout(t); reject(err) })
+        })
       }
-      router.push(`/room/${roomId}`)
-    })
+      socket.emit('room:join', { roomId, playerId, playerName: name }, (res: { ok?: true; error?: string }) => {
+        if (res?.error) { toast.error(`Erro: ${res.error}`); return }
+        router.push(`/room/${roomId}`)
+      })
+    } catch (err) {
+      console.error('[lobby] handleJoin failed', err)
+      toast.error(`Falha: ${err instanceof Error ? err.message : 'UNKNOWN'}`)
+    }
   }
 
   function handleCreated(roomId: string) {
@@ -100,21 +110,30 @@ export default function Home() {
       return
     }
     setStoredName(name)
-    const socket = await ensureSocketConnected()
-    const playerId = getPlayerId()
-    if (!playerId) { toast.error('Sessão ainda não pronta — tenta de novo'); return }
-    const randomName = QUICK_ROOM_NAMES[Math.floor(Math.random() * QUICK_ROOM_NAMES.length)]!
-    socket.emit(
-      'room:create',
-      { name: randomName, hostId: playerId, hostName: name, maxPlayers: 4 },
-      (res: { roomId?: string; error?: string }) => {
-        if (res.error) {
-          toast.error(`Erro: ${res.error}`)
-          return
-        }
-        if (res.roomId) handleJoin(res.roomId)
-      },
-    )
+    try {
+      const socket = await ensureSocketConnected()
+      const playerId = getPlayerId()
+      if (!playerId) { toast.error('Sessão ainda não pronta — tenta de novo'); return }
+      if (!socket.connected) {
+        await new Promise<void>((resolve, reject) => {
+          const t = setTimeout(() => reject(new Error('socket connect timeout')), 5000)
+          socket.once('connect', () => { clearTimeout(t); resolve() })
+          socket.once('connect_error', err => { clearTimeout(t); reject(err) })
+        })
+      }
+      const randomName = QUICK_ROOM_NAMES[Math.floor(Math.random() * QUICK_ROOM_NAMES.length)]!
+      socket.emit(
+        'room:create',
+        { name: randomName, hostId: playerId, hostName: name, maxPlayers: 4 },
+        (res: { roomId?: string; error?: string }) => {
+          if (res?.error) { toast.error(`Erro: ${res.error}`); return }
+          if (res?.roomId) handleJoin(res.roomId)
+        },
+      )
+    } catch (err) {
+      console.error('[lobby] handleQuickPlay failed', err)
+      toast.error(`Falha: ${err instanceof Error ? err.message : 'UNKNOWN'}`)
+    }
   }
 
   return (

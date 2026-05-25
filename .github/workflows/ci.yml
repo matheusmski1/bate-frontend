@@ -17,7 +17,7 @@ jobs:
         with:
           node-version: '22'
           cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Typecheck
         run: npx tsc --noEmit
       - name: Audit (high+critical only)

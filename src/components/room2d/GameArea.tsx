@@ -19,6 +19,7 @@ import { BateAnnouncement } from './BateAnnouncement'
 import { SnapToast } from './SnapToast'
 import { PenaltyPreview } from './PenaltyPreview'
 import { TurnTimer } from './TurnTimer'
+import { TurnCounter } from './TurnCounter'
 import { EmoteBar } from './EmoteBar'
 import { playSound } from '@/lib/sounds'
 
@@ -444,6 +445,7 @@ export function GameArea({ state }: { state: RedactedState }) {
       <PeekModal reveal={revealModal} onClose={() => setRevealModal(null)} />
       <ActionLog state={state} />
       <TurnTimer state={state} />
+      <TurnCounter state={state} />
       <button
         type="button"
         onClick={() => {

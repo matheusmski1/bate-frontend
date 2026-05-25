@@ -1,6 +1,8 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Fredoka, Bowlby_One, Caveat } from 'next/font/google'
+import { ToastHost } from '@/components/ui/ToastHost'
+import { ConfirmHost } from '@/components/ui/ConfirmHost'
 
 const fredoka = Fredoka({
   subsets: ['latin'],
@@ -31,7 +33,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" className={`${fredoka.variable} ${bowlby.variable} ${caveat.variable}`}>
-      <body className="font-body antialiased">{children}</body>
+      <body className="font-body antialiased">
+        {children}
+        <ToastHost />
+        <ConfirmHost />
+      </body>
     </html>
   )
 }

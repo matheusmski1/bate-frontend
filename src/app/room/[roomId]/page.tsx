@@ -1,4 +1,5 @@
 'use client'
+import { toast } from '@/lib/ui-store'
 
 import { useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
@@ -27,7 +28,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
     const doJoin = () => {
       socket.emit('room:join', { roomId, playerId: getPlayerId(), playerName: name }, (res: { ok?: true; error?: string }) => {
         if (res.error) {
-          alert(`Erro entrando: ${res.error}`)
+          toast.error(`Erro entrando: ${res.error}`)
           router.push('/')
         }
       })
@@ -36,7 +37,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
     socket.on('connect', doJoin)
     socket.on('room:expired', ({ message }: { roomId: string; reason: string; message: string }) => {
       setRoom(null)
-      alert(message)
+      toast.error(message)
       router.push('/')
     })
     let prevLogLength = 0

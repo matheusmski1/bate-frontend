@@ -1,4 +1,5 @@
 'use client'
+import { toast } from '@/lib/ui-store'
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -45,7 +46,7 @@ export default function Home() {
   function requireName(): boolean {
     if (!name.trim()) {
       inputRef.current?.focus()
-      alert('Coloca um apelido primeiro')
+      toast.error('Coloca um apelido primeiro')
       return false
     }
     return true
@@ -57,7 +58,7 @@ export default function Home() {
     const socket = getSocket()
     socket.emit('room:join', { roomId, playerId: getPlayerId(), playerName: name }, (res: { ok?: true; error?: string }) => {
       if (res.error) {
-        alert(`Erro: ${res.error}`)
+        toast.error(`Erro: ${res.error}`)
         return
       }
       router.push(`/room/${roomId}`)
@@ -88,7 +89,7 @@ export default function Home() {
       { name: randomName, hostId: getPlayerId(), hostName: name, maxPlayers: 4 },
       (res: { roomId?: string; error?: string }) => {
         if (res.error) {
-          alert(`Erro: ${res.error}`)
+          toast.error(`Erro: ${res.error}`)
           return
         }
         if (res.roomId) handleJoin(res.roomId)

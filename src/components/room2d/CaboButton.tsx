@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { getSocket } from '@/lib/socket-client'
 import { getPlayerId } from '@/lib/player-id'
+import { toast, confirmAsync } from '@/lib/ui-store'
 import type { RedactedState } from '@/types/shared'
 
 export function CaboButton({ state, drawnExists }: { state: RedactedState; drawnExists: boolean }) {
@@ -19,11 +20,11 @@ export function CaboButton({ state, drawnExists }: { state: RedactedState; drawn
 
   const enabled = disabledReason === null
 
-  function call() {
+  async function call() {
     if (!enabled) return
-    if (!confirm('Chamar BATE? Cada outro player joga mais 1 turno e vira as cartas.')) return
+    if (!(await confirmAsync('Chamar BATE? Cada outro player joga mais 1 turno e vira as cartas.'))) return
     getSocket().emit('game:cabo', { roomId: state.roomId, playerId: myId }, (res: { ok?: true; error?: string }) => {
-      if (res?.error) alert(res.error)
+      if (res?.error) toast.error(res.error)
     })
   }
 

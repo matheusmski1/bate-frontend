@@ -1,4 +1,5 @@
 'use client'
+import { toast } from '@/lib/ui-store'
 
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
@@ -30,7 +31,7 @@ export function TurnTimer({ state }: { state: RedactedState }) {
   function togglePause() {
     if (!isHost) return
     getSocket().emit('room:pause', { roomId: state.roomId, playerId: myId, paused: !state.paused }, (res: { ok?: true; error?: string }) => {
-      if (res?.error) alert(res.error)
+      if (res?.error) toast.error(res.error)
     })
   }
 

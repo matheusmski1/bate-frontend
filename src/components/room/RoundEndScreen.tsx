@@ -1,4 +1,5 @@
 'use client'
+import { toast } from '@/lib/ui-store'
 
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -41,7 +42,7 @@ export function RoundEndScreen({ state }: { state: RedactedState }) {
 
   function next() {
     getSocket().emit('game:next-round', { roomId: state.roomId, playerId: myId }, (res: { ok?: true; error?: string }) => {
-      if (res?.error) alert(res.error)
+      if (res?.error) toast.error(res.error)
     })
   }
 

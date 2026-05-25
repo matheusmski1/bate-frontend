@@ -1,4 +1,5 @@
 'use client'
+import { toast } from '@/lib/ui-store'
 
 import { getSocket } from '@/lib/socket-client'
 import { getPlayerId } from '@/lib/player-id'
@@ -11,7 +12,7 @@ export function WaitingRoom({ state }: { state: RedactedState }) {
 
   function start() {
     getSocket().emit('game:start', { roomId: state.roomId, playerId }, (res: { ok?: true; error?: string }) => {
-      if (res.error) alert(`Erro: ${res.error}`)
+      if (res.error) toast.error(`Erro: ${res.error}`)
     })
   }
 

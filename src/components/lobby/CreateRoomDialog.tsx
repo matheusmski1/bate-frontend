@@ -1,4 +1,5 @@
 'use client'
+import { toast } from '@/lib/ui-store'
 
 import { useState } from 'react'
 import { getSocket } from '@/lib/socket-client'
@@ -21,7 +22,7 @@ export function CreateRoomDialog({ hostName, onCreated, onClose }: { hostName: s
       (res: { roomId?: string; error?: string }) => {
         setSubmitting(false)
         if (res.error) {
-          alert(`Erro: ${res.error}`)
+          toast.error(`Erro: ${res.error}`)
           return
         }
         if (res.roomId) onCreated(res.roomId)

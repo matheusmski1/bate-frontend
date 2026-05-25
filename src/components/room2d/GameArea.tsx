@@ -1,4 +1,5 @@
 'use client'
+import { toast } from '@/lib/ui-store'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -213,7 +214,7 @@ export function GameArea({ state }: { state: RedactedState }) {
   function confirmInitialPeek() {
     setPeekConfirmedLocal(true)
     getSocket().emit('game:initial-peek-done', { roomId: state.roomId, playerId: myId }, (res: { ok?: true; error?: string }) => {
-      if (res?.error) { alert(res.error); setPeekConfirmedLocal(false) }
+      if (res?.error) { toast.error(res.error); setPeekConfirmedLocal(false) }
     })
   }
 
@@ -227,7 +228,7 @@ export function GameArea({ state }: { state: RedactedState }) {
   function handleDeckClick() {
     if (!canDraw) return
     getSocket().emit('game:draw', { roomId: state.roomId, playerId: myId }, (res: { ok?: true; error?: string; payload?: { card: Card } }) => {
-      if (res?.error) { alert(res.error); return }
+      if (res?.error) { toast.error(res.error); return }
       if (res.payload?.card) setDrawnCard(res.payload.card)
     })
   }
@@ -239,7 +240,7 @@ export function GameArea({ state }: { state: RedactedState }) {
       'game:keep-or-discard',
       { roomId: state.roomId, playerId: myId, action: 'discard', useEffect },
       (res: { ok?: true; error?: string }) => {
-        if (res?.error) { alert(res.error); return }
+        if (res?.error) { toast.error(res.error); return }
         setDrawnCard(null)
       },
     )
@@ -255,7 +256,7 @@ export function GameArea({ state }: { state: RedactedState }) {
         getSocket().emit('game:effect-target',
           { roomId: state.roomId, playerId: myId, targetPlayerId: myId, targetCardIndex: handIndex },
           (res: { ok?: true; error?: string; payload?: { revealed?: Array<{ card: { id: string; rank: Rank; suit: Suit | null } }> } }) => {
-            if (res?.error) { alert(res.error); return }
+            if (res?.error) { toast.error(res.error); return }
             const r = res.payload?.revealed?.[0]
             if (r) tempReveal(r.card.id, { rank: r.card.rank, suit: r.card.suit })
           })
@@ -276,7 +277,7 @@ export function GameArea({ state }: { state: RedactedState }) {
       getSocket().emit('game:keep-or-discard',
         { roomId: state.roomId, playerId: myId, action: 'keep', handIndex },
         (res: { ok?: true; error?: string }) => {
-          if (res?.error) { alert(res.error); return }
+          if (res?.error) { toast.error(res.error); return }
           setDrawnCard(null)
         })
       return
@@ -288,7 +289,7 @@ export function GameArea({ state }: { state: RedactedState }) {
       if (now - lastSnapAt.current < 500) return
       lastSnapAt.current = now
       getSocket().emit('game:snap', { roomId: state.roomId, playerId: myId, handIndex }, (res: { ok?: true; error?: string }) => {
-        if (res?.error && res.error !== 'INVALID_HAND_INDEX') alert(res.error)
+        if (res?.error && res.error !== 'INVALID_HAND_INDEX') toast.error(res.error)
       })
     }
   }
@@ -299,7 +300,7 @@ export function GameArea({ state }: { state: RedactedState }) {
       getSocket().emit('game:effect-target',
         { roomId: state.roomId, playerId: myId, targetPlayerId: opponentId, targetCardIndex: handIndex },
         (res: { ok?: true; error?: string; payload?: { revealed?: Array<{ card: { id: string; rank: Rank; suit: Suit | null } }> } }) => {
-          if (res?.error) { alert(res.error); return }
+          if (res?.error) { toast.error(res.error); return }
           const r = res.payload?.revealed?.[0]
           if (r) tempReveal(r.card.id, { rank: r.card.rank, suit: r.card.suit })
         })
@@ -309,7 +310,7 @@ export function GameArea({ state }: { state: RedactedState }) {
       getSocket().emit('game:effect-target',
         { roomId: state.roomId, playerId: myId, targetPlayerId: opponentId, targetCardIndex: handIndex, myCardIndex: mySwapPickIndex },
         (res: { ok?: true; error?: string }) => {
-          if (res?.error) { alert(res.error); return }
+          if (res?.error) { toast.error(res.error); return }
           setMySwapPickIndex(null)
         })
     }
@@ -342,14 +343,15 @@ export function GameArea({ state }: { state: RedactedState }) {
 
   const opponentPos = (idx: number): string => {
     const count = opponents.length
-    if (count === 1) return 'top-12 sm:top-14 left-1/2 -translate-x-1/2'
+    const mobileStack = ['top-12 left-2 right-2', 'top-24 left-2 right-2', 'top-36 left-2 right-2'][idx] ?? ''
+    if (count === 1) return `${mobileStack} sm:top-14 sm:left-1/2 sm:right-auto sm:-translate-x-1/2`
     if (count === 2) {
-      if (idx === 0) return 'top-12 sm:top-14 left-2 sm:left-10'
-      return 'top-12 sm:top-14 right-2 sm:right-10'
+      if (idx === 0) return `${mobileStack} sm:top-14 sm:left-10 sm:right-auto`
+      return `${mobileStack} sm:top-14 sm:right-10 sm:left-auto`
     }
-    if (idx === 0) return 'top-12 sm:top-14 left-1/2 -translate-x-1/2'
-    if (idx === 1) return 'top-40 sm:top-1/4 left-1 sm:left-8'
-    return 'top-40 sm:top-1/4 right-1 sm:right-8'
+    if (idx === 0) return `${mobileStack} sm:top-14 sm:left-1/2 sm:right-auto sm:-translate-x-1/2`
+    if (idx === 1) return `${mobileStack} sm:top-1/4 sm:left-8 sm:right-auto`
+    return `${mobileStack} sm:top-1/4 sm:right-8 sm:left-auto`
   }
 
   const leaderId = (() => {
@@ -457,7 +459,7 @@ export function GameArea({ state }: { state: RedactedState }) {
           const sock = getSocket()
           const name = (typeof window !== 'undefined' ? window.localStorage.getItem('cabo:name') : null) ?? me?.name ?? ''
           sock.emit('room:join', { roomId: state.roomId, playerId: myId, playerName: name }, (res: { ok?: true; error?: string }) => {
-            if (res?.error) alert(`Resync falhou: ${res.error}`)
+            if (res?.error) toast.error(`Resync falhou: ${res.error}`)
           })
         }}
         title="Forçar resync com o servidor (se algo travar)"
@@ -478,7 +480,7 @@ export function GameArea({ state }: { state: RedactedState }) {
           setMySwapPickIndex(null)
           setEffectPromptDismissed(false)
           getSocket().emit('game:skip-effect', { roomId: state.roomId, playerId: myId }, (res: { ok?: true; error?: string }) => {
-            if (res?.error) alert(res.error)
+            if (res?.error) toast.error(res.error)
           })
         }
         if (!effectPromptDismissed) {

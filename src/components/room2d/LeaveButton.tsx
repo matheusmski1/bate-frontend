@@ -4,14 +4,15 @@ import { useRouter } from 'next/navigation'
 import { LogOut } from 'lucide-react'
 import { getSocket } from '@/lib/socket-client'
 import { getPlayerId } from '@/lib/player-id'
+import { confirmAsync } from '@/lib/ui-store'
 import { useGameStore } from '@/lib/store'
 
 export function LeaveButton({ roomId, inGame }: { roomId: string; inGame: boolean }) {
   const router = useRouter()
   const setRoom = useGameStore(s => s.setRoom)
 
-  function leave() {
-    if (inGame && !confirm('Sair da partida? Os outros jogadores vão continuar sem você.')) return
+  async function leave() {
+    if (inGame && !(await confirmAsync('Sair da partida? Os outros jogadores vão continuar sem você.'))) return
     getSocket().emit('room:leave', { roomId, playerId: getPlayerId() }, () => {
       setRoom(null)
       router.push('/')

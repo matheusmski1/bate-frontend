@@ -26,8 +26,8 @@ const caveat = Caveat({
 })
 
 export const metadata: Metadata = {
-  title: 'Bate — Cabo brasileiro multiplayer',
-  description: 'Cabo brasileiro online: rápido, gratuito, 2-4 jogadores.',
+  title: 'Batinho — Cabo brasileiro multiplayer',
+  description: 'Os Batinhos são malandros: memorizam, espiam, trocam e cortam. Menor placar leva. 2-4 jogadores, grátis.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

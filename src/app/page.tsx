@@ -20,7 +20,8 @@ import { SuitBackground } from '@/components/lobby/SuitBackground'
 import { QuickRules } from '@/components/lobby/QuickRules'
 import { MuteToggle } from '@/components/lobby/MuteToggle'
 import { SkinPicker } from '@/components/lobby/SkinPicker'
-import { Shirt } from 'lucide-react'
+import { Tutorial, hasSeenTutorial } from '@/components/lobby/Tutorial'
+import { Shirt, HelpCircle } from 'lucide-react'
 import { Footer } from '@/components/lobby/Footer'
 
 const QUICK_ROOM_NAMES = ['Mesa do Maizão', 'Batinho Rápido', 'Sala do Zé', 'Bate Express', 'Mesa relâmpago']
@@ -32,6 +33,7 @@ export default function Home() {
   const [name, setName] = useState('')
   const [showCreate, setShowCreate] = useState(false)
   const [showSkins, setShowSkins] = useState(false)
+  const [showTutorial, setShowTutorial] = useState(false)
   const [roomsLoaded, setRoomsLoaded] = useState(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
 
@@ -60,6 +62,10 @@ export default function Home() {
 
   useEffect(() => {
     if (!getStoredName()) inputRef.current?.focus()
+  }, [])
+
+  useEffect(() => {
+    if (!hasSeenTutorial()) setShowTutorial(true)
   }, [])
 
   function requireName(): boolean {
@@ -147,6 +153,14 @@ export default function Home() {
       <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
         <button
           type="button"
+          onClick={() => setShowTutorial(true)}
+          title="Como jogar"
+          className="w-10 h-10 rounded-full bg-bate-paper border-[3px] border-bate-ink shadow-hard-sm flex items-center justify-center text-bate-ink hover:bg-bate-gold transition-colors"
+        >
+          <HelpCircle size={16} strokeWidth={3} />
+        </button>
+        <button
+          type="button"
           onClick={() => setShowSkins(true)}
           title="Skins"
           className="w-10 h-10 rounded-full bg-bate-paper border-[3px] border-bate-ink shadow-hard-sm flex items-center justify-center text-bate-ink hover:bg-bate-gold transition-colors"
@@ -222,6 +236,7 @@ export default function Home() {
       )}
 
       <SkinPicker open={showSkins} onClose={() => setShowSkins(false)} />
+      <Tutorial open={showTutorial} onClose={() => setShowTutorial(false)} />
     </main>
   )
 }

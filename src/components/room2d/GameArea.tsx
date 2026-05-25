@@ -56,7 +56,6 @@ export function GameArea({ state }: { state: RedactedState }) {
     snapResult: null,
     swapResolved: null,
   })
-  void setLocalActions  // wired in Phase 1+
   const emoteCounterRef = useRef(0)
   const lastSnapAt = useRef(0)
   const prevLogLenRef = useRef<number | null>(null)
@@ -190,7 +189,9 @@ export function GameArea({ state }: { state: RedactedState }) {
   const tempReveal = useCallback((cardId: string, value: RevealValue) => {
     setTempReveals(prev => new Map(prev).set(cardId, value))
     setKnownCards(prev => new Map(prev).set(cardId, value))
-    setRevealModal(value)
+    // Em vez de abrir o modal direto, dispara o overlay; o overlay chama onPeekArrived
+    // que chama setRevealModal quando o mascote chega na carta (~900ms depois).
+    setLocalActions(prev => ({ ...prev, peekRevealed: { cardId, reveal: value } }))
     setTimeout(() => {
       setTempReveals(prev => {
         const next = new Map(prev)
@@ -495,7 +496,10 @@ export function GameArea({ state }: { state: RedactedState }) {
         state={state}
         myId={myId}
         localActions={localActions}
-        onPeekArrived={(reveal) => setRevealModal(reveal)}
+        onPeekArrived={(reveal) => {
+          setRevealModal(reveal)
+          setLocalActions(prev => ({ ...prev, peekRevealed: null }))
+        }}
       />
       <ActionLog state={state} />
       <TopChrome state={state} />

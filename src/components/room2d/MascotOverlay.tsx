@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { RedactedState, Rank, Suit } from '@/types/shared'
-import { createController } from '@/lib/mascot-overlay'
+import { createController, type Controller } from '@/lib/mascot-overlay'
+import { usePeekOwnTrigger } from '@/lib/mascot-overlay/triggers/peek-own'
 
 export type LocalMascotActions = {
   peekRevealed: { cardId: string; reveal: { rank: Rank; suit: Suit | null } } | null
@@ -19,18 +20,21 @@ export type MascotOverlayProps = {
 
 export function MascotOverlay({ state, myId, localActions, onPeekArrived }: MascotOverlayProps) {
   const overlayRef = useRef<HTMLDivElement | null>(null)
-  const controller = useMemo(() => createController(), [])
-
-  // suprimir lint de "unused" — vão ser usados quando os triggers forem ligados
-  void state
-  void myId
-  void localActions
-  void onPeekArrived
-  void controller
+  const [overlay, setOverlay] = useState<HTMLElement | null>(null)
+  const controller = useMemo<Controller>(() => createController(), [])
 
   useEffect(() => {
-    // triggers serão registrados aqui em phases seguintes
+    setOverlay(overlayRef.current)
   }, [])
+
+  usePeekOwnTrigger({
+    state,
+    myId,
+    overlay,
+    controller,
+    localPeek: localActions.peekRevealed,
+    onArrived: onPeekArrived ?? (() => {}),
+  })
 
   return <div ref={overlayRef} className="fixed inset-0 pointer-events-none z-40" aria-hidden />
 }

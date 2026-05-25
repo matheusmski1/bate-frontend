@@ -5,6 +5,7 @@ import type { RedactedState, Rank, Suit } from '@/types/shared'
 import { createController, type Controller } from '@/lib/mascot-overlay'
 import { usePeekOwnTrigger } from '@/lib/mascot-overlay/triggers/peek-own'
 import { usePeekOtherTrigger } from '@/lib/mascot-overlay/triggers/peek-other'
+import { useSnapTrigger } from '@/lib/mascot-overlay/triggers/snap'
 
 export type LocalMascotActions = {
   peekRevealed: { cardId: string; reveal: { rank: Rank; suit: Suit | null }; kind: 'own' | 'other' } | null
@@ -17,9 +18,10 @@ export type MascotOverlayProps = {
   myId: string
   localActions: LocalMascotActions
   onPeekArrived?: (reveal: { rank: Rank; suit: Suit | null }) => void
+  onSnapConsumed?: () => void
 }
 
-export function MascotOverlay({ state, myId, localActions, onPeekArrived }: MascotOverlayProps) {
+export function MascotOverlay({ state, myId, localActions, onPeekArrived, onSnapConsumed }: MascotOverlayProps) {
   const overlayRef = useRef<HTMLDivElement | null>(null)
   const controller = useMemo<Controller>(() => createController(), [])
 
@@ -44,6 +46,15 @@ export function MascotOverlay({ state, myId, localActions, onPeekArrived }: Masc
     controller,
     localPeek: peekOtherLocal,
     onArrived: onPeekArrived ?? (() => {}),
+  })
+
+  useSnapTrigger({
+    state,
+    myId,
+    overlayRef,
+    controller,
+    localSnap: localActions.snapResult,
+    onConsumed: onSnapConsumed ?? (() => {}),
   })
 
   return <div ref={overlayRef} className="fixed inset-0 pointer-events-none z-40" aria-hidden />

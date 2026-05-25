@@ -299,6 +299,10 @@ export function GameArea({ state }: { state: RedactedState }) {
       lastSnapAt.current = now
       getSocket().emit('game:snap', { roomId: state.roomId, playerId: myId, handIndex }, (res: { ok?: true; error?: string }) => {
         if (res?.error && res.error !== 'INVALID_HAND_INDEX') toast.error(res.error)
+        setLocalActions(prev => ({
+          ...prev,
+          snapResult: { handIndex, ok: !res?.error },
+        }))
       })
     }
   }
@@ -500,6 +504,7 @@ export function GameArea({ state }: { state: RedactedState }) {
           setRevealModal(reveal)
           setLocalActions(prev => ({ ...prev, peekRevealed: null }))
         }}
+        onSnapConsumed={() => setLocalActions(prev => ({ ...prev, snapResult: null }))}
       />
       <ActionLog state={state} />
       <TopChrome state={state} />

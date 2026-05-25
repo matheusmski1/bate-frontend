@@ -9,7 +9,7 @@ import { CARD_META, formatPoints } from '@/lib/card-meta'
 import { Card2D } from '@/components/room2d/Card2D'
 import type { RedactedState, RedactedPlayer, Rank } from '@/types/shared'
 
-type Stage = 'counting' | 'reveal'
+type Stage = 'splash' | 'analyzing' | 'reveal'
 
 type Breakdown = {
   player: RedactedPlayer
@@ -30,12 +30,13 @@ function computeBreakdown(player: RedactedPlayer): Breakdown {
 export function RoundEndScreen({ state }: { state: RedactedState }) {
   const myId = getPlayerId()
   const isHost = state.hostId === myId
-  const [stage, setStage] = useState<Stage>('counting')
+  const [stage, setStage] = useState<Stage>('splash')
   const breakdowns = state.players.map(computeBreakdown).sort((a, b) => a.roundScore - b.roundScore)
 
   useEffect(() => {
-    const t = setTimeout(() => setStage('reveal'), 2400)
-    return () => clearTimeout(t)
+    const t1 = setTimeout(() => setStage('analyzing'), 1800)
+    const t2 = setTimeout(() => setStage('reveal'), 1800 + 1800)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [])
 
   function next() {
@@ -47,9 +48,9 @@ export function RoundEndScreen({ state }: { state: RedactedState }) {
   return (
     <main className="min-h-screen flex items-center justify-center p-6 bg-bate-cream">
       <AnimatePresence mode="wait">
-        {stage === 'counting' ? (
-          <CountingPhase key="counting" />
-        ) : (
+        {stage === 'splash' && <SplashPhase key="splash" />}
+        {stage === 'analyzing' && <AnalyzingPhase key="analyzing" />}
+        {stage === 'reveal' && (
           <RevealPhase key="reveal" breakdowns={breakdowns} caboCallerId={state.caboCallerId} isHost={isHost} onNext={next} />
         )}
       </AnimatePresence>
@@ -57,7 +58,109 @@ export function RoundEndScreen({ state }: { state: RedactedState }) {
   )
 }
 
-function CountingPhase() {
+function SplashPhase() {
+  const textRef = useRef<HTMLDivElement | null>(null)
+  const batinhoRef = useRef<HTMLImageElement | null>(null)
+  const burstRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (textRef.current) {
+      animate(textRef.current, {
+        scale: [0.2, 1.25, 1],
+        rotate: [-15, 5, 0],
+        opacity: [0, 1],
+        duration: 700,
+        ease: 'outBack',
+      })
+      animate(textRef.current, {
+        translateX: [0, -10, 8, -5, 0],
+        delay: 700,
+        duration: 400,
+        ease: 'inOutSine',
+      })
+    }
+    if (batinhoRef.current) {
+      animate(batinhoRef.current, {
+        scale: [0, 1.2, 1],
+        rotate: [-360, 12, 0],
+        opacity: [0, 1],
+        delay: 250,
+        duration: 900,
+        ease: 'outBack',
+      })
+      animate(batinhoRef.current, {
+        translateY: [0, -14, 0],
+        delay: 1150,
+        duration: 800,
+        loop: true,
+        ease: 'inOutSine',
+      })
+    }
+    if (burstRef.current) {
+      const sparks = burstRef.current.querySelectorAll<HTMLElement>('.spark')
+      sparks.forEach(s => {
+        const angle = Math.random() * Math.PI * 2
+        const dist = 120 + Math.random() * 80
+        s.style.setProperty('--dx', `${Math.cos(angle) * dist}px`)
+        s.style.setProperty('--dy', `${Math.sin(angle) * dist}px`)
+      })
+      animate(sparks, {
+        translateX: (el: HTMLElement) => parseFloat(getComputedStyle(el).getPropertyValue('--dx')),
+        translateY: (el: HTMLElement) => parseFloat(getComputedStyle(el).getPropertyValue('--dy')),
+        scale: [0, 1, 0],
+        opacity: [1, 0],
+        rotate: () => Math.random() * 720 - 360,
+        duration: 1400,
+        delay: utils.stagger(40, { start: 350 }),
+        ease: 'outExpo',
+      })
+    }
+  }, [])
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      transition={{ duration: 0.25 }}
+      className="text-center relative"
+    >
+      <div ref={burstRef} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+        {Array.from({ length: 18 }).map((_, i) => (
+          <span
+            key={i}
+            className="spark absolute left-0 top-0 w-3 h-3 rounded-full"
+            style={{
+              background: i % 3 === 0 ? '#ffb81c' : i % 3 === 1 ? '#e23744' : '#3a8e5e',
+              opacity: 0,
+            }}
+          />
+        ))}
+      </div>
+      <img
+        ref={batinhoRef}
+        src="/batinho/batinho-ouro.png"
+        alt=""
+        aria-hidden
+        className="w-40 sm:w-56 mx-auto mb-4 opacity-0 select-none"
+        style={{ filter: 'drop-shadow(0 16px 28px rgba(0,0,0,0.45))' }}
+      />
+      <div
+        ref={textRef}
+        className="font-display text-5xl sm:text-7xl text-bate-red opacity-0"
+        style={{
+          WebkitTextStroke: '3px #1a0e08',
+          textShadow: '6px 6px 0 #1a0e08, 6px 6px 0 #ffb81c, 8px 8px 0 #1a0e08',
+          letterSpacing: '-0.02em',
+        }}
+      >
+        FIM DA RODADA!
+      </div>
+    </motion.div>
+  )
+}
+
+function AnalyzingPhase() {
   const wrapRef = useRef<HTMLDivElement | null>(null)
   useEffect(() => {
     if (!wrapRef.current) return
@@ -98,8 +201,8 @@ function CountingPhase() {
           <span className="text-bate-ink font-extrabold text-lg">★</span>
         </div>
       </div>
-      <div className="font-display text-3xl text-bate-red" style={{ WebkitTextStroke: '2px #1a0e08', textShadow: '4px 4px 0 #1a0e08' }}>
-        CONTANDO PONTOS
+      <div className="font-display text-2xl sm:text-3xl text-bate-red" style={{ WebkitTextStroke: '2px #1a0e08', textShadow: '4px 4px 0 #1a0e08' }}>
+        ANALISANDO RESULTADOS
         <span className="counting-dot">.</span>
         <span className="counting-dot">.</span>
         <span className="counting-dot">.</span>
@@ -148,7 +251,7 @@ function RevealPhase({ breakdowns, caboCallerId, isHost, onNext }: { breakdowns:
         src="/batinho/batinho-ouro.png"
         alt=""
         aria-hidden
-        className="absolute -top-12 sm:-top-16 -right-2 sm:-right-8 w-20 sm:w-32 opacity-0 pointer-events-none select-none z-10"
+        className="absolute -top-2 sm:-top-4 -right-2 sm:-right-6 w-20 sm:w-28 opacity-0 pointer-events-none select-none z-10"
         style={{ filter: 'drop-shadow(0 12px 18px rgba(0,0,0,0.35))', willChange: 'transform, opacity' }}
       />
       <motion.h2

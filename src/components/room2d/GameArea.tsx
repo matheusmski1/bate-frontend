@@ -13,7 +13,7 @@ import { DeckPile2D } from './DeckPile2D'
 import { DiscardPile2D } from './DiscardPile2D'
 import { DrawnCard2D } from './DrawnCard2D'
 import { EffectPrompt } from './EffectPrompt'
-import { CaboButton } from './CaboButton'
+import { BateButton } from './BateButton'
 import { InstructionBar } from './InstructionBar'
 import { PeekModal } from './PeekModal'
 import { ActionLog } from './ActionLog'
@@ -35,7 +35,7 @@ export function GameArea({ state }: { state: RedactedState }) {
   const opponents = state.players.filter(p => p.id !== myId)
   const currentPlayerId = state.players[state.turn]?.id
   const isMyTurn = currentPlayerId === myId
-  const isPlayPhase = state.phase === 'playing' || state.phase === 'cabo-called'
+  const isPlayPhase = state.phase === 'playing' || state.phase === 'bate-called'
   const pendingEffect = state.phase === 'effect-pending' ? state.pendingEffect : null
   const isMyEffect = pendingEffect?.playerId === myId
 
@@ -480,7 +480,7 @@ export function GameArea({ state }: { state: RedactedState }) {
         )}
       </div>
 
-      <CaboButton state={state} drawnExists={!!drawnCard} />
+      <BateButton state={state} drawnExists={!!drawnCard} />
       <InstructionBar text={instruction} />
       <PeekModal reveal={revealModal} onClose={() => setRevealModal(null)} />
       <ActionLog state={state} />
@@ -490,7 +490,7 @@ export function GameArea({ state }: { state: RedactedState }) {
         type="button"
         onClick={() => {
           const sock = getSocket()
-          const name = (typeof window !== 'undefined' ? window.localStorage.getItem('cabo:name') : null) ?? me?.name ?? ''
+          const name = (typeof window !== 'undefined' ? window.localStorage.getItem('bate:name') : null) ?? me?.name ?? ''
           sock.emit('room:join', { roomId: state.roomId, playerId: myId, playerName: name }, (res: { ok?: true; error?: string }) => {
             if (res?.error) toast.error(`Resync falhou: ${res.error}`)
           })

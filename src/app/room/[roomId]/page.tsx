@@ -3,8 +3,13 @@ import { toast } from '@/lib/ui-store'
 
 import { useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
-import { getSocket } from '@/lib/socket-client'
-import { getPlayerId, getStoredName } from '@/lib/player-id'
+import { ensureSocketConnected } from '@/lib/socket-client'
+import { cachedPlayerId } from '@/lib/auth'
+import { getStoredName } from '@/lib/player-id'
+
+function getPlayerId(): string {
+  return cachedPlayerId() ?? ''
+}
 import { useGameStore } from '@/lib/store'
 import { playSound } from '@/lib/sounds'
 import { WaitingRoom } from '@/components/room/WaitingRoom'
@@ -19,48 +24,58 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
   const setRoom = useGameStore(s => s.setRoom)
 
   useEffect(() => {
-    const socket = getSocket()
     const name = getStoredName()
     if (!name) {
       router.push('/')
       return
     }
-    const doJoin = () => {
-      socket.emit('room:join', { roomId, playerId: getPlayerId(), playerName: name }, (res: { ok?: true; error?: string }) => {
-        if (res.error) {
-          toast.error(`Erro entrando: ${res.error}`)
-          router.push('/')
-        }
-      })
-    }
-    doJoin()
-    socket.on('connect', doJoin)
-    socket.on('room:expired', ({ message }: { roomId: string; reason: string; message: string }) => {
-      setRoom(null)
-      toast.error(message)
-      router.push('/')
-    })
-    let prevLogLength = 0
-    socket.on('room:state', ({ state }: { state: import('@/types/shared').RedactedState }) => {
-      if (state.log.length > prevLogLength) {
-        const newest = state.log[state.log.length - 1]
-        if (newest) {
-          if (newest.type === 'discard') playSound('card-discard')
-          if (newest.type === 'snap') playSound('snap-success')
-          if (newest.type === 'snap-fail') playSound('snap-fail')
-          if (newest.type === 'cabo') playSound('cabo-called')
-          if (newest.type === 'round-end') playSound('victory')
-          if (newest.type === 'draw') playSound('card-flip')
-        }
-        prevLogLength = state.log.length
+    let cancelled = false
+    let cleanup: (() => void) | null = null
+    ensureSocketConnected().then(socket => {
+      if (cancelled) return
+      const doJoin = () => {
+        socket.emit('room:join', { roomId, playerId: getPlayerId(), playerName: name }, (res: { ok?: true; error?: string }) => {
+          if (res.error) {
+            toast.error(`Erro entrando: ${res.error}`)
+            router.push('/')
+          }
+        })
       }
-      setRoom(state)
+      doJoin()
+      socket.on('connect', doJoin)
+      const onExpired = ({ message }: { roomId: string; reason: string; message: string }) => {
+        setRoom(null)
+        toast.error(message)
+        router.push('/')
+      }
+      socket.on('room:expired', onExpired)
+      let prevLogLength = 0
+      const onState = ({ state }: { state: import('@/types/shared').RedactedState }) => {
+        if (state.log.length > prevLogLength) {
+          const newest = state.log[state.log.length - 1]
+          if (newest) {
+            if (newest.type === 'discard') playSound('card-discard')
+            if (newest.type === 'snap') playSound('snap-success')
+            if (newest.type === 'snap-fail') playSound('snap-fail')
+            if (newest.type === 'bate') playSound('bate-called')
+            if (newest.type === 'round-end') playSound('victory')
+            if (newest.type === 'draw') playSound('card-flip')
+          }
+          prevLogLength = state.log.length
+        }
+        setRoom(state)
+      }
+      socket.on('room:state', onState)
+      cleanup = () => {
+        socket.off('room:state', onState)
+        socket.off('room:expired', onExpired)
+        socket.off('connect', doJoin)
+        setRoom(null)
+      }
     })
     return () => {
-      socket.off('room:state')
-      socket.off('room:expired')
-      socket.off('connect', doJoin)
-      setRoom(null)
+      cancelled = true
+      cleanup?.()
     }
   }, [roomId, router, setRoom])
 

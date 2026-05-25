@@ -19,7 +19,7 @@ export function TurnTimer({ state }: { state: RedactedState }) {
   }, [])
 
   if (state.turnTimeLimitSec === null) return null
-  if (state.phase !== 'playing' && state.phase !== 'cabo-called' && state.phase !== 'effect-pending') return null
+  if (state.phase !== 'playing' && state.phase !== 'bate-called' && state.phase !== 'effect-pending') return null
 
   const remainingMs = state.paused
     ? state.pausedRemainingMs ?? 0

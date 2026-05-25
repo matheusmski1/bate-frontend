@@ -6,15 +6,15 @@ import { getPlayerId } from '@/lib/player-id'
 import { toast, confirmAsync } from '@/lib/ui-store'
 import type { RedactedState } from '@/types/shared'
 
-export function CaboButton({ state, drawnExists }: { state: RedactedState; drawnExists: boolean }) {
+export function BateButton({ state, drawnExists }: { state: RedactedState; drawnExists: boolean }) {
   const myId = getPlayerId()
   const isMyTurn = state.players[state.turn]?.id === myId
-  const inPlayPhase = state.phase === 'playing' || state.phase === 'cabo-called'
+  const inPlayPhase = state.phase === 'playing' || state.phase === 'bate-called'
 
   if (!inPlayPhase) return null
 
   let disabledReason: string | null = null
-  if (state.caboCallerId !== null) disabledReason = state.caboCallerId === myId ? 'Você já chamou BATE!' : 'Alguém já chamou BATE'
+  if (state.bateCallerId !== null) disabledReason = state.bateCallerId === myId ? 'Você já chamou BATE!' : 'Alguém já chamou BATE'
   else if (!isMyTurn) disabledReason = 'Espere sua vez'
   else if (drawnExists) disabledReason = 'Resolva a carta comprada primeiro'
 
@@ -23,7 +23,7 @@ export function CaboButton({ state, drawnExists }: { state: RedactedState; drawn
   async function call() {
     if (!enabled) return
     if (!(await confirmAsync('Chamar BATE? Cada outro player joga mais 1 turno e vira as cartas.'))) return
-    getSocket().emit('game:cabo', { roomId: state.roomId, playerId: myId }, (res: { ok?: true; error?: string }) => {
+    getSocket().emit('game:bate', { roomId: state.roomId, playerId: myId }, (res: { ok?: true; error?: string }) => {
       if (res?.error) toast.error(res.error)
     })
   }

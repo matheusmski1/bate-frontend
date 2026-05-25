@@ -16,10 +16,10 @@ export function BateAnnouncement({ state }: { state: RedactedState }) {
   const prevCaller = useRef<string | null>(null)
 
   useEffect(() => {
-    if (!state.caboCallerId) return
-    if (state.caboCallerId === prevCaller.current) return
-    prevCaller.current = state.caboCallerId
-    const caller = state.players.find(p => p.id === state.caboCallerId)
+    if (!state.bateCallerId) return
+    if (state.bateCallerId === prevCaller.current) return
+    prevCaller.current = state.bateCallerId
+    const caller = state.players.find(p => p.id === state.bateCallerId)
     if (!caller) return
     setCallerName(caller.name)
     setStage('announce')
@@ -27,7 +27,7 @@ export function BateAnnouncement({ state }: { state: RedactedState }) {
     const t2 = setTimeout(() => setStage(null), 3500)
     return () => { clearTimeout(t1); clearTimeout(t2) }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.caboCallerId])
+  }, [state.bateCallerId])
 
   useEffect(() => {
     if (stage !== 'announce' || !slamRef.current) return

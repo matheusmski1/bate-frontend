@@ -1,4 +1,4 @@
-type SoundKey = 'card-flip' | 'card-discard' | 'snap-success' | 'snap-fail' | 'turn-yours' | 'cabo-called' | 'victory' | 'draw' | 'card-fly' | 'emote-pop'
+type SoundKey = 'card-flip' | 'card-discard' | 'snap-success' | 'snap-fail' | 'turn-yours' | 'bate-called' | 'victory' | 'draw' | 'card-fly' | 'emote-pop'
 
 const VOLUME_KEY = 'cabo:volume'
 let ctx: AudioContext | null = null
@@ -125,7 +125,7 @@ function playTurnYours(ac: AudioContext, master: GainNode) {
   })
 }
 
-function playCaboCalled(ac: AudioContext, master: GainNode) {
+function playBateCalled(ac: AudioContext, master: GainNode) {
   const t = ac.currentTime
   const notes = [392, 523.25, 659.25, 783.99]
   notes.forEach((freq, i) => {
@@ -219,7 +219,7 @@ export function playSound(key: SoundKey): void {
     case 'snap-success': return playSnapSuccess(ac, master)
     case 'snap-fail': return playSnapFail(ac, master)
     case 'turn-yours': return playTurnYours(ac, master)
-    case 'cabo-called': return playCaboCalled(ac, master)
+    case 'bate-called': return playBateCalled(ac, master)
     case 'victory': return playVictory(ac, master)
   }
 }

@@ -24,7 +24,7 @@ function describe(action: GameAction, state: RedactedState): string {
   if (action.type === 'snap-fail') return `😬 ${actor} cortou errado (+1 carta)`
   if (action.type === 'peek') return `${actor} espiou uma carta`
   if (action.type === 'swap') return `${actor} trocou cartas`
-  if (action.type === 'cabo') return `${actor} chamou BATE!`
+  if (action.type === 'bate') return `${actor} chamou BATE!`
   if (action.type === 'round-end') return 'Fim da rodada'
   if (action.type === 'join') return `${actor} entrou`
   if (action.type === 'leave') return `${actor} saiu`
@@ -34,7 +34,7 @@ function describe(action: GameAction, state: RedactedState): string {
 const COLORS: Partial<Record<GameAction['type'], string>> = {
   snap: 'text-bate-red',
   'snap-fail': 'text-bate-red',
-  cabo: 'text-bate-red font-bold',
+  bate: 'text-bate-red font-bold',
   'round-end': 'text-bate-green font-bold',
 }
 

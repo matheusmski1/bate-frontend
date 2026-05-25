@@ -53,7 +53,7 @@ export function RoundEndScreen({ state }: { state: RedactedState }) {
         {stage === 'splash' && <SplashPhase key="splash" />}
         {stage === 'analyzing' && <AnalyzingPhase key="analyzing" />}
         {stage === 'reveal' && (
-          <RevealPhase key="reveal" breakdowns={breakdowns} caboCallerId={state.caboCallerId} isHost={isHost} onNext={next} />
+          <RevealPhase key="reveal" breakdowns={breakdowns} bateCallerId={state.bateCallerId} isHost={isHost} onNext={next} />
         )}
       </AnimatePresence>
     </main>
@@ -213,9 +213,9 @@ function AnalyzingPhase() {
   )
 }
 
-function RevealPhase({ breakdowns, caboCallerId, isHost, onNext }: { breakdowns: Breakdown[]; caboCallerId: string | null; isHost: boolean; onNext: () => void }) {
-  const callerName = caboCallerId ? breakdowns.find(b => b.player.id === caboCallerId)?.player.name : null
-  const callerIsWinner = caboCallerId && breakdowns[0]?.player.id === caboCallerId
+function RevealPhase({ breakdowns, bateCallerId, isHost, onNext }: { breakdowns: Breakdown[]; bateCallerId: string | null; isHost: boolean; onNext: () => void }) {
+  const callerName = bateCallerId ? breakdowns.find(b => b.player.id === bateCallerId)?.player.name : null
+  const callerIsWinner = bateCallerId && breakdowns[0]?.player.id === bateCallerId
   const winnerBatinhoRef = useRef<HTMLImageElement | null>(null)
 
   useEffect(() => {
@@ -278,7 +278,7 @@ function RevealPhase({ breakdowns, caboCallerId, isHost, onNext }: { breakdowns:
       )}
       <ul className="space-y-3 mb-6">
         {breakdowns.map((b, i) => {
-          const isCaller = b.player.id === caboCallerId
+          const isCaller = b.player.id === bateCallerId
           const isWinner = i === 0
           return (
             <motion.li

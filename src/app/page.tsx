@@ -4,8 +4,13 @@ import { toast } from '@/lib/ui-store'
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Play, Plus, User } from 'lucide-react'
-import { getSocket } from '@/lib/socket-client'
-import { getPlayerId, getStoredName, setStoredName } from '@/lib/player-id'
+import { getSocket, ensureSocketConnected } from '@/lib/socket-client'
+import { cachedPlayerId, ensureGuestSession } from '@/lib/auth'
+import { getStoredName, setStoredName } from '@/lib/player-id'
+
+function getPlayerId(): string {
+  return cachedPlayerId() ?? ''
+}
 import { useGameStore } from '@/lib/store'
 import { RoomList } from '@/components/lobby/RoomList'
 import { CreateRoomDialog } from '@/components/lobby/CreateRoomDialog'
@@ -16,7 +21,7 @@ import { QuickRules } from '@/components/lobby/QuickRules'
 import { MuteToggle } from '@/components/lobby/MuteToggle'
 import { Footer } from '@/components/lobby/Footer'
 
-const QUICK_ROOM_NAMES = ['Mesa do Maizão', 'Cabo Rápido', 'Sala do Zé', 'Bate Express', 'Mesa relâmpago']
+const QUICK_ROOM_NAMES = ['Mesa do Maizão', 'Batinho Rápido', 'Sala do Zé', 'Bate Express', 'Mesa relâmpago']
 
 export default function Home() {
   const router = useRouter()
@@ -28,14 +33,21 @@ export default function Home() {
 
   useEffect(() => {
     setName(getStoredName())
-    const socket = getSocket()
-    socket.emit('lobby:subscribe')
-    socket.on('lobby:update', ({ rooms }: { rooms: import('@/types/shared').RoomSummary[] }) => {
-      setRooms(rooms)
+    let cancelled = false
+    let cleanup: (() => void) | null = null
+    ensureSocketConnected().then(socket => {
+      if (cancelled) return
+      socket.emit('lobby:subscribe')
+      const onUpdate = ({ rooms }: { rooms: import('@/types/shared').RoomSummary[] }) => setRooms(rooms)
+      socket.on('lobby:update', onUpdate)
+      cleanup = () => {
+        socket.emit('lobby:unsubscribe')
+        socket.off('lobby:update', onUpdate)
+      }
     })
     return () => {
-      socket.emit('lobby:unsubscribe')
-      socket.off('lobby:update')
+      cancelled = true
+      cleanup?.()
     }
   }, [setRooms])
 

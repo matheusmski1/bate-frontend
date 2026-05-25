@@ -13,7 +13,7 @@ export function TopChrome({ state }: { state: RedactedState }) {
   const isHost = state.hostId === myId
   const [now, setNow] = useState(() => Date.now())
 
-  const inActivePhase = state.phase === 'playing' || state.phase === 'cabo-called' || state.phase === 'effect-pending'
+  const inActivePhase = state.phase === 'playing' || state.phase === 'bate-called' || state.phase === 'effect-pending'
 
   useEffect(() => {
     if (!inActivePhase) return

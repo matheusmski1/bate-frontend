@@ -1,18 +1,29 @@
-const STORAGE_KEY = 'cabo:player-id'
+const STORAGE_KEY = 'bate:player-id'
+const NAME_KEY = 'bate:player-name'
+const LEGACY_STORAGE_KEY = 'cabo:player-id'
+const LEGACY_NAME_KEY = 'cabo:player-name'
+
+function migrateLegacyKey(legacyKey: string, newKey: string): void {
+  if (typeof window === 'undefined') return
+  const legacy = window.localStorage.getItem(legacyKey)
+  if (!legacy) return
+  if (!window.localStorage.getItem(newKey)) {
+    window.localStorage.setItem(newKey, legacy)
+  }
+  window.localStorage.removeItem(legacyKey)
+}
 
 export function getPlayerId(): string {
   if (typeof window === 'undefined') return ''
+  migrateLegacyKey(LEGACY_STORAGE_KEY, STORAGE_KEY)
   const existing = window.localStorage.getItem(STORAGE_KEY)
   if (existing) return existing
-  const id = crypto.randomUUID()
-  window.localStorage.setItem(STORAGE_KEY, id)
-  return id
+  return ''
 }
-
-const NAME_KEY = 'cabo:player-name'
 
 export function getStoredName(): string {
   if (typeof window === 'undefined') return ''
+  migrateLegacyKey(LEGACY_NAME_KEY, NAME_KEY)
   return window.localStorage.getItem(NAME_KEY) ?? ''
 }
 

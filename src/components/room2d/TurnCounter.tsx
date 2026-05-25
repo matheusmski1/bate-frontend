@@ -5,7 +5,7 @@ import { Repeat, Layers } from 'lucide-react'
 import type { RedactedState } from '@/types/shared'
 
 export function TurnCounter({ state }: { state: RedactedState }) {
-  if (state.phase !== 'playing' && state.phase !== 'cabo-called' && state.phase !== 'effect-pending') return null
+  if (state.phase !== 'playing' && state.phase !== 'bate-called' && state.phase !== 'effect-pending') return null
   return (
     <div className="fixed top-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5">
       <motion.div

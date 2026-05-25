@@ -1,8 +1,14 @@
 # bate-frontend
 
-Frontend Next.js do jogo Bate. Multiplayer card game tipo Cabo/Pablo. Conecta via Socket.io ao backend separado.
+Frontend Next.js do **Bate** — jogo de cartas multiplayer brasileiro de memorização e dedução. Conecta via Socket.io ao backend separado.
 
 Backend: https://github.com/matheusmski1/bate-backend
+
+## Sobre o jogo
+
+Bate é uma releitura brasileira de jogos clássicos da família "Golf" — uma tradição de jogos de cartas de pontuação mínima que remonta às décadas de 1960-70, popularizada em jogos como **Golf** (domínio público) e **Rat-a-Tat Cat** (Gamewright, 1995). Cada jogador recebe 4 cartas viradas para baixo e tenta terminar a rodada com a menor pontuação possível, usando ações de espiar, trocar e cortar.
+
+A identidade visual, o mascote **Batinho**, os nomes das ações (OLHADINHA, ESPIADINHA, TROCA, PRATA, OURO) e o sistema de pontuação são originais desta implementação.
 
 ## Stack
 - Next.js 15 (App Router) + React 19

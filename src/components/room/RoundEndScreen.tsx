@@ -148,7 +148,7 @@ function RevealPhase({ breakdowns, caboCallerId, isHost, onNext }: { breakdowns:
         src="/batinho/batinho-ouro.png"
         alt=""
         aria-hidden
-        className="absolute -top-16 sm:-top-24 left-1/2 -translate-x-1/2 w-28 sm:w-40 opacity-0 pointer-events-none select-none z-10"
+        className="absolute -top-12 sm:-top-16 -right-2 sm:-right-8 w-20 sm:w-32 opacity-0 pointer-events-none select-none z-10"
         style={{ filter: 'drop-shadow(0 12px 18px rgba(0,0,0,0.35))', willChange: 'transform, opacity' }}
       />
       <motion.h2

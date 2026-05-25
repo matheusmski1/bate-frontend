@@ -337,14 +337,14 @@ export function GameArea({ state }: { state: RedactedState }) {
 
   const opponentPos = (idx: number): string => {
     const count = opponents.length
-    if (count === 1) return 'top-4 sm:top-10 left-1/2 -translate-x-1/2'
+    if (count === 1) return 'top-12 sm:top-10 left-1/2 -translate-x-1/2'
     if (count === 2) {
-      if (idx === 0) return 'top-4 sm:top-10 left-2 sm:left-10'
-      return 'top-4 sm:top-10 right-2 sm:right-10'
+      if (idx === 0) return 'top-32 sm:top-40 left-2 sm:left-10'
+      return 'top-32 sm:top-40 right-2 sm:right-10'
     }
-    if (idx === 0) return 'top-2 sm:top-6 left-1/2 -translate-x-1/2'
-    if (idx === 1) return 'top-28 sm:top-1/4 left-1 sm:left-8'
-    return 'top-28 sm:top-1/4 right-1 sm:right-8'
+    if (idx === 0) return 'top-12 sm:top-6 left-1/2 -translate-x-1/2'
+    if (idx === 1) return 'top-40 sm:top-1/4 left-1 sm:left-8'
+    return 'top-40 sm:top-1/4 right-1 sm:right-8'
   }
 
   const leaderId = (() => {

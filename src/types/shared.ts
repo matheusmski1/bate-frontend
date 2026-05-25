@@ -44,6 +44,13 @@ export type Player = {
   skin: string
 }
 
+export type Spectator = {
+  id: string
+  name: string
+  socketId: string | null
+  skin: string
+}
+
 export type GameActionType =
   | 'draw' | 'discard' | 'snap' | 'snap-fail'
   | 'peek' | 'swap' | 'bate' | 'round-end' | 'join' | 'leave'
@@ -77,6 +84,7 @@ export type GameState = {
   pausedRemainingMs: number | null
   roundTurnCount: number
   roundNumber: number
+  spectators: Spectator[]
 }
 
 export type RedactedCard = { id: string; rank: Rank; suit: Suit | null } | { id: string; hidden: true }
@@ -94,4 +102,5 @@ export type RoomSummary = {
   playerCount: number
   maxPlayers: number
   phase: GamePhase
+  spectatorCount: number
 }

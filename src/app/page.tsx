@@ -107,6 +107,28 @@ export default function Home() {
     handleJoin(roomId)
   }
 
+  async function handleSpectate(roomId: string) {
+    try {
+      const socket = await ensureSocketConnected()
+      const playerId = getPlayerId()
+      if (!playerId) { toast.error('Sessão ainda não pronta'); return }
+      if (!socket.connected) {
+        await new Promise<void>((resolve, reject) => {
+          const t = setTimeout(() => reject(new Error('socket connect timeout')), 5000)
+          socket.once('connect', () => { clearTimeout(t); resolve() })
+          socket.once('connect_error', err => { clearTimeout(t); reject(err) })
+        })
+      }
+      socket.emit('room:spectate', { roomId, playerId }, (res: { ok?: true; error?: string }) => {
+        if (res?.error) { toast.error(`Erro: ${res.error}`); return }
+        router.push(`/room/${roomId}?spectate=1`)
+      })
+    } catch (err) {
+      console.error('[lobby] handleSpectate failed', err)
+      toast.error(`Falha: ${err instanceof Error ? err.message : 'UNKNOWN'}`)
+    }
+  }
+
   function openCreate() {
     if (!requireName()) return
     setShowCreate(true)
@@ -221,7 +243,7 @@ export default function Home() {
               <Plus size={14} /> CRIAR
             </button>
           </div>
-          <RoomList rooms={rooms} onJoin={handleJoin} onCreate={openCreate} loaded={roomsLoaded} />
+          <RoomList rooms={rooms} onJoin={handleJoin} onSpectate={handleSpectate} onCreate={openCreate} loaded={roomsLoaded} />
         </div>
 
         <Footer />

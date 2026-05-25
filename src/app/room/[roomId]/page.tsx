@@ -2,7 +2,7 @@
 import { toast } from '@/lib/ui-store'
 
 import { useEffect, use } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { ensureSocketConnected } from '@/lib/socket-client'
 import { cachedPlayerId } from '@/lib/auth'
 import { getStoredName } from '@/lib/player-id'
@@ -19,9 +19,13 @@ import { GameArea } from '@/components/room2d/GameArea'
 
 export default function RoomPage({ params }: { params: Promise<{ roomId: string }> }) {
   const router = useRouter()
+  const search = useSearchParams()
+  const isSpectator = search.get('spectate') === '1'
   const { roomId } = use(params)
   const room = useGameStore(s => s.room)
   const setRoom = useGameStore(s => s.setRoom)
+  const myId = getPlayerId()
+  const amISpectator = isSpectator || (room?.spectators ?? []).some(s => s.id === myId)
 
   useEffect(() => {
     const name = getStoredName()
@@ -34,12 +38,21 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
     ensureSocketConnected().then(socket => {
       if (cancelled) return
       const doJoin = () => {
-        socket.emit('room:join', { roomId, playerId: getPlayerId(), playerName: name }, (res: { ok?: true; error?: string }) => {
-          if (res.error) {
-            toast.error(`Erro entrando: ${res.error}`)
-            router.push('/')
-          }
-        })
+        if (isSpectator) {
+          socket.emit('room:spectate', { roomId, playerId: getPlayerId() }, (res: { ok?: true; error?: string }) => {
+            if (res?.error) {
+              toast.error(`Erro assistindo: ${res.error}`)
+              router.push('/')
+            }
+          })
+        } else {
+          socket.emit('room:join', { roomId, playerId: getPlayerId(), playerName: name }, (res: { ok?: true; error?: string }) => {
+            if (res?.error) {
+              toast.error(`Erro entrando: ${res.error}`)
+              router.push('/')
+            }
+          })
+        }
       }
       doJoin()
       socket.on('connect', doJoin)
@@ -77,14 +90,27 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
       cancelled = true
       cleanup?.()
     }
-  }, [roomId, router, setRoom])
+  }, [roomId, router, setRoom, isSpectator])
 
   if (!room) {
     return <main className="min-h-screen flex items-center justify-center text-bate-ink font-display text-xl">CARREGANDO SALA…</main>
   }
 
-  if (room.phase === 'waiting') return <WaitingRoom state={room} />
-  if (room.phase === 'round-end') return <RoundEndScreen state={room} />
-  if (room.phase === 'match-end') return <MatchEndScreen state={room} />
-  return <GameArea state={room} />
+  const view = (() => {
+    if (room.phase === 'waiting') return <WaitingRoom state={room} />
+    if (room.phase === 'round-end') return <RoundEndScreen state={room} />
+    if (room.phase === 'match-end') return <MatchEndScreen state={room} />
+    return <GameArea state={room} />
+  })()
+
+  return (
+    <>
+      {amISpectator && (
+        <div className="fixed top-0 left-0 right-0 z-[55] bg-bate-ink text-bate-paper text-center py-1.5 text-[11px] sm:text-xs font-display tracking-wider shadow-hard-sm">
+          👁 ASSISTINDO • {(room.spectators?.length ?? 0)} {(room.spectators?.length ?? 0) === 1 ? 'olho' : 'olhos'} na mesa
+        </div>
+      )}
+      {view}
+    </>
+  )
 }

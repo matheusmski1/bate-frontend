@@ -12,6 +12,7 @@ import { PlayerHand2D } from './PlayerHand2D'
 import { DeckPile2D } from './DeckPile2D'
 import { DiscardPile2D } from './DiscardPile2D'
 import { DrawnCard2D } from './DrawnCard2D'
+import { EffectPrompt } from './EffectPrompt'
 import { CaboButton } from './CaboButton'
 import { InstructionBar } from './InstructionBar'
 import { PeekModal } from './PeekModal'
@@ -262,7 +263,7 @@ export function GameArea({ state }: { state: RedactedState }) {
           })
         return
       }
-      if (pendingEffect.type === 'swap' && mySwapPickIndex === null) {
+      if (pendingEffect.type === 'swap') {
         setMySwapPickIndex(handIndex)
         return
       }
@@ -407,7 +408,7 @@ export function GameArea({ state }: { state: RedactedState }) {
           <div className="flex items-center gap-2 sm:gap-14">
             <DeckPile2D count={state.deckCount} onClick={canDraw ? handleDeckClick : undefined} />
             <AnimatePresence mode="wait">
-              {drawnCard && (
+              {drawnCard ? (
                 <motion.div
                   key={drawnCard.id}
                   exit={
@@ -423,7 +424,39 @@ export function GameArea({ state }: { state: RedactedState }) {
                     onDiscard={() => handleDiscardDrawn(false)}
                   />
                 </motion.div>
-              )}
+              ) : isMyEffect && pendingEffect && !effectPromptDismissed ? (
+                <EffectPrompt
+                  key="prompt"
+                  kind={pendingEffect.type}
+                  onUse={() => setEffectPromptDismissed(true)}
+                  onSkip={() => {
+                    setMySwapPickIndex(null)
+                    setEffectPromptDismissed(false)
+                    getSocket().emit('game:skip-effect', { roomId: state.roomId, playerId: myId }, (res: { ok?: true; error?: string }) => {
+                      if (res?.error) toast.error(res.error)
+                    })
+                  }}
+                />
+              ) : isMyEffect && pendingEffect && effectPromptDismissed ? (
+                <motion.button
+                  key="skipBtn"
+                  type="button"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => {
+                    setMySwapPickIndex(null)
+                    setEffectPromptDismissed(false)
+                    getSocket().emit('game:skip-effect', { roomId: state.roomId, playerId: myId }, (res: { ok?: true; error?: string }) => {
+                      if (res?.error) toast.error(res.error)
+                    })
+                  }}
+                  className="px-3 py-2 rounded-xl bg-bate-paper border-[2px] border-bate-ink shadow-hard-sm text-bate-ink/80 text-[10px] sm:text-xs font-display whitespace-nowrap"
+                >
+                  ✕ pular ação
+                </motion.button>
+              ) : null}
             </AnimatePresence>
             <DiscardPile2D discard={state.discard} />
           </div>
@@ -471,59 +504,6 @@ export function GameArea({ state }: { state: RedactedState }) {
       <PenaltyPreview state={state} />
       <BateAnnouncement state={state} />
       <EmoteBar roomId={state.roomId} />
-      {isMyEffect && pendingEffect && (() => {
-        const effectName =
-          pendingEffect.type === 'peek-own' ? 'OLHADINHA'
-          : pendingEffect.type === 'peek-other' ? 'ESPIADINHA'
-          : 'TROCA'
-        const skipNow = () => {
-          setMySwapPickIndex(null)
-          setEffectPromptDismissed(false)
-          getSocket().emit('game:skip-effect', { roomId: state.roomId, playerId: myId }, (res: { ok?: true; error?: string }) => {
-            if (res?.error) toast.error(res.error)
-          })
-        }
-        if (!effectPromptDismissed) {
-          return (
-            <motion.div
-              initial={{ opacity: 0, y: 30, scale: 0.85 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 20 }}
-              className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 flex gap-4"
-            >
-              <motion.button
-                type="button"
-                whileHover={{ scale: 1.05, y: -3 }}
-                whileTap={{ scale: 0.96 }}
-                onClick={() => setEffectPromptDismissed(true)}
-                className="px-5 py-3 rounded-2xl bg-bate-gold border-[4px] border-bate-ink shadow-hard-lg text-bate-ink font-display uppercase whitespace-nowrap leading-tight text-center"
-              >
-                <div className="text-sm">🎯 USAR</div>
-                <div className="text-[10px] mt-0.5">{effectName}</div>
-              </motion.button>
-              <motion.button
-                type="button"
-                whileHover={{ scale: 1.05, y: -3 }}
-                whileTap={{ scale: 0.96 }}
-                onClick={skipNow}
-                className="px-5 py-3 rounded-2xl bg-bate-paper border-[4px] border-bate-ink shadow-hard text-bate-ink font-display uppercase whitespace-nowrap leading-tight text-center"
-              >
-                <div className="text-sm">✕ PULAR</div>
-                <div className="text-[10px] mt-0.5 text-bate-ink/60">sem ação</div>
-              </motion.button>
-            </motion.div>
-          )
-        }
-        return (
-          <button
-            type="button"
-            onClick={skipNow}
-            className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 px-3 py-1.5 rounded-lg bg-bate-paper border-[2px] border-bate-ink shadow-hard-sm text-bate-ink/80 hover:text-bate-ink hover:bg-bate-cream text-xs font-body font-semibold tracking-wide whitespace-nowrap"
-          >
-            ✕ pular ação
-          </button>
-        )
-      })()}
     </div>
   )
 }

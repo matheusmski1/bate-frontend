@@ -115,7 +115,7 @@ export function SnapToast({ state }: { state: RedactedState }) {
                 {toast.rank ? <> <span className="ml-1">{CARD_META[toast.rank].displayName ?? toast.rank}</span></> : ''}!
               </span>
             ) : (
-              <span>{toast.name} ERROU O SNAP (+1 carta)</span>
+              <span>😬 {toast.name} CORTOU ERRADO (+1 carta)</span>
             )}
           </motion.div>
         )}

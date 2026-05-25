@@ -39,7 +39,7 @@ export function TopChrome({ state }: { state: RedactedState }) {
   }
 
   return (
-    <div className="fixed top-2 left-2 sm:top-3 sm:left-3 z-40 flex items-center gap-1.5">
+    <div className="fixed top-2 left-2 sm:top-3 sm:left-1/2 sm:-translate-x-1/2 z-40 flex items-center gap-1.5">
       <motion.div
         animate={isCritical ? { scale: [1, 1.04, 1] } : { scale: 1 }}
         transition={isCritical ? { duration: 0.5, repeat: Infinity } : undefined}

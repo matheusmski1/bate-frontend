@@ -21,7 +21,7 @@ function describe(action: GameAction, state: RedactedState): string {
     const rank = (action.payload as { rank?: string } | undefined)?.rank
     return `${actor} cortou ${labelFor(rank)}`
   }
-  if (action.type === 'snap-fail') return `${actor} errou o snap (+1 carta)`
+  if (action.type === 'snap-fail') return `😬 ${actor} cortou errado (+1 carta)`
   if (action.type === 'peek') return `${actor} espiou uma carta`
   if (action.type === 'swap') return `${actor} trocou cartas`
   if (action.type === 'cabo') return `${actor} chamou BATE!`

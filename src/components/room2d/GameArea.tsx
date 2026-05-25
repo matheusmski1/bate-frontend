@@ -23,6 +23,7 @@ import { PenaltyPreview } from './PenaltyPreview'
 import { TopChrome } from './TopChrome'
 import { LeaveButton } from './LeaveButton'
 import { EmoteBar } from './EmoteBar'
+import { MascotOverlay, type LocalMascotActions } from './MascotOverlay'
 import { playSound } from '@/lib/sounds'
 
 const TEMP_REVEAL_MS = 3000
@@ -50,6 +51,12 @@ export function GameArea({ state }: { state: RedactedState }) {
   const [opponentsHoldingDrawn, setOpponentsHoldingDrawn] = useState<Set<string>>(new Set())
   const [effectPromptDismissed, setEffectPromptDismissed] = useState(false)
   const [emotes, setEmotes] = useState<Map<string, { id: number; key: string }>>(new Map())
+  const [localActions, setLocalActions] = useState<LocalMascotActions>({
+    peekRevealed: null,
+    snapResult: null,
+    swapResolved: null,
+  })
+  void setLocalActions  // wired in Phase 1+
   const emoteCounterRef = useRef(0)
   const lastSnapAt = useRef(0)
   const prevLogLenRef = useRef<number | null>(null)
@@ -484,6 +491,12 @@ export function GameArea({ state }: { state: RedactedState }) {
       <BateButton state={state} drawnExists={!!drawnCard} />
       <InstructionBar text={instruction} />
       <PeekModal reveal={revealModal} onClose={() => setRevealModal(null)} />
+      <MascotOverlay
+        state={state}
+        myId={myId}
+        localActions={localActions}
+        onPeekArrived={(reveal) => setRevealModal(reveal)}
+      />
       <ActionLog state={state} />
       <TopChrome state={state} />
       <LeaveButton roomId={state.roomId} inGame={state.phase !== 'waiting'} />

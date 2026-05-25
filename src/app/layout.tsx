@@ -26,7 +26,7 @@ const caveat = Caveat({
 })
 
 export const metadata: Metadata = {
-  title: 'Batinho — Cabo brasileiro multiplayer',
+  title: 'Batinho',
   description: 'Os Batinhos são malandros: memorizam, espiam, trocam e cortam. Menor placar leva. 2-4 jogadores, grátis.',
 }
 

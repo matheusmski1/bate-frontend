@@ -1,5 +1,16 @@
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL ?? ''
-const STORAGE_KEY = 'cabo:player-id'
+const STORAGE_KEY = 'bate:player-id'
+const LEGACY_STORAGE_KEY = 'cabo:player-id'
+
+function migrateLegacyKey(): void {
+  if (typeof window === 'undefined') return
+  const legacy = window.localStorage.getItem(LEGACY_STORAGE_KEY)
+  if (!legacy) return
+  if (!window.localStorage.getItem(STORAGE_KEY)) {
+    window.localStorage.setItem(STORAGE_KEY, legacy)
+  }
+  window.localStorage.removeItem(LEGACY_STORAGE_KEY)
+}
 
 export type GuestSession = {
   playerId: string
@@ -39,5 +50,6 @@ export async function ensureGuestSession(): Promise<GuestSession> {
 
 export function cachedPlayerId(): string | null {
   if (typeof window === 'undefined') return null
+  migrateLegacyKey()
   return window.localStorage.getItem(STORAGE_KEY)
 }

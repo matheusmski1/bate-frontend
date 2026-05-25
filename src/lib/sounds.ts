@@ -1,7 +1,18 @@
 type SoundKey = 'card-flip' | 'card-discard' | 'snap-success' | 'snap-fail' | 'turn-yours' | 'bate-called' | 'victory' | 'draw' | 'card-fly' | 'emote-pop'
 
-const VOLUME_KEY = 'cabo:volume'
+const VOLUME_KEY = 'bate:volume'
+const LEGACY_VOLUME_KEY = 'cabo:volume'
 let ctx: AudioContext | null = null
+
+function migrateLegacyVolume(): void {
+  if (typeof window === 'undefined') return
+  const legacy = window.localStorage.getItem(LEGACY_VOLUME_KEY)
+  if (!legacy) return
+  if (!window.localStorage.getItem(VOLUME_KEY)) {
+    window.localStorage.setItem(VOLUME_KEY, legacy)
+  }
+  window.localStorage.removeItem(LEGACY_VOLUME_KEY)
+}
 
 function getCtx(): AudioContext | null {
   if (typeof window === 'undefined') return null
@@ -16,6 +27,7 @@ function getCtx(): AudioContext | null {
 
 function getVolume(): number {
   if (typeof window === 'undefined') return 0.5
+  migrateLegacyVolume()
   const stored = window.localStorage.getItem(VOLUME_KEY)
   return stored ? Number(stored) : 0.5
 }

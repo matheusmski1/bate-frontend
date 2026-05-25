@@ -1,9 +1,11 @@
 // src/lib/mascot-overlay/triggers/snap.ts
 // Dispara pop-on-card quando:
 // - EU dei snap: localSnap set pelo GameArea no callback do socket
-//   (variant 'success' ou 'shake' baseado em ok)
 // - OUTRO deu snap: state.log ganha entrada nova { type: 'snap' } ou 'snap-fail'
-//   Pra outros, animamos no NAMEPLATE do actor (sem handIndex confiável)
+//
+// Pop SEMPRE no nameplate do ator. Snap success move a carta pro discard antes
+// do popOnCard rodar, então lookup por handIndex pega a carta errada (a que
+// shiftou pra essa posição). Nameplate é estável e comunica "esse player snapou".
 
 import { useEffect, useRef, type RefObject } from 'react'
 import type { RedactedState } from '@/types/shared'
@@ -15,8 +17,15 @@ type Args = {
   myId: string
   overlayRef: RefObject<HTMLElement | null>
   controller: Controller
-  localSnap: { handIndex: number; ok: boolean } | null
+  localSnap: { ok: boolean } | null
   onConsumed: () => void
+}
+
+function nameplateRectFor(playerId: string): DOMRect | null {
+  return (
+    getRect(`[data-opponent-nameplate="${CSS.escape(playerId)}"]`) ??
+    getRect(`[data-player-nameplate="${CSS.escape(playerId)}"]`)
+  )
 }
 
 export function useSnapTrigger({ state, myId, overlayRef, controller, localSnap, onConsumed }: Args) {
@@ -25,32 +34,20 @@ export function useSnapTrigger({ state, myId, overlayRef, controller, localSnap,
     onConsumedRef.current = onConsumed
   })
 
-  // ref pra ler players atuais sem incluir state.players nas deps
-  const statePlayersRef = useRef(state.players)
-  statePlayersRef.current = state.players
-
-  // ---- caso A: EU sou o ator ----
-  const lastLocalKeyRef = useRef<string | null>(null)
+  // EU como ator
+  const lastLocalKeyRef = useRef<number>(0)
   useEffect(() => {
     const overlay = overlayRef.current
     if (!overlay || !localSnap) {
-      if (!localSnap) lastLocalKeyRef.current = null
+      if (!localSnap) lastLocalKeyRef.current = 0
       return
     }
-    const key = `${localSnap.handIndex}:${localSnap.ok}`
-    if (lastLocalKeyRef.current === key) return
-    lastLocalKeyRef.current = key
-
-    const me = statePlayersRef.current.find((p) => p.id === myId)
-    const card = me?.hand[localSnap.handIndex]
-    const targetRect = card
-      ? getRect(`[data-card-id="${CSS.escape(card.id)}"]`)
-      : getRect(`[data-player-nameplate="${CSS.escape(myId)}"]`)
+    lastLocalKeyRef.current += 1
 
     const asset = localSnap.ok ? FELIZ : ASSUSTADO
     controller.popOnCard({
       overlay,
-      targetRect,
+      targetRect: nameplateRectFor(myId),
       asset,
       variant: localSnap.ok ? 'success' : 'shake',
       box: boxFor(130, [asset]),
@@ -58,7 +55,7 @@ export function useSnapTrigger({ state, myId, overlayRef, controller, localSnap,
     })
   }, [overlayRef, controller, localSnap, myId])
 
-  // ---- caso B: OUTRO é o ator ----
+  // OUTRO como ator
   const prevLogLenRef = useRef<number | null>(null)
   useEffect(() => {
     const overlay = overlayRef.current
@@ -77,14 +74,11 @@ export function useSnapTrigger({ state, myId, overlayRef, controller, localSnap,
     for (const entry of newEntries) {
       if (entry.type !== 'snap' && entry.type !== 'snap-fail') continue
       if (entry.actorId === myId) continue
-      const targetRect =
-        getRect(`[data-opponent-nameplate="${CSS.escape(entry.actorId)}"]`) ??
-        getRect(`[data-player-nameplate="${CSS.escape(entry.actorId)}"]`)
       const ok = entry.type === 'snap'
       const asset = ok ? FELIZ : ASSUSTADO
       controller.popOnCard({
         overlay,
-        targetRect,
+        targetRect: nameplateRectFor(entry.actorId),
         asset,
         variant: ok ? 'success' : 'shake',
         box: boxFor(130, [asset]),

@@ -3,6 +3,11 @@
 // - EU dei swap: localActions.swapResolved set pelo GameArea no callback
 // - OUTRO deu swap: state.log ganha { type: 'swap', actorId } com payload contendo
 //   targetPlayerId/targetCardIndex/myCardIndex
+//
+// IMPORTANTE: lookup é por SLOT INDEX, não por card.id. Após o swap aplicar,
+// os card.ids capturados antes da ação estão nas posições TROCADAS. Os slots
+// (índice na mão de cada player) ficam fixos visualmente. Lookup via cards
+// atualmente nesses slots dá as posições visuais corretas.
 
 import { useEffect, useRef, type RefObject } from 'react'
 import type { RedactedState } from '@/types/shared'
@@ -14,8 +19,33 @@ type Args = {
   myId: string
   overlayRef: RefObject<HTMLElement | null>
   controller: Controller
-  localSwap: { myCardId: string; opponentCardId: string } | null
+  localSwap: {
+    actorPlayerId: string
+    actorCardIndex: number
+    targetPlayerId: string
+    targetCardIndex: number
+  } | null
   onConsumed: () => void
+}
+
+function lookupSlotRects(
+  state: RedactedState,
+  actorPlayerId: string,
+  actorCardIndex: number,
+  targetPlayerId: string,
+  targetCardIndex: number,
+): { midRect: DOMRect | null; toRect: DOMRect | null } {
+  const actorPlayer = state.players.find((pl) => pl.id === actorPlayerId)
+  const targetPlayer = state.players.find((pl) => pl.id === targetPlayerId)
+  const cardAtActorSlot = actorPlayer?.hand[actorCardIndex]
+  const cardAtTargetSlot = targetPlayer?.hand[targetCardIndex]
+  const midRect = cardAtActorSlot
+    ? getRect(`[data-card-id="${CSS.escape(cardAtActorSlot.id)}"]`)
+    : null
+  const toRect = cardAtTargetSlot
+    ? getRect(`[data-card-id="${CSS.escape(cardAtTargetSlot.id)}"]`)
+    : null
+  return { midRect, toRect }
 }
 
 export function useSwapTrigger({ state, myId, overlayRef, controller, localSwap, onConsumed }: Args) {
@@ -24,18 +54,30 @@ export function useSwapTrigger({ state, myId, overlayRef, controller, localSwap,
     onConsumedRef.current = onConsumed
   })
 
+  // refs pra ler players de dentro de callbacks/effects sem incluir state.players em deps
+  const statePlayersRef = useRef(state.players)
+  statePlayersRef.current = state.players
+
   // EU como ator
   const lastLocalKeyRef = useRef<string | null>(null)
   useEffect(() => {
     const overlay = overlayRef.current
-    if (!overlay || !localSwap) return
-    const key = `${localSwap.myCardId}:${localSwap.opponentCardId}`
+    if (!overlay || !localSwap) {
+      if (!localSwap) lastLocalKeyRef.current = null
+      return
+    }
+    const key = `${localSwap.actorPlayerId}:${localSwap.actorCardIndex}:${localSwap.targetPlayerId}:${localSwap.targetCardIndex}`
     if (lastLocalKeyRef.current === key) return
     lastLocalKeyRef.current = key
 
     const fromRect = getRect('[data-discard-pile]')
-    const midRect = getRect(`[data-card-id="${CSS.escape(localSwap.myCardId)}"]`)
-    const toRect = getRect(`[data-card-id="${CSS.escape(localSwap.opponentCardId)}"]`)
+    const { midRect, toRect } = lookupSlotRects(
+      { ...state, players: statePlayersRef.current } as RedactedState,
+      localSwap.actorPlayerId,
+      localSwap.actorCardIndex,
+      localSwap.targetPlayerId,
+      localSwap.targetCardIndex,
+    )
     controller.runSwapDelivery({
       overlay,
       fromRect,
@@ -46,6 +88,7 @@ export function useSwapTrigger({ state, myId, overlayRef, controller, localSwap,
       box: boxFor(140, [FELIZ, TROCA]),
       onComplete: () => onConsumedRef.current(),
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [overlayRef, controller, localSwap])
 
   // OUTRO como ator
@@ -70,15 +113,10 @@ export function useSwapTrigger({ state, myId, overlayRef, controller, localSwap,
       const p = entry.payload as { targetPlayerId?: string; targetCardIndex?: number; myCardIndex?: number } | undefined
       if (!p || p.targetPlayerId === undefined || p.targetCardIndex === undefined || p.myCardIndex === undefined) continue
 
-      const actorPlayer = state.players.find((pl) => pl.id === entry.actorId)
-      const targetPlayer = state.players.find((pl) => pl.id === p.targetPlayerId)
-      const actorCard = actorPlayer?.hand[p.myCardIndex]
-      const targetCard = targetPlayer?.hand[p.targetCardIndex]
-      if (!actorCard || !targetCard) continue
-
       const fromRect = getRect('[data-discard-pile]')
-      const midRect = getRect(`[data-card-id="${CSS.escape(actorCard.id)}"]`)
-      const toRect = getRect(`[data-card-id="${CSS.escape(targetCard.id)}"]`)
+      const { midRect, toRect } = lookupSlotRects(state, entry.actorId, p.myCardIndex, p.targetPlayerId, p.targetCardIndex)
+      if (!midRect || !toRect) continue
+
       controller.runSwapDelivery({
         overlay,
         fromRect,
@@ -89,5 +127,5 @@ export function useSwapTrigger({ state, myId, overlayRef, controller, localSwap,
         box: boxFor(140, [FELIZ, TROCA]),
       })
     }
-  }, [overlayRef, controller, state.log, state.players, myId])
+  }, [overlayRef, controller, state, state.log, myId])
 }

@@ -49,6 +49,7 @@ export function GameArea({ state }: { state: RedactedState }) {
   const [effectPromptDismissed, setEffectPromptDismissed] = useState(false)
   const [emotes, setEmotes] = useState<Map<string, { id: number; key: string }>>(new Map())
   const emoteCounterRef = useRef(0)
+  const lastSnapAt = useRef(0)
   const prevLogLenRef = useRef<number | null>(null)
 
   useEffect(() => {
@@ -282,8 +283,12 @@ export function GameArea({ state }: { state: RedactedState }) {
     }
 
     if (canSnap) {
+      if (handIndex >= me.hand.length) return
+      const now = Date.now()
+      if (now - lastSnapAt.current < 500) return
+      lastSnapAt.current = now
       getSocket().emit('game:snap', { roomId: state.roomId, playerId: myId, handIndex }, (res: { ok?: true; error?: string }) => {
-        if (res?.error) alert(res.error)
+        if (res?.error && res.error !== 'INVALID_HAND_INDEX') alert(res.error)
       })
     }
   }

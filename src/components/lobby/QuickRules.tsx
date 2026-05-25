@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
-import { CARD_META, formatPoints } from '@/lib/card-meta'
+import { CARD_META, formatPoints, getCardImage } from '@/lib/card-meta'
 import type { Rank } from '@/types/shared'
 
 const SPECIAL_RANKS: Rank[] = ['10', 'J', 'Q', 'K', 'JOKER']
@@ -51,7 +51,7 @@ export function QuickRules() {
                       <li key={rank} className="flex items-center gap-3">
                         <div className="w-10 h-14 rounded-md overflow-hidden border-[2px] border-bate-ink shadow-hard-sm flex-shrink-0 bg-bate-paper">
                           <img
-                            src={meta.image}
+                            src={getCardImage(rank)}
                             alt={meta.displayName ?? rank}
                             className="w-full h-full object-cover"
                             draggable={false}

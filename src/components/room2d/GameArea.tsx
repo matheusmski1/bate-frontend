@@ -406,7 +406,7 @@ export function GameArea({ state }: { state: RedactedState }) {
             ✦ MESA ✦
           </div>
           <div className="flex items-center gap-2 sm:gap-14">
-            <DeckPile2D count={state.deckCount} onClick={canDraw ? handleDeckClick : undefined} />
+            <DeckPile2D count={state.deckCount} onClick={canDraw ? handleDeckClick : undefined} viewerDeckId={me?.deck ?? null} />
             <AnimatePresence mode="wait">
               {drawnCard ? (
                 <motion.div
@@ -422,6 +422,7 @@ export function GameArea({ state }: { state: RedactedState }) {
                     card={drawnCard}
                     onUseAction={() => handleDiscardDrawn(true)}
                     onDiscard={() => handleDiscardDrawn(false)}
+                    deckId={me?.deck ?? null}
                   />
                 </motion.div>
               ) : isMyEffect && pendingEffect && !effectPromptDismissed ? (
@@ -458,7 +459,7 @@ export function GameArea({ state }: { state: RedactedState }) {
                 </motion.button>
               ) : null}
             </AnimatePresence>
-            <DiscardPile2D discard={state.discard} />
+            <DiscardPile2D discard={state.discard} players={state.players} />
           </div>
         </div>
       </div>

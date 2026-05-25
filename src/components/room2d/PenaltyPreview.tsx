@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { CARD_META, formatPoints } from '@/lib/card-meta'
+import { CARD_META, formatPoints, getCardImage } from '@/lib/card-meta'
 import { getPlayerId } from '@/lib/player-id'
 import type { RedactedState, Rank } from '@/types/shared'
 
@@ -70,7 +70,7 @@ export function PenaltyPreview({ state }: { state: RedactedState }) {
             </div>
             <div className="w-40 h-56 sm:w-48 sm:h-64 rounded-2xl border-[4px] border-bate-ink overflow-hidden shadow-hard-lg mx-auto bg-bate-paper">
               <img
-                src={meta.image}
+                src={getCardImage(preview.rank)}
                 alt={meta.displayName ?? preview.rank}
                 className="w-full h-full object-cover"
                 draggable={false}

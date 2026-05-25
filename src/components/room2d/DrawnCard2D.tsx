@@ -11,10 +11,12 @@ export function DrawnCard2D({
   card,
   onUseAction,
   onDiscard,
+  deckId = null,
 }: {
   card: CardType
   onUseAction: () => void
   onDiscard: () => void
+  deckId?: string | null
 }) {
   const meta = CARD_META[card.rank]
   const isAction = meta.kind === 'action'
@@ -68,6 +70,7 @@ export function DrawnCard2D({
           <Card2D
             card={{ id: card.id, rank: card.rank, suit: card.suit }}
             size="lg"
+            deckId={deckId}
             onClick={isAction ? undefined : onDiscard}
             highlighted
           />

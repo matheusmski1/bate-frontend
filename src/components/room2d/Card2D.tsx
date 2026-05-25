@@ -4,7 +4,7 @@ import { motion, type HTMLMotionProps } from 'framer-motion'
 import { Eye, ArrowLeftRight } from 'lucide-react'
 import type { RedactedCard, Rank, Suit } from '@/types/shared'
 import { CardBack } from './CardBack'
-import { CARD_META, formatPoints } from '@/lib/card-meta'
+import { CARD_META, formatPoints, getCardImage } from '@/lib/card-meta'
 
 function tooltipFor(rank: Rank): string {
   const meta = CARD_META[rank]
@@ -24,6 +24,7 @@ type Props = {
   snapHint?: boolean
   size?: 'sm' | 'md' | 'lg'
   draggable?: boolean
+  deckId?: string | null
 } & Omit<HTMLMotionProps<'button'>, 'onClick' | 'children'>
 
 const SIZE_CLASSES: Record<NonNullable<Props['size']>, string> = {
@@ -37,11 +38,11 @@ const VICTIM_SHADOW: Record<VictimEffect, string> = {
   swapped: '0 0 28px 8px rgba(214, 50, 50, 0.85), 5px 5px 0 #1a0e08',
 }
 
-export function Card2D({ card, tempRevealedAs = null, onClick, highlighted = false, victimEffect = null, snapHint = false, size = 'md', ...rest }: Props) {
+export function Card2D({ card, tempRevealedAs = null, onClick, highlighted = false, victimEffect = null, snapHint = false, size = 'md', deckId = null, ...rest }: Props) {
   const isHidden = 'hidden' in card
   const effectiveRank: Rank | null = tempRevealedAs?.rank ?? (!isHidden ? card.rank : null)
   const showFace = !!effectiveRank
-  const imageSrc = effectiveRank ? CARD_META[effectiveRank].image : null
+  const imageSrc = effectiveRank ? getCardImage(effectiveRank, deckId) : null
   const tooltip = effectiveRank ? tooltipFor(effectiveRank) : undefined
 
   return (
@@ -83,14 +84,14 @@ export function Card2D({ card, tempRevealedAs = null, onClick, highlighted = fal
             draggable={false}
           />
         ) : (
-          <CardBack />
+          <CardBack deckId={deckId} />
         )}
       </div>
       <div
         className="absolute inset-0"
         style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
       >
-        <CardBack />
+        <CardBack deckId={deckId} />
       </div>
       {victimEffect && (
         <motion.div

@@ -99,6 +99,7 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
                 tempRevealedAs={tempReveals?.get(c.id) ?? null}
                 highlighted={highlightedIds?.has(c.id) ?? false}
                 victimEffect={victimEffects?.get(c.id) ?? null}
+                deckId={player.deck}
               />
             ))}
             {holdingDrawn && (
@@ -107,7 +108,7 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
                 className="w-8 h-12 rounded-md overflow-hidden border-[2px] border-bate-ink shadow-hard-sm ml-1"
                 style={{ willChange: 'transform, opacity' }}
               >
-                <CardBack />
+                <CardBack deckId={player.deck} />
               </div>
             )}
           </div>
@@ -141,6 +142,7 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
                 tempRevealedAs={tempReveals?.get(c.id) ?? null}
                 highlighted={highlightedIds?.has(c.id) ?? false}
                 victimEffect={victimEffects?.get(c.id) ?? null}
+                deckId={player.deck}
               />
             ))}
           </div>
@@ -150,7 +152,7 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
               className="w-20 h-28 rounded-xl overflow-hidden border-[3px] border-bate-ink shadow-hard"
               style={{ willChange: 'transform, opacity' }}
             >
-              <CardBack />
+              <CardBack deckId={player.deck} />
             </div>
           )}
         </div>

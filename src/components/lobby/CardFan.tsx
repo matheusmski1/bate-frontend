@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { animate, utils } from 'animejs'
-import { CARD_META } from '@/lib/card-meta'
+import { CARD_META, getCardImage } from '@/lib/card-meta'
 import type { Rank } from '@/types/shared'
 
 type FanSlot = { rank: Rank; x: number; y: number; rotate: number; scale: number; z: number; shadow: string }
@@ -115,7 +115,7 @@ export function CardFan() {
               style={{ willChange: 'transform, opacity' }}
             >
               <img
-                src={CARD_META[slot.rank].image}
+                src={getCardImage(slot.rank)}
                 alt={CARD_META[slot.rank].displayName ?? slot.rank}
                 className="w-full h-full object-cover"
                 draggable={false}

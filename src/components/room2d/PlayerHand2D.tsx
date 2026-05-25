@@ -43,6 +43,7 @@ export function PlayerHand2D({ player, isCurrent, isHost = false, isLeader = fal
             highlighted={highlightedIds?.has(c.id) ?? false}
             victimEffect={victimEffects?.get(c.id) ?? null}
             snapHint={snapHintIds?.has(c.id) ?? false}
+            deckId={player.deck}
           />
         ))}
       </div>

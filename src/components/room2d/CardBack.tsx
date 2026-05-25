@@ -1,11 +1,11 @@
 'use client'
 
-import { CARD_BACK_IMAGE } from '@/lib/card-meta'
+import { getCardBack } from '@/lib/card-meta'
 
-export function CardBack() {
+export function CardBack({ deckId = null }: { deckId?: string | null }) {
   return (
     <img
-      src={CARD_BACK_IMAGE}
+      src={getCardBack(deckId)}
       alt=""
       className="w-full h-full object-cover"
       draggable={false}

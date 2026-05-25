@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import { CardBack } from './CardBack'
 
-export function DeckPile2D({ count, onClick }: { count: number; onClick?: () => void }) {
+export function DeckPile2D({ count, onClick, viewerDeckId = null }: { count: number; onClick?: () => void; viewerDeckId?: string | null }) {
   const visibleStack = Math.min(5, Math.max(1, Math.ceil(count / 12)))
   return (
     <div className="flex flex-col items-center gap-1">
@@ -21,7 +21,7 @@ export function DeckPile2D({ count, onClick }: { count: number; onClick?: () => 
             className="absolute inset-0 rounded-xl overflow-hidden shadow-[0_6px_16px_rgba(0,0,0,0.5)]"
             style={{ transform: `translate(${i * 1.5}px, ${-i * 1.5}px) scaleX(-1)`, zIndex: i }}
           >
-            <CardBack />
+            <CardBack deckId={viewerDeckId} />
           </div>
         ))}
         {onClick && (

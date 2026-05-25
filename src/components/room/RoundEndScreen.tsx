@@ -310,7 +310,7 @@ function RevealPhase({ breakdowns, bateCallerId, isHost, onNext }: { breakdowns:
               </div>
               <div className="flex gap-1.5 sm:gap-2 items-end mb-1.5 flex-wrap">
                 {b.player.hand.map(card => (
-                  <Card2D key={card.id} card={card} size="sm" />
+                  <Card2D key={card.id} card={card} size="sm" deckId={b.player.deck} />
                 ))}
               </div>
               <div className="text-xs sm:text-sm font-mono text-bate-ink/80">

@@ -320,11 +320,20 @@ export function GameArea({ state }: { state: RedactedState }) {
       return
     }
     if (pendingEffect.type === 'swap' && mySwapPickIndex !== null) {
+      const myCard = me?.hand[mySwapPickIndex]
+      const targetPlayer = state.players.find(p => p.id === opponentId)
+      const targetCard = targetPlayer?.hand[handIndex]
       getSocket().emit('game:effect-target',
         { roomId: state.roomId, playerId: myId, targetPlayerId: opponentId, targetCardIndex: handIndex, myCardIndex: mySwapPickIndex },
         (res: { ok?: true; error?: string }) => {
           if (res?.error) { toast.error(res.error); return }
           setMySwapPickIndex(null)
+          if (myCard && targetCard) {
+            setLocalActions(prev => ({
+              ...prev,
+              swapResolved: { myCardId: myCard.id, opponentCardId: targetCard.id },
+            }))
+          }
         })
     }
   }
@@ -505,6 +514,7 @@ export function GameArea({ state }: { state: RedactedState }) {
           setLocalActions(prev => ({ ...prev, peekRevealed: null }))
         }}
         onSnapConsumed={() => setLocalActions(prev => ({ ...prev, snapResult: null }))}
+        onSwapConsumed={() => setLocalActions(prev => ({ ...prev, swapResolved: null }))}
       />
       <ActionLog state={state} />
       <TopChrome state={state} />

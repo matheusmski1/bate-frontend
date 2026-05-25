@@ -4,9 +4,10 @@ import { useMemo, useRef } from 'react'
 import type { RedactedState, Rank, Suit } from '@/types/shared'
 import { createController, type Controller } from '@/lib/mascot-overlay'
 import { usePeekOwnTrigger } from '@/lib/mascot-overlay/triggers/peek-own'
+import { usePeekOtherTrigger } from '@/lib/mascot-overlay/triggers/peek-other'
 
 export type LocalMascotActions = {
-  peekRevealed: { cardId: string; reveal: { rank: Rank; suit: Suit | null } } | null
+  peekRevealed: { cardId: string; reveal: { rank: Rank; suit: Suit | null }; kind: 'own' | 'other' } | null
   snapResult: { handIndex: number; ok: boolean } | null
   swapResolved: { myCardId: string; opponentCardId: string } | null
 }
@@ -22,12 +23,26 @@ export function MascotOverlay({ state, myId, localActions, onPeekArrived }: Masc
   const overlayRef = useRef<HTMLDivElement | null>(null)
   const controller = useMemo<Controller>(() => createController(), [])
 
+  const peekOwnLocal =
+    localActions.peekRevealed?.kind === 'own' ? localActions.peekRevealed : null
+  const peekOtherLocal =
+    localActions.peekRevealed?.kind === 'other' ? localActions.peekRevealed : null
+
   usePeekOwnTrigger({
     state,
     myId,
     overlayRef,
     controller,
-    localPeek: localActions.peekRevealed,
+    localPeek: peekOwnLocal,
+    onArrived: onPeekArrived ?? (() => {}),
+  })
+
+  usePeekOtherTrigger({
+    state,
+    myId,
+    overlayRef,
+    controller,
+    localPeek: peekOtherLocal,
     onArrived: onPeekArrived ?? (() => {}),
   })
 

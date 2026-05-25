@@ -20,17 +20,17 @@ const STEPS: Step[] = [
   {
     title: 'Sua vez: comprar',
     body: 'Na sua vez, clique no baralho pra comprar uma carta. Aí decide: usar (se tiver ação), trocar com uma sua, ou descartar.',
-    mascot: MASCOT.olhadinha,
+    mascot: MASCOT.lupa,
   },
   {
     title: 'Cortar (snap)',
     body: 'Sabe o valor de uma carta sua e a do descarte é igual? CORTA! Clica nela e ela vai pro descarte. Errou? Penalidade de +1 carta.',
-    mascot: MASCOT.confuso,
+    mascot: MASCOT.assustado,
   },
   {
     title: 'Cartas de ação',
     body: 'Q troca cartas, J espia adversário, 10 espia uma sua. Use bem — pode virar o jogo na última volta.',
-    mascot: MASCOT.troca,
+    mascot: MASCOT.confuso,
   },
   {
     title: 'Chamar BATE',
@@ -94,16 +94,20 @@ export function Tutorial({ open, onClose }: { open: boolean; onClose: () => void
             >
               <X size={16} strokeWidth={3} />
             </button>
-            <motion.img
+            <motion.div
               key={step}
               initial={{ scale: 0.6, rotate: -10, opacity: 0 }}
               animate={{ scale: 1, rotate: 0, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 320, damping: 20 }}
-              src={current.mascot}
-              alt=""
-              className="w-32 h-32 mx-auto mb-3 object-contain select-none"
-              draggable={false}
-            />
+              className="w-36 h-36 mx-auto mb-3 flex items-center justify-center bg-bate-cream rounded-full border-[3px] border-bate-ink shadow-hard-sm overflow-hidden"
+            >
+              <img
+                src={current.mascot}
+                alt=""
+                className="w-full h-full object-contain select-none p-2"
+                draggable={false}
+              />
+            </motion.div>
             <h2 className="font-display text-xl sm:text-2xl text-bate-red text-center mb-2">{current.title}</h2>
             <p className="font-body text-sm sm:text-base text-bate-ink/85 text-center leading-snug mb-5 min-h-[60px]">{current.body}</p>
             <div className="flex items-center justify-between gap-3">

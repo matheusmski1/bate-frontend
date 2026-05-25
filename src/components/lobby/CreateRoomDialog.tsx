@@ -2,8 +2,8 @@
 import { toast } from '@/lib/ui-store'
 
 import { useState } from 'react'
-import { getSocket } from '@/lib/socket-client'
-import { getPlayerId } from '@/lib/player-id'
+import { ensureSocketConnected } from '@/lib/socket-client'
+import { cachedPlayerId } from '@/lib/auth'
 
 type TurnLimit = 30 | 60 | 90 | 120 | null
 
@@ -13,21 +13,30 @@ export function CreateRoomDialog({ hostName, onCreated, onClose }: { hostName: s
   const [turnTimeLimitSec, setTurnTimeLimit] = useState<TurnLimit>(60)
   const [submitting, setSubmitting] = useState(false)
 
-  function submit() {
+  async function submit() {
     if (!name.trim()) return
     setSubmitting(true)
-    getSocket().emit(
-      'room:create',
-      { name: name.trim(), hostId: getPlayerId(), hostName, maxPlayers, turnTimeLimitSec },
-      (res: { roomId?: string; error?: string }) => {
-        setSubmitting(false)
-        if (res.error) {
-          toast.error(`Erro: ${res.error}`)
-          return
-        }
-        if (res.roomId) onCreated(res.roomId)
-      }
-    )
+    try {
+      const socket = await ensureSocketConnected()
+      const hostId = cachedPlayerId()
+      if (!hostId) { toast.error('Sessão ainda não pronta — tenta de novo'); setSubmitting(false); return }
+      socket.emit(
+        'room:create',
+        { name: name.trim(), hostId, hostName, maxPlayers, turnTimeLimitSec },
+        (res: { roomId?: string; error?: string }) => {
+          setSubmitting(false)
+          if (res?.error) {
+            toast.error(`Erro: ${res.error}`)
+            return
+          }
+          if (res?.roomId) onCreated(res.roomId)
+        },
+      )
+    } catch (err) {
+      setSubmitting(false)
+      toast.error('Falha ao conectar')
+      console.error('[create-room]', err)
+    }
   }
 
   return (

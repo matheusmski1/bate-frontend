@@ -67,12 +67,14 @@ export default function Home() {
     return true
   }
 
-  function handleJoin(roomId: string) {
+  async function handleJoin(roomId: string) {
     if (!requireName()) return
     setStoredName(name)
-    const socket = getSocket()
-    socket.emit('room:join', { roomId, playerId: getPlayerId(), playerName: name }, (res: { ok?: true; error?: string }) => {
-      if (res.error) {
+    const socket = await ensureSocketConnected()
+    const playerId = getPlayerId()
+    if (!playerId) { toast.error('Sessão ainda não pronta — tenta de novo'); return }
+    socket.emit('room:join', { roomId, playerId, playerName: name }, (res: { ok?: true; error?: string }) => {
+      if (res?.error) {
         toast.error(`Erro: ${res.error}`)
         return
       }
@@ -90,7 +92,7 @@ export default function Home() {
     setShowCreate(true)
   }
 
-  function handleQuickPlay() {
+  async function handleQuickPlay() {
     if (!requireName()) return
     const available = rooms.find(r => r.phase === 'waiting' && r.playerCount < r.maxPlayers)
     if (available) {
@@ -98,10 +100,13 @@ export default function Home() {
       return
     }
     setStoredName(name)
+    const socket = await ensureSocketConnected()
+    const playerId = getPlayerId()
+    if (!playerId) { toast.error('Sessão ainda não pronta — tenta de novo'); return }
     const randomName = QUICK_ROOM_NAMES[Math.floor(Math.random() * QUICK_ROOM_NAMES.length)]!
-    getSocket().emit(
+    socket.emit(
       'room:create',
-      { name: randomName, hostId: getPlayerId(), hostName: name, maxPlayers: 4 },
+      { name: randomName, hostId: playerId, hostName: name, maxPlayers: 4 },
       (res: { roomId?: string; error?: string }) => {
         if (res.error) {
           toast.error(`Erro: ${res.error}`)

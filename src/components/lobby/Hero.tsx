@@ -42,10 +42,10 @@ export function Hero() {
           draggable={false}
         />
       </div>
-      <p className="font-body text-sm sm:text-base md:text-lg text-bate-ink/80 mt-3 sm:mt-4 max-w-md font-medium leading-snug">
-        Os Batinhos são malandros — <span className="font-bold text-bate-red">memorizam</span>, <span className="font-bold text-bate-red">espiam</span>, <span className="font-bold text-bate-red">trocam</span> e <span className="font-bold text-bate-red">cortam</span> no momento certo.
+      <p className="font-body text-sm sm:text-base md:text-lg text-bate-ink/80 mt-3 sm:mt-4 max-w-lg font-medium leading-snug">
+        Os Batinhos são malandros: <span className="font-bold text-bate-red">memorizam</span> as cartas deles, <span className="font-bold text-bate-red">espiam</span> as suas, e <span className="font-bold text-bate-red">cortam</span> na hora exata.
         <br className="hidden sm:block" />
-        Menor placar leva. Bora?
+        Tu vai cair nessa?
       </p>
     </header>
   )

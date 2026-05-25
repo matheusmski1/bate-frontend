@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef } from 'react'
 import type { RedactedState, Rank, Suit } from '@/types/shared'
 import { createController, type Controller } from '@/lib/mascot-overlay'
 import { usePeekOwnTrigger } from '@/lib/mascot-overlay/triggers/peek-own'
@@ -20,17 +20,12 @@ export type MascotOverlayProps = {
 
 export function MascotOverlay({ state, myId, localActions, onPeekArrived }: MascotOverlayProps) {
   const overlayRef = useRef<HTMLDivElement | null>(null)
-  const [overlay, setOverlay] = useState<HTMLElement | null>(null)
   const controller = useMemo<Controller>(() => createController(), [])
-
-  useEffect(() => {
-    setOverlay(overlayRef.current)
-  }, [])
 
   usePeekOwnTrigger({
     state,
     myId,
-    overlay,
+    overlayRef,
     controller,
     localPeek: localActions.peekRevealed,
     onArrived: onPeekArrived ?? (() => {}),

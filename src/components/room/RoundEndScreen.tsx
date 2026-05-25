@@ -7,6 +7,7 @@ import { animate, utils } from 'animejs'
 import { getSocket } from '@/lib/socket-client'
 import { getPlayerId } from '@/lib/player-id'
 import { CARD_META, formatPoints } from '@/lib/card-meta'
+import { MASCOT } from '@/lib/mascot'
 import { Card2D } from '@/components/room2d/Card2D'
 import type { RedactedState, RedactedPlayer, Rank } from '@/types/shared'
 
@@ -140,7 +141,7 @@ function SplashPhase() {
       </div>
       <img
         ref={batinhoRef}
-        src="/batinho/batinho-ouro.png"
+        src={MASCOT.feliz}
         alt=""
         aria-hidden
         className="w-40 sm:w-56 mx-auto mb-4 opacity-0 select-none"
@@ -249,7 +250,7 @@ function RevealPhase({ breakdowns, caboCallerId, isHost, onNext }: { breakdowns:
     >
       <img
         ref={winnerBatinhoRef}
-        src="/batinho/batinho-ouro.png"
+        src={MASCOT.trofeu}
         alt=""
         aria-hidden
         className="absolute -top-2 sm:-top-4 -right-2 sm:-right-6 w-20 sm:w-28 opacity-0 pointer-events-none select-none z-10"

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createTimeline, animate } from 'animejs'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { RedactedState } from '@/types/shared'
+import { MASCOT } from '@/lib/mascot'
 
 type Stage = 'announce' | 'message' | null
 
@@ -76,7 +77,7 @@ export function BateAnnouncement({ state }: { state: RedactedState }) {
             <div className="relative">
               <img
                 ref={batinhoRef}
-                src="/batinho/batinho-ouro.png"
+                src={MASCOT.bate}
                 alt=""
                 aria-hidden
                 className="absolute left-1/2 top-1/2 w-[340px] sm:w-[480px] md:w-[560px] -translate-x-1/2 -translate-y-1/2 opacity-0 pointer-events-none select-none"

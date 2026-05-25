@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { animate } from 'animejs'
-import { Scissors, X } from 'lucide-react'
 import type { RedactedState, Rank } from '@/types/shared'
 import { CARD_META } from '@/lib/card-meta'
+import { MASCOT } from '@/lib/mascot'
 
 type ToastKind = 'snap' | 'snap-fail'
 type Toast = { id: number; kind: ToastKind; name: string; rank?: Rank }
@@ -106,9 +106,13 @@ export function SnapToast({ state }: { state: RedactedState }) {
                 : 'bg-bate-red text-bate-paper'
             }`}
           >
-            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-bate-paper/20 border-[2px] border-bate-paper/70">
-              {toast.kind === 'snap' ? <Scissors size={16} strokeWidth={3} /> : <X size={16} strokeWidth={3} />}
-            </span>
+            <img
+              src={toast.kind === 'snap' ? MASCOT.feliz : MASCOT.confuso}
+              alt=""
+              aria-hidden
+              className="w-10 h-10 sm:w-12 sm:h-12 select-none"
+              style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.35))' }}
+            />
             {toast.kind === 'snap' ? (
               <span>
                 {toast.name} CORTOU

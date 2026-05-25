@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import type { RedactedState } from '@/types/shared'
+import { MASCOT } from '@/lib/mascot'
 
 export function MatchEndScreen({ state }: { state: RedactedState }) {
   const router = useRouter()
@@ -12,6 +13,13 @@ export function MatchEndScreen({ state }: { state: RedactedState }) {
   return (
     <main className="min-h-screen flex items-center justify-center p-6">
       <div className="bg-bate-paper p-8 rounded-3xl max-w-md w-full text-center border-[4px] border-bate-ink shadow-hard-lg">
+        <img
+          src={MASCOT.trofeu}
+          alt=""
+          aria-hidden
+          className="w-32 sm:w-40 mx-auto mb-2 select-none"
+          style={{ filter: 'drop-shadow(0 12px 20px rgba(0,0,0,0.4))' }}
+        />
         <h2
           className="font-display text-5xl text-bate-red mb-2"
           style={{

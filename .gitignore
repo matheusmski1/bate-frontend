@@ -8,5 +8,4 @@ coverage
 dist
 .vercel
 *.tsbuildinfo
-pnpm-workspace.yaml
 .superpowers/

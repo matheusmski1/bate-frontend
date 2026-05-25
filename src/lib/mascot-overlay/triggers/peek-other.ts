@@ -1,0 +1,89 @@
+// src/lib/mascot-overlay/triggers/peek-other.ts
+// Dispara animação de espiadinha (peek-other). Quase idêntico a peek-own mas:
+// - Alvo é carta do OPONENTE (targetPlayerId !== actorId)
+// - Asset de chegada = ESPIADINHA
+
+import { useEffect, useRef, type RefObject } from 'react'
+import type { RedactedState, Rank, Suit } from '@/types/shared'
+import type { Controller } from '@/lib/mascot-overlay'
+import { boxFor, getRect, FELIZ, ESPIADINHA } from '@/lib/mascot-overlay'
+
+type Args = {
+  state: RedactedState
+  myId: string
+  overlayRef: RefObject<HTMLElement | null>
+  controller: Controller
+  localPeek: { cardId: string; reveal: { rank: Rank; suit: Suit | null } } | null
+  onArrived: (reveal: { rank: Rank; suit: Suit | null }) => void
+}
+
+export function usePeekOtherTrigger({ state, myId, overlayRef, controller, localPeek, onArrived }: Args) {
+  const onArrivedRef = useRef(onArrived)
+  useEffect(() => {
+    onArrivedRef.current = onArrived
+  })
+
+  // ---- caso A: EU sou o ator (espiei carta do oponente) ----
+  const lastLocalKeyRef = useRef<string | null>(null)
+  useEffect(() => {
+    const overlay = overlayRef.current
+    if (!overlay || !localPeek) return
+    const key = `${localPeek.cardId}:${localPeek.reveal.rank}:${localPeek.reveal.suit ?? ''}`
+    if (lastLocalKeyRef.current === key) return
+    lastLocalKeyRef.current = key
+
+    const fromRect = getRect('[data-discard-pile]')
+    const toRect = getRect(`[data-card-id="${CSS.escape(localPeek.cardId)}"]`)
+    controller.runFlight({
+      overlay,
+      fromRect,
+      toRect,
+      travelAsset: FELIZ,
+      arrivalAsset: ESPIADINHA,
+      box: boxFor(140, [FELIZ, ESPIADINHA]),
+      onArrived: () => onArrivedRef.current(localPeek.reveal),
+    })
+  }, [overlayRef, controller, localPeek])
+
+  // ---- caso B: OUTRO é o ator (espiou carta de terceiro) ----
+  const prevLogLenRef = useRef<number | null>(null)
+  useEffect(() => {
+    const overlay = overlayRef.current
+    if (!overlay) return
+    if (prevLogLenRef.current === null) {
+      prevLogLenRef.current = state.log.length
+      return
+    }
+    if (state.log.length <= prevLogLenRef.current) {
+      prevLogLenRef.current = state.log.length
+      return
+    }
+    const newEntries = state.log.slice(prevLogLenRef.current)
+    prevLogLenRef.current = state.log.length
+
+    for (const entry of newEntries) {
+      if (entry.type !== 'peek') continue
+      if (entry.actorId === myId) continue
+      const p = entry.payload as { targetPlayerId?: string; cardIndex?: number; skipped?: boolean } | undefined
+      if (!p || p.skipped) continue
+      // peek-other: targetPlayer DIFERENTE do actor
+      if (p.targetPlayerId === undefined || p.targetPlayerId === entry.actorId) continue
+      if (p.cardIndex === undefined) continue
+
+      const targetPlayer = state.players.find((pl) => pl.id === p.targetPlayerId)
+      const card = targetPlayer?.hand[p.cardIndex]
+      if (!card) continue
+
+      const fromRect = getRect('[data-discard-pile]')
+      const toRect = getRect(`[data-card-id="${CSS.escape(card.id)}"]`)
+      controller.runFlight({
+        overlay,
+        fromRect,
+        toRect,
+        travelAsset: FELIZ,
+        arrivalAsset: ESPIADINHA,
+        box: boxFor(140, [FELIZ, ESPIADINHA]),
+      })
+    }
+  }, [overlayRef, controller, state.log, state.players, myId])
+}

@@ -15,9 +15,9 @@ jobs:
           version: 11
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Typecheck
         run: npx tsc --noEmit
       - name: Audit (high+critical only)

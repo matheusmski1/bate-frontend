@@ -23,6 +23,7 @@ import { PenaltyPreview } from './PenaltyPreview'
 import { TopChrome } from './TopChrome'
 import { LeaveButton } from './LeaveButton'
 import { EmoteBar } from './EmoteBar'
+import { MascotOverlay, type LocalMascotActions } from './MascotOverlay'
 import { playSound } from '@/lib/sounds'
 
 const TEMP_REVEAL_MS = 3000
@@ -50,6 +51,11 @@ export function GameArea({ state }: { state: RedactedState }) {
   const [opponentsHoldingDrawn, setOpponentsHoldingDrawn] = useState<Set<string>>(new Set())
   const [effectPromptDismissed, setEffectPromptDismissed] = useState(false)
   const [emotes, setEmotes] = useState<Map<string, { id: number; key: string }>>(new Map())
+  const [localActions, setLocalActions] = useState<LocalMascotActions>({
+    peekRevealed: null,
+    snapResult: null,
+    swapResolved: null,
+  })
   const emoteCounterRef = useRef(0)
   const lastSnapAt = useRef(0)
   const prevLogLenRef = useRef<number | null>(null)
@@ -180,10 +186,12 @@ export function GameArea({ state }: { state: RedactedState }) {
     }
   }, [state.log, state.players, myId, markVictimEffect])
 
-  const tempReveal = useCallback((cardId: string, value: RevealValue) => {
+  const tempReveal = useCallback((cardId: string, value: RevealValue, kind: 'own' | 'other') => {
     setTempReveals(prev => new Map(prev).set(cardId, value))
     setKnownCards(prev => new Map(prev).set(cardId, value))
-    setRevealModal(value)
+    // Em vez de abrir o modal direto, dispara o overlay; o overlay chama onPeekArrived
+    // que chama setRevealModal quando o mascote chega na carta (~900ms depois).
+    setLocalActions(prev => ({ ...prev, peekRevealed: { cardId, reveal: value, kind } }))
     setTimeout(() => {
       setTempReveals(prev => {
         const next = new Map(prev)
@@ -259,7 +267,7 @@ export function GameArea({ state }: { state: RedactedState }) {
           (res: { ok?: true; error?: string; payload?: { revealed?: Array<{ card: { id: string; rank: Rank; suit: Suit | null } }> } }) => {
             if (res?.error) { toast.error(res.error); return }
             const r = res.payload?.revealed?.[0]
-            if (r) tempReveal(r.card.id, { rank: r.card.rank, suit: r.card.suit })
+            if (r) tempReveal(r.card.id, { rank: r.card.rank, suit: r.card.suit }, 'own')
           })
         return
       }
@@ -291,6 +299,10 @@ export function GameArea({ state }: { state: RedactedState }) {
       lastSnapAt.current = now
       getSocket().emit('game:snap', { roomId: state.roomId, playerId: myId, handIndex }, (res: { ok?: true; error?: string }) => {
         if (res?.error && res.error !== 'INVALID_HAND_INDEX') toast.error(res.error)
+        setLocalActions(prev => ({
+          ...prev,
+          snapResult: { handIndex, ok: !res?.error },
+        }))
       })
     }
   }
@@ -303,16 +315,25 @@ export function GameArea({ state }: { state: RedactedState }) {
         (res: { ok?: true; error?: string; payload?: { revealed?: Array<{ card: { id: string; rank: Rank; suit: Suit | null } }> } }) => {
           if (res?.error) { toast.error(res.error); return }
           const r = res.payload?.revealed?.[0]
-          if (r) tempReveal(r.card.id, { rank: r.card.rank, suit: r.card.suit })
+          if (r) tempReveal(r.card.id, { rank: r.card.rank, suit: r.card.suit }, 'other')
         })
       return
     }
     if (pendingEffect.type === 'swap' && mySwapPickIndex !== null) {
+      const myCard = me?.hand[mySwapPickIndex]
+      const targetPlayer = state.players.find(p => p.id === opponentId)
+      const targetCard = targetPlayer?.hand[handIndex]
       getSocket().emit('game:effect-target',
         { roomId: state.roomId, playerId: myId, targetPlayerId: opponentId, targetCardIndex: handIndex, myCardIndex: mySwapPickIndex },
         (res: { ok?: true; error?: string }) => {
           if (res?.error) { toast.error(res.error); return }
           setMySwapPickIndex(null)
+          if (myCard && targetCard) {
+            setLocalActions(prev => ({
+              ...prev,
+              swapResolved: { myCardId: myCard.id, opponentCardId: targetCard.id },
+            }))
+          }
         })
     }
   }
@@ -484,6 +505,17 @@ export function GameArea({ state }: { state: RedactedState }) {
       <BateButton state={state} drawnExists={!!drawnCard} />
       <InstructionBar text={instruction} />
       <PeekModal reveal={revealModal} onClose={() => setRevealModal(null)} />
+      <MascotOverlay
+        state={state}
+        myId={myId}
+        localActions={localActions}
+        onPeekArrived={(reveal) => {
+          setRevealModal(reveal)
+          setLocalActions(prev => ({ ...prev, peekRevealed: null }))
+        }}
+        onSnapConsumed={() => setLocalActions(prev => ({ ...prev, snapResult: null }))}
+        onSwapConsumed={() => setLocalActions(prev => ({ ...prev, swapResolved: null }))}
+      />
       <ActionLog state={state} />
       <TopChrome state={state} />
       <LeaveButton roomId={state.roomId} inGame={state.phase !== 'waiting'} />

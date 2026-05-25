@@ -31,6 +31,7 @@ export function PlayerHand2D({ player, isCurrent, isHost = false, isLeader = fal
         isLeader={isLeader}
         isMe
         skin={player.skin}
+        dataAttribute={{ key: 'data-player-nameplate', value: player.id }}
       />
       <div className="flex gap-1.5 sm:gap-3 items-end">
         {player.hand.map((c, i) => (

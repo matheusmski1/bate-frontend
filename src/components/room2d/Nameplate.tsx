@@ -13,15 +13,17 @@ type Props = {
   isLeader?: boolean
   isMe?: boolean
   skin?: string | null
+  dataAttribute?: { key: string; value: string }
 }
 
 const ACTIVE_GLOW = '0 0 0 4px rgba(255, 184, 28, 0.55), 0 0 36px 12px rgba(255, 184, 28, 0.45), 6px 6px 0 #1a0e08'
 const ACTIVE_GLOW_PEAK = '0 0 0 6px rgba(255, 184, 28, 0.85), 0 0 56px 20px rgba(255, 184, 28, 0.7), 7px 7px 0 #1a0e08'
 const IDLE_SHADOW = '3px 3px 0 #1a0e08'
 
-export function Nameplate({ name, score, isCurrent, connected = true, isHost = false, isLeader = false, isMe = false, skin = null }: Props) {
+export function Nameplate({ name, score, isCurrent, connected = true, isHost = false, isLeader = false, isMe = false, skin = null, dataAttribute }: Props) {
   return (
     <motion.div
+      {...(dataAttribute ? { [dataAttribute.key]: dataAttribute.value } : {})}
       animate={
         isCurrent
           ? { scale: [1, 1.08, 1], boxShadow: [ACTIVE_GLOW, ACTIVE_GLOW_PEAK, ACTIVE_GLOW] }

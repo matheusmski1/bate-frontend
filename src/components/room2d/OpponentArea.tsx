@@ -6,7 +6,7 @@ import type { RedactedPlayer, Rank, Suit } from '@/types/shared'
 import { Card2D } from './Card2D'
 import { CardBack } from './CardBack'
 import { Nameplate } from './Nameplate'
-import { skinImage } from '@/lib/mascot'
+import { Avatar } from '@/components/lobby/Avatar'
 import { EmoteBubble } from './EmoteBubble'
 import { playSound } from '@/lib/sounds'
 
@@ -79,7 +79,7 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
           } ${!player.connected ? 'opacity-60' : ''} shadow-hard-sm transition-colors`}
         >
           <div className="flex items-center gap-1 min-w-0">
-            <img src={skinImage(player.skin)} alt="" className="w-7 h-7 rounded-full border-[2px] border-bate-ink bg-bate-cream object-cover select-none" draggable={false} />
+            <Avatar name={player.name} size={28} />
             <div className="flex flex-col leading-tight min-w-0">
               <div className="font-display text-[11px] flex items-center gap-1 truncate max-w-[80px]">
                 {isLeader && <span title="Em primeiro" className="text-[11px]">🏆</span>}
@@ -129,7 +129,6 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
           connected={player.connected}
           isHost={isHost}
           isLeader={isLeader}
-          skin={player.skin}
           dataAttribute={{ key: 'data-opponent-nameplate', value: player.id }}
         />
         <div className="flex gap-3 items-center">

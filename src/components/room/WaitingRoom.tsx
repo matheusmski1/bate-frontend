@@ -3,7 +3,7 @@ import { toast } from '@/lib/ui-store'
 
 import { getSocket } from '@/lib/socket-client'
 import { getPlayerId } from '@/lib/player-id'
-import { skinImage } from '@/lib/mascot'
+import { Avatar } from '@/components/lobby/Avatar'
 import type { RedactedState } from '@/types/shared'
 
 export function WaitingRoom({ state }: { state: RedactedState }) {
@@ -29,7 +29,7 @@ export function WaitingRoom({ state }: { state: RedactedState }) {
           {state.players.map(p => (
             <li key={p.id} className="bg-bate-cream rounded-lg px-4 py-3 flex justify-between items-center border-[2px] border-bate-ink shadow-hard-sm">
               <span className="font-display text-sm text-bate-ink flex items-center gap-2">
-                <img src={skinImage(p.skin)} alt="" className="w-7 h-7 rounded-full border-[2px] border-bate-ink bg-bate-paper object-cover" draggable={false} />
+                <Avatar name={p.name} size={28} />
                 {p.name}{p.id === state.hostId && ' 👑'}
               </span>
               <span className={`font-display text-xs ${p.connected ? 'text-bate-green' : 'text-bate-red'}`}>

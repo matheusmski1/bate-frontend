@@ -43,9 +43,9 @@ export function Hero() {
         />
       </div>
       <p className="font-body text-sm sm:text-base md:text-lg text-bate-ink/80 mt-3 sm:mt-4 max-w-lg font-medium leading-snug">
-        Os Batinhos são malandros: <span className="font-bold text-bate-red">memorizam</span> as cartas deles, <span className="font-bold text-bate-red">espiam</span> as suas, e <span className="font-bold text-bate-red">cortam</span> na hora exata.
+        <span className="font-bold text-bate-red">Memorize</span> as suas, <span className="font-bold text-bate-red">espie</span> as deles, <span className="font-bold text-bate-red">troque</span> o que precisa e <span className="font-bold text-bate-red">corte</span> na hora exata.
         <br className="hidden sm:block" />
-        Tu vai cair nessa?
+        Menor placar leva. Tu cai nessa?
       </p>
     </header>
   )

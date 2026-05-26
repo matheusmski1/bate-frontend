@@ -26,3 +26,41 @@ html, body {
   }
 }
 
+@keyframes deco-sway-slow {
+  0%, 100% { transform: rotate(-3deg); }
+  50%      { transform: rotate(3deg); }
+}
+@keyframes deco-sway-fast {
+  0%, 100% { transform: rotate(-2deg) translateY(0); }
+  50%      { transform: rotate(2deg) translateY(-2px); }
+}
+@keyframes deco-pulse {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(255,184,28,0.6)); }
+  50%      { filter: drop-shadow(0 0 18px rgba(255,184,28,1)); }
+}
+
+.deco-anim-sway-slow { animation: deco-sway-slow 4s ease-in-out infinite; transform-origin: top center; }
+.deco-anim-sway-fast { animation: deco-sway-fast 2.4s ease-in-out infinite; transform-origin: top center; }
+.deco-anim-pulse     { animation: deco-pulse 2s ease-in-out infinite; }
+.deco-anim-none      { animation: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .deco-anim-sway-slow, .deco-anim-sway-fast, .deco-anim-pulse {
+    animation: none;
+  }
+}
+
+.table-surface {
+  position: relative;
+}
+.table-surface-default {
+  /* mantém visual atual sem mudança */
+}
+.table-surface-boteco {
+  background: repeating-linear-gradient(45deg, #c83737 0 18px, #faf3e0 18px 36px);
+  border: 3px solid #5a3a1f;
+  box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  padding: 8px;
+}
+

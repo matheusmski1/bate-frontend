@@ -32,3 +32,16 @@ export function skinImage(skinId: string | null | undefined): string {
   if (!skinId) return MASCOT.feliz
   return SKIN_TO_MASCOT[skinId] ?? MASCOT.feliz
 }
+
+const ARENA_MASCOT_STATES: Record<string, Set<MascotKey>> = {
+  boteco: new Set<MascotKey>(['bate', 'lupa', 'feliz', 'chorando', 'trofeu', 'confuso', 'tempoAcabando']),
+}
+
+export function getMascot(state: MascotKey, arenaId: string = 'default'): string {
+  const states = ARENA_MASCOT_STATES[arenaId]
+  if (states?.has(state)) {
+    const fileName = state === 'tempoAcabando' ? 'tempo-acabando' : state
+    return `/arenas/${arenaId}/batinho/${fileName}.webp`
+  }
+  return MASCOT[state]
+}

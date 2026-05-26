@@ -7,7 +7,7 @@ import { animate, utils } from 'animejs'
 import { getSocket } from '@/lib/socket-client'
 import { getPlayerId } from '@/lib/player-id'
 import { CARD_META, formatPoints } from '@/lib/card-meta'
-import { MASCOT } from '@/lib/mascot'
+import { getMascot } from '@/lib/mascot'
 import { Card2D } from '@/components/room2d/Card2D'
 import type { RedactedState, RedactedPlayer, Rank } from '@/types/shared'
 
@@ -32,6 +32,7 @@ function computeBreakdown(player: RedactedPlayer): Breakdown {
 export function RoundEndScreen({ state }: { state: RedactedState }) {
   const myId = getPlayerId()
   const isHost = state.hostId === myId
+  const arenaId = state.players.find(p => p.id === myId)?.arena ?? 'default'
   const [stage, setStage] = useState<Stage>('splash')
   const breakdowns = state.players.map(computeBreakdown).sort((a, b) => a.roundScore - b.roundScore)
 
@@ -50,17 +51,17 @@ export function RoundEndScreen({ state }: { state: RedactedState }) {
   return (
     <main className="min-h-screen flex items-center justify-center p-6 bg-bate-cream">
       <AnimatePresence mode="wait">
-        {stage === 'splash' && <SplashPhase key="splash" />}
+        {stage === 'splash' && <SplashPhase key="splash" arenaId={arenaId} />}
         {stage === 'analyzing' && <AnalyzingPhase key="analyzing" />}
         {stage === 'reveal' && (
-          <RevealPhase key="reveal" breakdowns={breakdowns} bateCallerId={state.bateCallerId} isHost={isHost} onNext={next} />
+          <RevealPhase key="reveal" breakdowns={breakdowns} bateCallerId={state.bateCallerId} isHost={isHost} onNext={next} arenaId={arenaId} />
         )}
       </AnimatePresence>
     </main>
   )
 }
 
-function SplashPhase() {
+function SplashPhase({ arenaId }: { arenaId: string }) {
   const textRef = useRef<HTMLDivElement | null>(null)
   const batinhoRef = useRef<HTMLImageElement | null>(null)
   const burstRef = useRef<HTMLDivElement | null>(null)
@@ -141,7 +142,7 @@ function SplashPhase() {
       </div>
       <img
         ref={batinhoRef}
-        src={MASCOT.feliz}
+        src={getMascot('feliz', arenaId)}
         alt=""
         aria-hidden
         className="w-40 sm:w-56 mx-auto mb-4 opacity-0 select-none"
@@ -213,7 +214,7 @@ function AnalyzingPhase() {
   )
 }
 
-function RevealPhase({ breakdowns, bateCallerId, isHost, onNext }: { breakdowns: Breakdown[]; bateCallerId: string | null; isHost: boolean; onNext: () => void }) {
+function RevealPhase({ breakdowns, bateCallerId, isHost, onNext, arenaId }: { breakdowns: Breakdown[]; bateCallerId: string | null; isHost: boolean; onNext: () => void; arenaId: string }) {
   const callerName = bateCallerId ? breakdowns.find(b => b.player.id === bateCallerId)?.player.name : null
   const callerIsWinner = bateCallerId && breakdowns[0]?.player.id === bateCallerId
   const winnerBatinhoRef = useRef<HTMLImageElement | null>(null)
@@ -250,7 +251,7 @@ function RevealPhase({ breakdowns, bateCallerId, isHost, onNext }: { breakdowns:
     >
       <img
         ref={winnerBatinhoRef}
-        src={MASCOT.trofeu}
+        src={getMascot('trofeu', arenaId)}
         alt=""
         aria-hidden
         className="absolute -top-2 sm:-top-4 -right-2 sm:-right-6 w-20 sm:w-28 opacity-0 pointer-events-none select-none z-10"

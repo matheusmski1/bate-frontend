@@ -1,6 +1,6 @@
-# Bate — Brand Brief / AI Prompt
+# Batinho — Brand Brief / AI Prompt
 
-> Um prompt-descritivo do jogo Bate. Pode ser colado como contexto pra qualquer IA gerar arte, copy, animação, código ou marketing alinhado com a identidade do jogo.
+> Um prompt-descritivo do produto Batinho (jogo: Bate). Pode ser colado como contexto pra qualquer IA gerar arte, copy, animação, código ou marketing alinhado com a identidade.
 
 ---
 

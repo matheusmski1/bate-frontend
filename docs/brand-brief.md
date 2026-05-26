@@ -1,12 +1,12 @@
-# Bate — Brand Brief / AI Prompt
+# Batinho — Brand Brief / AI Prompt
 
-> Um prompt-descritivo do jogo Bate. Pode ser colado como contexto pra qualquer IA gerar arte, copy, animação, código ou marketing alinhado com a identidade do jogo.
+> Um prompt-descritivo do produto Batinho (jogo: Bate). Pode ser colado como contexto pra qualquer IA gerar arte, copy, animação, código ou marketing alinhado com a identidade.
 
 ---
 
 ## O que é
 
-**Bate** é uma versão online multiplayer de **Cabo** (também conhecido como Pablo, Cambio) — o jogo de cartas brasileiro de mesa onde o objetivo é ter a **menor pontuação**. Reskinning total da nomenclatura clássica: dez vira **OLHADINHA**, valete vira **ESPIADINHA**, dama vira **TROCA**, rei vira **PRATA (−3 pts)**, joker vira **OURO (−6 pts)**.
+**Batinho** é uma versão online multiplayer de **Bate** (releitura brasileira de **Cabo / Pablo / Cambio** — o jogo de cartas de mesa onde o objetivo é ter a **menor pontuação**). "Bate" é o nome da mecânica (o que você joga); "Batinho" é o nome do produto e do mascote singular que ilustra ele. Reskinning total da nomenclatura clássica: dez vira **OLHADINHA**, valete vira **ESPIADINHA**, dama vira **TROCA**, rei vira **PRATA (−3 pts)**, joker vira **OURO (−6 pts)**.
 
 Jogado **2 a 4 jogadores**, sem cadastro, sem login, sem fricção. Você abre a URL, coloca um apelido, cria ou entra numa sala, e em **5 minutos uma rodada acabou**.
 
@@ -59,7 +59,7 @@ Os cards **OURO / PRATA / OLHADINHA / ESPIADINHA / TROCA** são os "personagens"
 - Como ícones nos toasts de feedback
 - Como "winners" no round-end (a carta MVP da rodada ganha um destaque)
 
-Não precisa criar mascote humano/animal. **As cartas são o branding.**
+**Batinho (esquilinho chibi, singular) é o protagonista visual** — aparece como mascote único no hero, como ilustração nas 14 cartas do baralho (cada carta mostra o Batinho em uma situação diferente: segurando moeda na carta OURO, espiando na carta OLHADINHA, etc. — as cartas continuam se chamando "OURO", "OLHADINHA" etc., não viram entidades nomeadas), e como NPC nas arenas (ex: bartender no Boteco). As cartas especiais (OURO / PRATA / OLHADINHA / ESPIADINHA / TROCA) continuam sendo as estrelas das interações de jogo, mas são extensões visuais do mascote, não substitutos dele.
 
 ---
 

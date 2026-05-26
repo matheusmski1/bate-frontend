@@ -13,7 +13,7 @@ type Step = {
 
 const STEPS: Step[] = [
   {
-    title: 'Bem-vindo, Batinho!',
+    title: 'Bem-vindo ao Batinho!',
     body: 'No Batinho cada um recebe 4 cartas viradas. Memorize 2 logo no início — o resto é dedução pura.',
     mascot: MASCOT.feliz,
   },

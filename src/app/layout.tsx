@@ -28,7 +28,7 @@ const caveat = Caveat({
 
 export const metadata: Metadata = {
   title: 'Batinho',
-  description: 'Os Batinhos são malandros: memorizam, espiam, trocam e cortam. Menor placar leva. 2-4 jogadores, grátis.',
+  description: 'Memorize, espie, troque, corte. Menor placar leva. Bate online, 2-4 jogadores, grátis.',
   applicationName: 'Batinho',
   appleWebApp: {
     capable: true,
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'Batinho',
-    description: 'Memorize, espie, troque, corte. Menor placar leva.',
+    description: 'Bate online: memorize, espie, troque, corte. Menor placar leva.',
     url: 'https://www.batinho.com.br',
     siteName: 'Batinho',
     locale: 'pt_BR',

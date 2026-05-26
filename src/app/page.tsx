@@ -19,11 +19,10 @@ import { CardFan } from '@/components/lobby/CardFan'
 import { SuitBackground } from '@/components/lobby/SuitBackground'
 import { QuickRules } from '@/components/lobby/QuickRules'
 import { MuteToggle } from '@/components/lobby/MuteToggle'
-import { SkinPicker } from '@/components/lobby/SkinPicker'
 import { DeckPicker } from '@/components/lobby/DeckPicker'
 import { ArenaPicker } from '@/components/lobby/ArenaPicker'
 import { Tutorial, hasSeenTutorial } from '@/components/lobby/Tutorial'
-import { Shirt, HelpCircle, Layers, Tent } from 'lucide-react'
+import { HelpCircle, Layers, Tent } from 'lucide-react'
 import { Footer } from '@/components/lobby/Footer'
 
 const QUICK_ROOM_NAMES = ['Mesa do Maizão', 'Batinho Rápido', 'Sala do Zé', 'Bate Express', 'Mesa relâmpago']
@@ -34,7 +33,6 @@ export default function Home() {
   const setRooms = useGameStore(s => s.setRooms)
   const [name, setName] = useState('')
   const [showCreate, setShowCreate] = useState(false)
-  const [showSkins, setShowSkins] = useState(false)
   const [showDecks, setShowDecks] = useState(false)
   const [showArenas, setShowArenas] = useState(false)
   const [showTutorial, setShowTutorial] = useState(false)
@@ -187,14 +185,6 @@ export default function Home() {
         </button>
         <button
           type="button"
-          onClick={() => setShowSkins(true)}
-          title="Skins"
-          className="w-10 h-10 rounded-full bg-bate-paper border-[3px] border-bate-ink shadow-hard-sm flex items-center justify-center text-bate-ink hover:bg-bate-gold transition-colors"
-        >
-          <Shirt size={16} strokeWidth={3} />
-        </button>
-        <button
-          type="button"
           onClick={() => setShowDecks(true)}
           title="Baralhos"
           className="w-10 h-10 rounded-full bg-bate-paper border-[3px] border-bate-ink shadow-hard-sm flex items-center justify-center text-bate-ink hover:bg-bate-gold transition-colors"
@@ -277,7 +267,6 @@ export default function Home() {
         />
       )}
 
-      <SkinPicker open={showSkins} onClose={() => setShowSkins(false)} />
       <DeckPicker open={showDecks} onClose={() => setShowDecks(false)} />
       <ArenaPicker open={showArenas} onClose={() => setShowArenas(false)} />
       <Tutorial open={showTutorial} onClose={() => setShowTutorial(false)} />

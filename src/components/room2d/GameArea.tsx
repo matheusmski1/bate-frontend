@@ -52,6 +52,11 @@ export function GameArea({ state }: { state: RedactedState }) {
   const [effectPromptDismissed, setEffectPromptDismissed] = useState(false)
   const [emotes, setEmotes] = useState<Map<string, { id: number; key: string }>>(new Map())
   const [animationSelectedIds, setAnimationSelectedIds] = useState<readonly string[]>([])
+  // Mobile: qual oponente é mostrado em destaque (tabs controlam)
+  const [activeOppIdx, setActiveOppIdx] = useState(0)
+  useEffect(() => {
+    if (activeOppIdx >= opponents.length) setActiveOppIdx(0)
+  }, [opponents.length, activeOppIdx])
   const [localActions, setLocalActions] = useState<LocalMascotActions>({
     peekRevealed: null,
     snapResult: null,
@@ -377,10 +382,12 @@ export function GameArea({ state }: { state: RedactedState }) {
   const opponentPos = (idx: number): string => {
     const count = opponents.length
     const seat = seatFor(idx, count)
-    const mobileStack = ['top-12 left-2 right-2', 'top-24 left-2 right-2', 'top-36 left-2 right-2'][idx] ?? ''
-    if (seat === 'top') return `${mobileStack} sm:top-8 sm:left-1/2 sm:right-auto sm:-translate-x-1/2`
-    if (seat === 'left') return `${mobileStack} sm:top-1/2 sm:left-8 sm:right-auto sm:-translate-y-1/2`
-    return `${mobileStack} sm:top-1/2 sm:right-8 sm:left-auto sm:-translate-y-1/2`
+    // Mobile: todos opponents na mesma slot (tabs controlam qual aparece).
+    // top-24 deixa espaço pra TopChrome (top-2) + tabs (top-12)
+    const mobileSlot = 'top-24 left-2 right-2'
+    if (seat === 'top') return `${mobileSlot} sm:top-8 sm:left-1/2 sm:right-auto sm:-translate-x-1/2`
+    if (seat === 'left') return `${mobileSlot} sm:top-1/2 sm:left-8 sm:right-auto sm:-translate-y-1/2`
+    return `${mobileSlot} sm:top-1/2 sm:right-8 sm:left-auto sm:-translate-y-1/2`
   }
 
   const leaderId = (() => {
@@ -427,9 +434,30 @@ export function GameArea({ state }: { state: RedactedState }) {
             emote={emotes.get(p.id) ?? null}
             seat={seatFor(i, opponents.length)}
             selectedCardIds={animationSelectedIds}
+            mobileVisible={i === activeOppIdx}
           />
         </div>
       ))}
+
+      {/* Tabs mobile: troca qual oponente fica em destaque */}
+      {opponents.length > 1 && (
+        <div className="sm:hidden absolute top-12 left-2 right-2 z-30 flex gap-1.5">
+          {opponents.map((p, i) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => setActiveOppIdx(i)}
+              className={`flex-1 px-2 py-1 rounded-full font-display text-[11px] border-2 border-bate-ink whitespace-nowrap truncate ${
+                activeOppIdx === i
+                  ? 'bg-bate-gold text-bate-ink shadow-hard-sm'
+                  : 'bg-bate-paper/70 text-bate-ink/70'
+              } ${p.id === currentPlayerId ? 'ring-2 ring-bate-red' : ''}`}
+            >
+              {p.name}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
         <div className={`relative max-w-[calc(100vw-1rem)] px-2 sm:px-12 py-2 sm:py-8 rounded-2xl sm:rounded-3xl border-[3px] sm:border-[4px] border-bate-ink bg-bate-paper/70 shadow-hard sm:shadow-hard-lg backdrop-blur-sm table-surface table-surface-${arenaId}`}>

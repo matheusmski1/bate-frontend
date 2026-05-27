@@ -100,11 +100,13 @@ function seatFor(idx: number, count: number): Seat {
   return 'right'
 }
 
-function opponentPosUno(seat: Seat, idx: number): string {
-  const mobileStack = ['top-12 left-2 right-2', 'top-24 left-2 right-2', 'top-36 left-2 right-2'][idx] ?? ''
-  if (seat === 'top') return `${mobileStack} sm:top-8 sm:left-1/2 sm:right-auto sm:-translate-x-1/2`
-  if (seat === 'left') return `${mobileStack} sm:top-1/2 sm:left-8 sm:right-auto sm:-translate-y-1/2`
-  return `${mobileStack} sm:top-1/2 sm:right-8 sm:left-auto sm:-translate-y-1/2`
+function opponentPosUno(seat: Seat): string {
+  // Mobile: todos opponents na mesma slot (tabs controlam qual aparece).
+  // top-24 deixa espaço pra TopChrome (top-2) + tabs (top-12)
+  const mobileSlot = 'top-24 left-2 right-2'
+  if (seat === 'top') return `${mobileSlot} sm:top-8 sm:left-1/2 sm:right-auto sm:-translate-x-1/2`
+  if (seat === 'left') return `${mobileSlot} sm:top-1/2 sm:left-8 sm:right-auto sm:-translate-y-1/2`
+  return `${mobileSlot} sm:top-1/2 sm:right-8 sm:left-auto sm:-translate-y-1/2`
 }
 
 function rotationFor(seat: Seat): string {
@@ -130,6 +132,12 @@ export default function TestLayoutPage() {
   const me = allPlayers[meIndex] ?? allPlayers[0]!
   const opponents = allPlayers.filter(p => p.id !== me.id)
   const arenaId = 'default'
+
+  // Mobile: qual oponente é mostrado em destaque (tabs controlam)
+  const [activeOppIdx, setActiveOppIdx] = useState(0)
+  useEffect(() => {
+    if (activeOppIdx >= opponents.length) setActiveOppIdx(0)
+  }, [opponents.length, activeOppIdx])
 
   // Stage com tamanho fixo de design (1280x800) que é escalado uniformemente
   // pra caber em qualquer viewport. Padrão usado por jogos como Hearthstone/Marvel Snap.
@@ -629,7 +637,7 @@ export default function TestLayoutPage() {
             const seat = seatFor(i, opponents.length)
             const canClick = selection.mode === 'peek-other' || selection.mode === 'swap-target'
             return (
-              <div key={p.id} className={`absolute z-20 ${opponentPosUno(seat, i)}`}>
+              <div key={p.id} className={`absolute z-20 ${opponentPosUno(seat)}`}>
                 <OpponentArea
                   player={p}
                   isCurrent={i === 0}
@@ -638,10 +646,31 @@ export default function TestLayoutPage() {
                   seat={seat}
                   onCardClick={canClick ? (idx) => onOppCardClick(p.id, idx) : undefined}
                   selectedCardIds={activeSelectedIds}
+                  mobileVisible={i === activeOppIdx}
                 />
               </div>
             )
           })}
+
+          {/* Tabs mobile: troca qual oponente fica visível em destaque */}
+          {opponents.length > 1 && (
+            <div className="sm:hidden absolute top-12 left-2 right-2 z-30 flex gap-1.5">
+              {opponents.map((p, i) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => setActiveOppIdx(i)}
+                  className={`flex-1 px-2 py-1 rounded-full font-display text-[11px] border-2 border-bate-ink whitespace-nowrap truncate ${
+                    activeOppIdx === i
+                      ? 'bg-bate-gold text-bate-ink shadow-hard-sm'
+                      : 'bg-bate-paper/70 text-bate-ink/70'
+                  }`}
+                >
+                  {p.name}
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
             <div className={`relative max-w-[calc(100vw-1rem)] px-2 sm:px-12 py-2 sm:py-8 rounded-2xl sm:rounded-3xl border-[3px] sm:border-[4px] border-bate-ink bg-bate-paper/70 shadow-hard sm:shadow-hard-lg backdrop-blur-sm table-surface table-surface-${arenaId}`}>

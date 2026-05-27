@@ -26,9 +26,13 @@ type Props = {
   // - 'left' / 'right': cards em coluna (flex-col), tipo UNO mas sem rotação
   //   pra manter cartas legíveis
   seat?: 'top' | 'left' | 'right'
+  // mobileVisible controla se o pill mobile aparece. Quando false, mobile
+  // branch é hidden — usado pra mostrar 1 oponente por vez no mobile via
+  // tabs no parent.
+  mobileVisible?: boolean
 }
 
-export function OpponentArea({ player, isCurrent, isHost = false, isLeader = false, onCardClick, tempReveals, highlightedIds, victimEffects, holdingDrawn = false, selectedCardIds, emote = null, seat = 'top' }: Props) {
+export function OpponentArea({ player, isCurrent, isHost = false, isLeader = false, onCardClick, tempReveals, highlightedIds, victimEffects, holdingDrawn = false, selectedCardIds, emote = null, seat = 'top', mobileVisible = true }: Props) {
   const isLateral = seat === 'left' || seat === 'right'
   const desktopFlyingRef = useRef<HTMLDivElement | null>(null)
   const mobileFlyingRef = useRef<HTMLDivElement | null>(null)
@@ -77,8 +81,8 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
     <div className="relative">
       <EmoteBubble emote={emote?.key ?? null} id={emote?.id ?? 0} />
 
-      {/* Mobile: compact horizontal pill */}
-      <div className="sm:hidden">
+      {/* Mobile: compact horizontal pill — esconde se mobileVisible=false (parent tá usando tabs) */}
+      <div className={mobileVisible ? 'sm:hidden' : 'hidden'}>
         <div
           className={`relative flex items-center gap-1.5 px-1.5 py-1 rounded-2xl border-[2px] border-bate-ink ${
             isCurrent ? 'bg-bate-gold' : 'bg-bate-paper'

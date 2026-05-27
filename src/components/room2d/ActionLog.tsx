@@ -47,7 +47,7 @@ export function ActionLog({ state }: { state: RedactedState }) {
     <>
       <button
         onClick={() => setOpen(v => !v)}
-        className="fixed top-4 right-4 z-50 w-12 h-12 rounded-full bg-bate-paper/90 backdrop-blur text-bate-red text-xl shadow-2xl hover:scale-110 transition-transform border border-bate-ink/40 flex items-center justify-center"
+        className="fixed bottom-2 left-12 sm:bottom-4 sm:left-16 z-50 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-bate-paper/90 backdrop-blur text-bate-red text-base sm:text-xl shadow-2xl hover:scale-110 transition-transform border border-bate-ink/40 flex items-center justify-center"
         title="Histórico"
       >
         {open ? '✕' : '📜'}
@@ -58,8 +58,8 @@ export function ActionLog({ state }: { state: RedactedState }) {
         )}
       </button>
       <div
-        className={`fixed top-0 right-0 h-screen w-72 bg-bate-paper/95 backdrop-blur z-40 shadow-2xl overflow-y-auto p-4 pt-20 transition-transform duration-300 ${
-          open ? 'translate-x-0' : 'translate-x-full'
+        className={`fixed top-0 left-0 h-screen w-72 bg-bate-paper/95 backdrop-blur z-40 shadow-2xl overflow-y-auto p-4 pt-20 transition-transform duration-300 ${
+          open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <h4 className="font-bold mb-3 text-bate-ink text-sm uppercase">Histórico</h4>

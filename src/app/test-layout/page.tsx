@@ -114,6 +114,14 @@ function rotationFor(seat: Seat): string {
 }
 
 export default function TestLayoutPage() {
+  // Detecta modo "bare" via URL — quando true, esconde a toolbar e fica
+  // totalmente controlado por postMessage (usado pelo /test-mobile)
+  const [isBare, setIsBare] = useState(false)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    setIsBare(new URLSearchParams(window.location.search).get('bare') === '1')
+  }, [])
+
   const [opponentCount, setOpponentCount] = useState<1 | 2 | 3>(3)
   const [meIndex, setMeIndex] = useState(0)
   const [showRealUI, setShowRealUI] = useState(true)
@@ -351,11 +359,38 @@ export default function TestLayoutPage() {
     setSelection({ mode: 'drawn-swap' })
   }
 
+  // Ref pra latest action functions — message handler chama via ref pra não
+  // ficar com closure stale (useEffect roda só uma vez)
+  const actionsRef = useRef({ drawCard, runSnap, runTempo })
+  useEffect(() => {
+    actionsRef.current = { drawCard, runSnap, runTempo }
+  })
+
+  // Listener de postMessage — quando embedded em iframe (/test-mobile), o
+  // parent envia comandos por aqui. Aceita config (opp/me/hud) e ações
+  // (draw-card, snap, tempo).
+  useEffect(() => {
+    const handler = (e: MessageEvent) => {
+      const msg = e.data
+      if (!msg || typeof msg !== 'object' || typeof msg.type !== 'string') return
+      if (msg.type === 'set-opp-count') setOpponentCount(msg.value)
+      else if (msg.type === 'set-me-index') setMeIndex(msg.value)
+      else if (msg.type === 'set-hud') setShowRealUI(msg.value)
+      else if (msg.type === 'draw-card') actionsRef.current.drawCard(msg.rank)
+      else if (msg.type === 'run-snap') actionsRef.current.runSnap(msg.ok)
+      else if (msg.type === 'run-tempo') actionsRef.current.runTempo()
+    }
+    window.addEventListener('message', handler)
+    return () => window.removeEventListener('message', handler)
+  }, [])
+
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-bate-cream flex items-center justify-center">
       <Background arenaId={arenaId} />
 
-      {/* Toolbar fora do stage — fica em tamanho real (não escala) */}
+      {/* Toolbar fora do stage — fica em tamanho real (não escala). Escondida
+          em modo bare (controlado externamente via postMessage) */}
+      {!isBare && (
       <div className="fixed top-2 left-2 z-50 flex flex-col gap-2 bg-bate-paper border-[2px] border-bate-ink rounded-xl p-2 shadow-hard-sm">
         <div className="flex gap-2 items-center">
           <span className="font-display text-xs text-bate-ink/80 self-center w-20">Oponentes:</span>
@@ -432,6 +467,7 @@ export default function TestLayoutPage() {
           </div>
         )}
       </div>
+      )}
 
       {/* Banner de seleção — flutua centralizado no topo, prominente durante modo de seleção */}
       <AnimatePresence>

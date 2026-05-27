@@ -27,6 +27,7 @@ const caveat = Caveat({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.batinho.com.br'),
   title: 'Batinho',
   description: 'Memorize, espie, troque, corte. Menor placar leva. Bate online, 2-4 jogadores, grátis.',
   applicationName: 'Batinho',
@@ -42,6 +43,20 @@ export const metadata: Metadata = {
     siteName: 'Batinho',
     locale: 'pt_BR',
     type: 'website',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Batinho — Bate online multiplayer',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Batinho',
+    description: 'Bate online: memorize, espie, troque, corte. Menor placar leva.',
+    images: ['/og-image.png'],
   },
 }
 

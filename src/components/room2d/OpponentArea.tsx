@@ -6,8 +6,8 @@ import type { RedactedPlayer, Rank, Suit } from '@/types/shared'
 import { Card2D } from './Card2D'
 import { CardBack } from './CardBack'
 import { Nameplate } from './Nameplate'
-import { Avatar } from '@/components/lobby/Avatar'
 import { EmoteBubble } from './EmoteBubble'
+import { Avatar } from '@/components/lobby/Avatar'
 import { playSound } from '@/lib/sounds'
 
 type Props = {
@@ -27,9 +27,13 @@ type Props = {
   // - 'left' / 'right': cards em coluna (flex-col), tipo UNO mas sem rotação
   //   pra manter cartas legíveis
   seat?: 'top' | 'left' | 'right'
+  // mobileVisible controla se o pill mobile aparece. Quando false, mobile
+  // branch é hidden — usado pra mostrar 1 oponente por vez no mobile via
+  // tabs no parent.
+  mobileVisible?: boolean
 }
 
-export function OpponentArea({ player, isCurrent, isHost = false, isLeader = false, onCardClick, tempReveals, highlightedIds, victimEffects, holdingDrawn = false, selectedCardIds, emote = null, seat = 'top' }: Props) {
+export function OpponentArea({ player, isCurrent, isHost = false, isLeader = false, onCardClick, tempReveals, highlightedIds, victimEffects, holdingDrawn = false, selectedCardIds, emote = null, seat = 'top', mobileVisible = true }: Props) {
   const isLateral = seat === 'left' || seat === 'right'
   const desktopFlyingRef = useRef<HTMLDivElement | null>(null)
   const mobileFlyingRef = useRef<HTMLDivElement | null>(null)
@@ -78,25 +82,26 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
     <div className="relative">
       <EmoteBubble emote={emote?.key ?? null} id={emote?.id ?? 0} />
 
-      {/* Mobile: compact horizontal pill */}
-      <div className="sm:hidden">
+      {/* Mobile: compact horizontal pill — esconde se mobileVisible=false (parent tá usando tabs) */}
+      <div className={mobileVisible ? 'sm:hidden' : 'hidden'}>
         <div
           className={`relative flex items-center gap-1.5 px-1.5 py-1 rounded-2xl border-[2px] border-bate-ink ${
             isCurrent ? 'bg-bate-gold' : 'bg-bate-paper'
           } ${!player.connected ? 'opacity-60' : ''} shadow-hard-sm transition-colors`}
         >
-          <div className="flex items-center gap-1 min-w-0">
-            <Avatar name={player.name} size={28} />
-            <div className="flex flex-col leading-tight min-w-0">
-              <div className="font-display text-[11px] flex items-center gap-1 truncate max-w-[80px]">
-                {isLeader && <span title="Em primeiro" className="text-[11px]">🏆</span>}
-                <span className="truncate">{player.name}</span>
-                {isHost && <span title="Host" className="text-[10px]">👑</span>}
-              </div>
-              <div className="font-body text-[9px] uppercase tracking-wider text-bate-ink/70 leading-none">{player.score}p</div>
+          <Avatar name={player.name} size={26} />
+          <div className="flex flex-col leading-tight min-w-0">
+            <div className="font-display text-[11px] flex items-center gap-0.5 truncate max-w-[80px]">
+              {isLeader && <span title="Em primeiro" className="text-[10px]">🏆</span>}
+              <span className="truncate">{player.name}</span>
+              {isHost && <span title="Host" className="text-[9px]">👑</span>}
+              {!player.connected && <span className="w-1.5 h-1.5 rounded-full bg-bate-red-deep shrink-0" title="Desconectado" />}
+            </div>
+            <div className="font-body text-[9px] uppercase tracking-wider text-bate-ink/70">
+              {player.score} pts
             </div>
           </div>
-          <div className="flex gap-0.5 items-center">
+          <div className="flex gap-0.5 items-center ml-2">
             {player.hand.map((c, i) => (
               <Card2D
                 key={c.id}

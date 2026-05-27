@@ -100,11 +100,13 @@ function seatFor(idx: number, count: number): Seat {
   return 'right'
 }
 
-function opponentPosUno(seat: Seat, idx: number): string {
-  const mobileStack = ['top-12 left-2 right-2', 'top-24 left-2 right-2', 'top-36 left-2 right-2'][idx] ?? ''
-  if (seat === 'top') return `${mobileStack} sm:top-8 sm:left-1/2 sm:right-auto sm:-translate-x-1/2`
-  if (seat === 'left') return `${mobileStack} sm:top-1/2 sm:left-8 sm:right-auto sm:-translate-y-1/2`
-  return `${mobileStack} sm:top-1/2 sm:right-8 sm:left-auto sm:-translate-y-1/2`
+function opponentPosUno(seat: Seat): string {
+  // Mobile: todos opponents na mesma slot (tabs controlam qual aparece).
+  // top-24 deixa espaço pra TopChrome (top-2) + tabs (top-12)
+  const mobileSlot = 'top-24 left-2 right-2'
+  if (seat === 'top') return `${mobileSlot} sm:top-8 sm:left-1/2 sm:right-auto sm:-translate-x-1/2`
+  if (seat === 'left') return `${mobileSlot} sm:top-1/2 sm:left-8 sm:right-auto sm:-translate-y-1/2`
+  return `${mobileSlot} sm:top-1/2 sm:right-8 sm:left-auto sm:-translate-y-1/2`
 }
 
 function rotationFor(seat: Seat): string {
@@ -114,6 +116,14 @@ function rotationFor(seat: Seat): string {
 }
 
 export default function TestLayoutPage() {
+  // Detecta modo "bare" via URL — quando true, esconde a toolbar e fica
+  // totalmente controlado por postMessage (usado pelo /test-mobile)
+  const [isBare, setIsBare] = useState(false)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    setIsBare(new URLSearchParams(window.location.search).get('bare') === '1')
+  }, [])
+
   const [opponentCount, setOpponentCount] = useState<1 | 2 | 3>(3)
   const [meIndex, setMeIndex] = useState(0)
   const [showRealUI, setShowRealUI] = useState(true)
@@ -122,6 +132,12 @@ export default function TestLayoutPage() {
   const me = allPlayers[meIndex] ?? allPlayers[0]!
   const opponents = allPlayers.filter(p => p.id !== me.id)
   const arenaId = 'default'
+
+  // Mobile: qual oponente é mostrado em destaque (tabs controlam)
+  const [activeOppIdx, setActiveOppIdx] = useState(0)
+  useEffect(() => {
+    if (activeOppIdx >= opponents.length) setActiveOppIdx(0)
+  }, [opponents.length, activeOppIdx])
 
   // Stage com tamanho fixo de design (1280x800) que é escalado uniformemente
   // pra caber em qualquer viewport. Padrão usado por jogos como Hearthstone/Marvel Snap.
@@ -351,11 +367,38 @@ export default function TestLayoutPage() {
     setSelection({ mode: 'drawn-swap' })
   }
 
+  // Ref pra latest action functions — message handler chama via ref pra não
+  // ficar com closure stale (useEffect roda só uma vez)
+  const actionsRef = useRef({ drawCard, runSnap, runTempo })
+  useEffect(() => {
+    actionsRef.current = { drawCard, runSnap, runTempo }
+  })
+
+  // Listener de postMessage — quando embedded em iframe (/test-mobile), o
+  // parent envia comandos por aqui. Aceita config (opp/me/hud) e ações
+  // (draw-card, snap, tempo).
+  useEffect(() => {
+    const handler = (e: MessageEvent) => {
+      const msg = e.data
+      if (!msg || typeof msg !== 'object' || typeof msg.type !== 'string') return
+      if (msg.type === 'set-opp-count') setOpponentCount(msg.value)
+      else if (msg.type === 'set-me-index') setMeIndex(msg.value)
+      else if (msg.type === 'set-hud') setShowRealUI(msg.value)
+      else if (msg.type === 'draw-card') actionsRef.current.drawCard(msg.rank)
+      else if (msg.type === 'run-snap') actionsRef.current.runSnap(msg.ok)
+      else if (msg.type === 'run-tempo') actionsRef.current.runTempo()
+    }
+    window.addEventListener('message', handler)
+    return () => window.removeEventListener('message', handler)
+  }, [])
+
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-bate-cream flex items-center justify-center">
       <Background arenaId={arenaId} />
 
-      {/* Toolbar fora do stage — fica em tamanho real (não escala) */}
+      {/* Toolbar fora do stage — fica em tamanho real (não escala). Escondida
+          em modo bare (controlado externamente via postMessage) */}
+      {!isBare && (
       <div className="fixed top-2 left-2 z-50 flex flex-col gap-2 bg-bate-paper border-[2px] border-bate-ink rounded-xl p-2 shadow-hard-sm">
         <div className="flex gap-2 items-center">
           <span className="font-display text-xs text-bate-ink/80 self-center w-20">Oponentes:</span>
@@ -432,8 +475,9 @@ export default function TestLayoutPage() {
           </div>
         )}
       </div>
+      )}
 
-      {/* Banner de seleção — flutua centralizado no topo, prominente durante modo de seleção */}
+      {/* Banner de seleção — entre oponente e mesa no mobile, topo no desktop */}
       <AnimatePresence>
         {selectionHint && (
           <motion.div
@@ -441,14 +485,14 @@ export default function TestLayoutPage() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -40, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 320, damping: 22 }}
-            className="fixed top-20 left-1/2 -translate-x-1/2 z-40 pointer-events-auto"
+            className="fixed top-[22%] sm:top-20 left-1/2 -translate-x-1/2 z-40 pointer-events-auto"
           >
-            <div className="flex items-center gap-3 px-4 py-2 sm:px-5 sm:py-3 rounded-full bg-bate-gold border-[3px] border-bate-ink shadow-hard-lg">
-              <span className="font-display text-sm sm:text-base text-bate-ink uppercase tracking-wider">{selectionHint}</span>
+            <div className="flex items-center gap-2 px-2.5 py-1 sm:px-5 sm:py-3 rounded-xl sm:rounded-full bg-bate-gold border-[2px] sm:border-[3px] border-bate-ink shadow-hard-sm sm:shadow-hard-lg">
+              <span className="font-display text-[10px] sm:text-base text-bate-ink uppercase tracking-wider text-center">{selectionHint}</span>
               <button
                 type="button"
                 onClick={cancelSelection}
-                className="px-2 py-0.5 rounded-full font-display text-[10px] sm:text-xs border-2 border-bate-ink bg-bate-paper hover:bg-bate-cream"
+                className="px-1.5 py-0.5 rounded-full font-display text-[9px] sm:text-xs border-2 border-bate-ink bg-bate-paper hover:bg-bate-cream shrink-0"
               >
                 cancelar
               </button>
@@ -480,21 +524,21 @@ export default function TestLayoutPage() {
                 animate={{ scale: 1, y: 0, opacity: 1 }}
                 exit={{ scale: 0.7, y: 30, opacity: 0 }}
                 transition={{ type: 'spring', stiffness: 320, damping: 22 }}
-                className="bg-bate-paper rounded-3xl border-[4px] border-bate-ink shadow-hard-lg p-6 sm:p-8 flex flex-col items-center gap-4 sm:gap-6 max-w-sm w-full"
+                className="bg-bate-paper rounded-2xl sm:rounded-3xl border-[3px] sm:border-[4px] border-bate-ink shadow-hard-lg p-3 sm:p-8 flex flex-col items-center gap-2 sm:gap-6 max-w-sm w-full"
               >
                 <div className="text-center">
-                  <div className="font-display text-[10px] sm:text-xs uppercase tracking-widest text-bate-ink/60">você comprou</div>
+                  <div className="font-display text-[9px] sm:text-xs uppercase tracking-widest text-bate-ink/60">você comprou</div>
                   <h2
-                    className="font-display text-3xl sm:text-4xl text-bate-red"
+                    className="font-display text-xl sm:text-4xl text-bate-red leading-none"
                     style={{
-                      WebkitTextStroke: '2px #1a0e08',
-                      textShadow: '3px 3px 0 #1a0e08, 3px 3px 0 #ffb81c',
+                      WebkitTextStroke: '1.5px #1a0e08',
+                      textShadow: '2px 2px 0 #1a0e08, 2px 2px 0 #ffb81c',
                     }}
                   >
                     {meta.displayName ?? drawnCard.rank}
                   </h2>
                   {meta.abilityText && (
-                    <p className="text-xs sm:text-sm text-bate-ink/80 mt-2 font-body">{meta.abilityText}</p>
+                    <p className="text-[10px] sm:text-sm text-bate-ink/80 mt-1 sm:mt-2 font-body">{meta.abilityText}</p>
                   )}
                 </div>
 
@@ -502,18 +546,18 @@ export default function TestLayoutPage() {
                   initial={{ rotateY: 180, scale: 0.4 }}
                   animate={{ rotateY: 0, scale: 1 }}
                   transition={{ delay: 0.1, duration: 0.5, ease: 'easeOut' }}
-                  className="w-28 h-40 sm:w-36 sm:h-52 rounded-xl border-[3px] sm:border-[4px] border-bate-ink overflow-hidden shadow-hard"
+                  className="w-20 h-28 sm:w-36 sm:h-52 rounded-xl border-[2px] sm:border-[4px] border-bate-ink overflow-hidden shadow-hard"
                   style={{ transformStyle: 'preserve-3d' }}
                 >
                   <img src={getCardImage(drawnCard.rank, me.deck)} alt={drawnCard.rank} className="w-full h-full object-cover" draggable={false} />
                 </motion.div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 w-full">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-3 w-full">
                   {isAction && (
                     <button
                       type="button"
                       onClick={onUseDrawn}
-                      className="px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl bg-bate-gold border-[2px] sm:border-[3px] border-bate-ink shadow-hard text-bate-ink font-display uppercase text-sm sm:text-base hover:scale-105 active:scale-95 transition-transform sm:col-span-2"
+                      className="px-3 py-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-2xl bg-bate-gold border-[2px] sm:border-[3px] border-bate-ink shadow-hard text-bate-ink font-display uppercase text-xs sm:text-base hover:scale-105 active:scale-95 transition-transform sm:col-span-2"
                     >
                       🎯 USAR EFEITO
                     </button>
@@ -521,20 +565,20 @@ export default function TestLayoutPage() {
                   <button
                     type="button"
                     onClick={onSwapDrawn}
-                    className="px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl bg-bate-red text-bate-paper border-[2px] sm:border-[3px] border-bate-ink shadow-hard font-display uppercase text-sm sm:text-base hover:scale-105 active:scale-95 transition-transform"
+                    className="px-3 py-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-2xl bg-bate-red text-bate-paper border-[2px] sm:border-[3px] border-bate-ink shadow-hard font-display uppercase text-xs sm:text-base hover:scale-105 active:scale-95 transition-transform"
                   >
                     🔄 TROCAR
                   </button>
                   <button
                     type="button"
                     onClick={onDiscardDrawn}
-                    className="px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl bg-bate-paper border-[2px] sm:border-[3px] border-bate-ink shadow-hard-sm text-bate-ink font-display uppercase text-sm sm:text-base hover:scale-105 active:scale-95 transition-transform"
+                    className="px-3 py-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-2xl bg-bate-paper border-[2px] sm:border-[3px] border-bate-ink shadow-hard-sm text-bate-ink font-display uppercase text-xs sm:text-base hover:scale-105 active:scale-95 transition-transform"
                   >
                     🗑️ DESCARTAR
                   </button>
                 </div>
 
-                <div className="text-[10px] sm:text-xs text-bate-ink/60 text-center font-body leading-relaxed max-w-xs">
+                <div className="hidden sm:block text-xs text-bate-ink/60 text-center font-body leading-relaxed max-w-xs">
                   {isAction
                     ? '🎯 USAR = dispara o efeito  ·  🔄 TROCAR = põe na sua mão (uma sua vai pro descarte)  ·  🗑️ DESCARTAR = sem efeito'
                     : '🔄 TROCAR = põe na sua mão (uma sua vai pro descarte)  ·  🗑️ DESCARTAR = joga fora'}
@@ -549,7 +593,7 @@ export default function TestLayoutPage() {
       {showRealUI && (
         <>
           <TopChrome state={state} />
-          <InstructionBar text="✋ Sua vez — clica no baralho pra comprar" />
+          <InstructionBar text={selectionHint ? null : '✋ Sua vez — clica no baralho pra comprar'} />
           <ActionLog state={state} />
           <LeaveButton roomId={state.roomId} inGame />
           <EmoteBar roomId={state.roomId} />
@@ -593,7 +637,7 @@ export default function TestLayoutPage() {
             const seat = seatFor(i, opponents.length)
             const canClick = selection.mode === 'peek-other' || selection.mode === 'swap-target'
             return (
-              <div key={p.id} className={`absolute z-20 ${opponentPosUno(seat, i)}`}>
+              <div key={p.id} className={`absolute z-20 ${opponentPosUno(seat)}`}>
                 <OpponentArea
                   player={p}
                   isCurrent={i === 0}
@@ -602,10 +646,31 @@ export default function TestLayoutPage() {
                   seat={seat}
                   onCardClick={canClick ? (idx) => onOppCardClick(p.id, idx) : undefined}
                   selectedCardIds={activeSelectedIds}
+                  mobileVisible={i === activeOppIdx}
                 />
               </div>
             )
           })}
+
+          {/* Tabs mobile: troca qual oponente fica visível em destaque */}
+          {opponents.length > 1 && (
+            <div className="sm:hidden absolute top-12 left-2 right-2 z-30 flex gap-1.5">
+              {opponents.map((p, i) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => setActiveOppIdx(i)}
+                  className={`flex-1 px-2 py-1 rounded-full font-display text-[11px] border-2 border-bate-ink whitespace-nowrap truncate ${
+                    activeOppIdx === i
+                      ? 'bg-bate-gold text-bate-ink shadow-hard-sm'
+                      : 'bg-bate-paper/70 text-bate-ink/70'
+                  }`}
+                >
+                  {p.name}
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
             <div className={`relative max-w-[calc(100vw-1rem)] px-2 sm:px-12 py-2 sm:py-8 rounded-2xl sm:rounded-3xl border-[3px] sm:border-[4px] border-bate-ink bg-bate-paper/70 shadow-hard sm:shadow-hard-lg backdrop-blur-sm table-surface table-surface-${arenaId}`}>

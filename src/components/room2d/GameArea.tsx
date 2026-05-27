@@ -520,6 +520,9 @@ export function GameArea({ state }: { state: RedactedState }) {
             </AnimatePresence>
             <DiscardPile2D discard={state.discard} players={state.players} />
           </div>
+          <div className="hidden sm:block absolute left-full top-1/2 -translate-y-1/2 ml-4 z-40">
+            <BateButton state={state} drawnExists={!!drawnCard} embedded />
+          </div>
         </div>
       </div>
 
@@ -551,7 +554,9 @@ export function GameArea({ state }: { state: RedactedState }) {
         })()}
       </div>
 
-      <BateButton state={state} drawnExists={!!drawnCard} />
+      <div className="sm:hidden">
+        <BateButton state={state} drawnExists={!!drawnCard} />
+      </div>
       <InstructionBar text={(!pendingEffect || effectPromptDismissed) ? instruction : null} />
       <MascotOverlay
         state={state}

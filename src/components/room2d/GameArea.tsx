@@ -552,7 +552,7 @@ export function GameArea({ state }: { state: RedactedState }) {
       </div>
 
       <BateButton state={state} drawnExists={!!drawnCard} />
-      <InstructionBar text={instruction} />
+      <InstructionBar text={(!pendingEffect || effectPromptDismissed) ? instruction : null} />
       <MascotOverlay
         state={state}
         myId={myId}

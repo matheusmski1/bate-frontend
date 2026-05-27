@@ -7,6 +7,7 @@ import { Card2D } from './Card2D'
 import { CardBack } from './CardBack'
 import { Nameplate } from './Nameplate'
 import { EmoteBubble } from './EmoteBubble'
+import { Avatar } from '@/components/lobby/Avatar'
 import { playSound } from '@/lib/sounds'
 
 type Props = {
@@ -88,14 +89,19 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
             isCurrent ? 'bg-bate-gold' : 'bg-bate-paper'
           } ${!player.connected ? 'opacity-60' : ''} shadow-hard-sm transition-colors`}
         >
-          <div className="flex items-center gap-1 min-w-0">
-            <div className="font-display text-[11px] flex items-center gap-1 truncate max-w-[90px]">
-              {isLeader && <span title="Em primeiro" className="text-[11px]">🏆</span>}
+          <Avatar name={player.name} size={26} />
+          <div className="flex flex-col leading-tight min-w-0">
+            <div className="font-display text-[11px] flex items-center gap-0.5 truncate max-w-[80px]">
+              {isLeader && <span title="Em primeiro" className="text-[10px]">🏆</span>}
               <span className="truncate">{player.name}</span>
-              {isHost && <span title="Host" className="text-[10px]">👑</span>}
+              {isHost && <span title="Host" className="text-[9px]">👑</span>}
+              {!player.connected && <span className="w-1.5 h-1.5 rounded-full bg-bate-red-deep shrink-0" title="Desconectado" />}
+            </div>
+            <div className="font-body text-[9px] uppercase tracking-wider text-bate-ink/70">
+              {player.score} pts
             </div>
           </div>
-          <div className="flex gap-0.5 items-center">
+          <div className="flex gap-0.5 items-center ml-2">
             {player.hand.map((c, i) => (
               <Card2D
                 key={c.id}

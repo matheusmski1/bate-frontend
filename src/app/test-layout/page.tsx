@@ -477,7 +477,7 @@ export default function TestLayoutPage() {
       </div>
       )}
 
-      {/* Banner de seleção — flutua centralizado no topo, prominente durante modo de seleção */}
+      {/* Banner de seleção — entre oponente e mesa no mobile, topo no desktop */}
       <AnimatePresence>
         {selectionHint && (
           <motion.div
@@ -485,14 +485,14 @@ export default function TestLayoutPage() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -40, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 320, damping: 22 }}
-            className="fixed top-20 left-1/2 -translate-x-1/2 z-40 pointer-events-auto"
+            className="fixed top-[22%] sm:top-20 left-1/2 -translate-x-1/2 z-40 pointer-events-auto"
           >
-            <div className="flex items-center gap-3 px-4 py-2 sm:px-5 sm:py-3 rounded-full bg-bate-gold border-[3px] border-bate-ink shadow-hard-lg">
-              <span className="font-display text-sm sm:text-base text-bate-ink uppercase tracking-wider">{selectionHint}</span>
+            <div className="flex items-center gap-2 px-2.5 py-1 sm:px-5 sm:py-3 rounded-xl sm:rounded-full bg-bate-gold border-[2px] sm:border-[3px] border-bate-ink shadow-hard-sm sm:shadow-hard-lg">
+              <span className="font-display text-[10px] sm:text-base text-bate-ink uppercase tracking-wider text-center">{selectionHint}</span>
               <button
                 type="button"
                 onClick={cancelSelection}
-                className="px-2 py-0.5 rounded-full font-display text-[10px] sm:text-xs border-2 border-bate-ink bg-bate-paper hover:bg-bate-cream"
+                className="px-1.5 py-0.5 rounded-full font-display text-[9px] sm:text-xs border-2 border-bate-ink bg-bate-paper hover:bg-bate-cream shrink-0"
               >
                 cancelar
               </button>
@@ -593,7 +593,7 @@ export default function TestLayoutPage() {
       {showRealUI && (
         <>
           <TopChrome state={state} />
-          <InstructionBar text="✋ Sua vez — clica no baralho pra comprar" />
+          <InstructionBar text={selectionHint ? null : '✋ Sua vez — clica no baralho pra comprar'} />
           <ActionLog state={state} />
           <LeaveButton roomId={state.roomId} inGame />
           <EmoteBar roomId={state.roomId} />

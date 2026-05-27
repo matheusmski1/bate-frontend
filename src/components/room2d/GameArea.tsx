@@ -16,7 +16,6 @@ import { DrawnCard2D } from './DrawnCard2D'
 import { EffectPrompt } from './EffectPrompt'
 import { BateButton } from './BateButton'
 import { InstructionBar } from './InstructionBar'
-import { PeekModal } from './PeekModal'
 import { ActionLog } from './ActionLog'
 import { BateAnnouncement } from './BateAnnouncement'
 import { SnapToast } from './SnapToast'
@@ -46,13 +45,13 @@ export function GameArea({ state }: { state: RedactedState }) {
   const [drawnExit, setDrawnExit] = useState<'swap' | 'discard'>('discard')
   const [tempReveals, setTempReveals] = useState<Map<string, RevealValue>>(new Map())
   const [knownCards, setKnownCards] = useState<Map<string, RevealValue>>(new Map())
-  const [revealModal, setRevealModal] = useState<RevealValue | null>(null)
   const [mySwapPickIndex, setMySwapPickIndex] = useState<number | null>(null)
   const [peekConfirmedLocal, setPeekConfirmedLocal] = useState(false)
   const [victimEffects, setVictimEffects] = useState<Map<string, 'peeked' | 'swapped'>>(new Map())
   const [opponentsHoldingDrawn, setOpponentsHoldingDrawn] = useState<Set<string>>(new Set())
   const [effectPromptDismissed, setEffectPromptDismissed] = useState(false)
   const [emotes, setEmotes] = useState<Map<string, { id: number; key: string }>>(new Map())
+  const [animationSelectedIds, setAnimationSelectedIds] = useState<readonly string[]>([])
   const [localActions, setLocalActions] = useState<LocalMascotActions>({
     peekRevealed: null,
     snapResult: null,
@@ -191,8 +190,8 @@ export function GameArea({ state }: { state: RedactedState }) {
   const tempReveal = useCallback((cardId: string, value: RevealValue, kind: 'own' | 'other') => {
     setTempReveals(prev => new Map(prev).set(cardId, value))
     setKnownCards(prev => new Map(prev).set(cardId, value))
-    // Em vez de abrir o modal direto, dispara o overlay; o overlay chama onPeekArrived
-    // que chama setRevealModal quando o mascote chega na carta (~900ms depois).
+    // Dispara o mascote do overlay; reveal acontece via tempReveal no tabuleiro
+    // (a carta vira por TEMP_REVEAL_MS). Sem modal redundante.
     setLocalActions(prev => ({ ...prev, peekRevealed: { cardId, reveal: value, kind } }))
     setTimeout(() => {
       setTempReveals(prev => {
@@ -219,7 +218,7 @@ export function GameArea({ state }: { state: RedactedState }) {
   const ownCardsClickable =
     canSwapDrawn ||
     canSnap ||
-    (isMyEffect && (pendingEffect?.type === 'peek-own' || pendingEffect?.type === 'swap'))
+    (isMyEffect && (pendingEffect?.type === 'peek-own' || (pendingEffect?.type === 'swap' && mySwapPickIndex === null)))
   const opponentCardsClickable = isMyEffect && (pendingEffect?.type === 'peek-other' || (pendingEffect?.type === 'swap' && mySwapPickIndex !== null))
 
   function confirmInitialPeek() {
@@ -366,17 +365,22 @@ export function GameArea({ state }: { state: RedactedState }) {
     instruction = '✂️ Vez de outro — clica uma carta SUA pra cortar (se bater com o descarte)'
   }
 
+  type Seat = 'top' | 'left' | 'right'
+  const seatFor = (idx: number, count: number): Seat => {
+    if (count === 1) return 'top'
+    if (count === 2) return idx === 0 ? 'left' : 'right'
+    // 3 opponents: 0=left, 1=top, 2=right (UNO layout)
+    if (idx === 0) return 'left'
+    if (idx === 1) return 'top'
+    return 'right'
+  }
   const opponentPos = (idx: number): string => {
     const count = opponents.length
+    const seat = seatFor(idx, count)
     const mobileStack = ['top-12 left-2 right-2', 'top-24 left-2 right-2', 'top-36 left-2 right-2'][idx] ?? ''
-    if (count === 1) return `${mobileStack} sm:top-14 sm:left-1/2 sm:right-auto sm:-translate-x-1/2`
-    if (count === 2) {
-      if (idx === 0) return `${mobileStack} sm:top-14 sm:left-10 sm:right-auto`
-      return `${mobileStack} sm:top-14 sm:right-10 sm:left-auto`
-    }
-    if (idx === 0) return `${mobileStack} sm:top-14 sm:left-1/2 sm:right-auto sm:-translate-x-1/2`
-    if (idx === 1) return `${mobileStack} sm:top-1/4 sm:left-8 sm:right-auto`
-    return `${mobileStack} sm:top-1/4 sm:right-8 sm:left-auto`
+    if (seat === 'top') return `${mobileStack} sm:top-8 sm:left-1/2 sm:right-auto sm:-translate-x-1/2`
+    if (seat === 'left') return `${mobileStack} sm:top-1/2 sm:left-8 sm:right-auto sm:-translate-y-1/2`
+    return `${mobileStack} sm:top-1/2 sm:right-8 sm:left-auto sm:-translate-y-1/2`
   }
 
   const leaderId = (() => {
@@ -421,6 +425,8 @@ export function GameArea({ state }: { state: RedactedState }) {
             victimEffects={victimEffects}
             holdingDrawn={opponentsHoldingDrawn.has(p.id)}
             emote={emotes.get(p.id) ?? null}
+            seat={seatFor(i, opponents.length)}
+            selectedCardIds={animationSelectedIds}
           />
         </div>
       ))}
@@ -490,35 +496,46 @@ export function GameArea({ state }: { state: RedactedState }) {
       </div>
 
       <div className="absolute bottom-16 sm:bottom-8 left-1/2 -translate-x-1/2 z-20">
-        {me && (
-          <PlayerHand2D
-            player={me}
-            isCurrent={isMyTurn}
-            isHost={me.id === state.hostId}
-            isLeader={me.id === leaderId}
-            onCardClick={ownCardsClickable ? handlePlayerCardClick : undefined}
-            tempReveals={tempReveals}
-            highlightedIds={highlightedIds}
-            victimEffects={victimEffects}
-            snapHintIds={snapHintIds}
-            emote={emotes.get(me.id) ?? null}
-          />
-        )}
+        {me && (() => {
+          // Combina cartas selecionadas pela animação (sync entre players) com
+          // a carta picada localmente no swap (antes de clicar oponente)
+          const localPicked = (isMyEffect && pendingEffect?.type === 'swap' && mySwapPickIndex !== null)
+            ? me.hand[mySwapPickIndex]?.id
+            : undefined
+          const handSelectedIds = localPicked
+            ? [...animationSelectedIds, localPicked]
+            : animationSelectedIds
+          return (
+            <PlayerHand2D
+              player={me}
+              isCurrent={isMyTurn}
+              isHost={me.id === state.hostId}
+              isLeader={me.id === leaderId}
+              onCardClick={ownCardsClickable ? handlePlayerCardClick : undefined}
+              tempReveals={tempReveals}
+              highlightedIds={highlightedIds}
+              victimEffects={victimEffects}
+              snapHintIds={snapHintIds}
+              emote={emotes.get(me.id) ?? null}
+              selectedCardIds={handSelectedIds}
+            />
+          )
+        })()}
       </div>
 
       <BateButton state={state} drawnExists={!!drawnCard} />
       <InstructionBar text={instruction} />
-      <PeekModal reveal={revealModal} onClose={() => setRevealModal(null)} />
       <MascotOverlay
         state={state}
         myId={myId}
         localActions={localActions}
-        onPeekArrived={(reveal) => {
-          setRevealModal(reveal)
+        onPeekArrived={() => {
           setLocalActions(prev => ({ ...prev, peekRevealed: null }))
         }}
         onSnapConsumed={() => setLocalActions(prev => ({ ...prev, snapResult: null }))}
         onSwapConsumed={() => setLocalActions(prev => ({ ...prev, swapResolved: null }))}
+        onCardsSelected={(ids) => setAnimationSelectedIds(ids)}
+        onCardsUnselected={() => setAnimationSelectedIds([])}
       />
       <ActionLog state={state} />
       <TopChrome state={state} />

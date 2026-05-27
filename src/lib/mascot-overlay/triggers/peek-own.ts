@@ -20,13 +20,19 @@ type Args = {
   controller: Controller
   localPeek: { cardId: string; reveal: { rank: Rank; suit: Suit | null } } | null
   onArrived: (reveal: { rank: Rank; suit: Suit | null }) => void
+  onCardsSelected?: (cardIds: string[]) => void
+  onCardsUnselected?: () => void
 }
 
-export function usePeekOwnTrigger({ state, myId, overlayRef, controller, localPeek, onArrived }: Args) {
+export function usePeekOwnTrigger({ state, myId, overlayRef, controller, localPeek, onArrived, onCardsSelected, onCardsUnselected }: Args) {
   // callback estável via ref — evita re-fire do effect quando parent re-renderiza
   const onArrivedRef = useRef(onArrived)
+  const onCardsSelectedRef = useRef(onCardsSelected)
+  const onCardsUnselectedRef = useRef(onCardsUnselected)
   useEffect(() => {
     onArrivedRef.current = onArrived
+    onCardsSelectedRef.current = onCardsSelected
+    onCardsUnselectedRef.current = onCardsUnselected
   })
 
   // ---- caso A: EU sou o ator ----
@@ -40,6 +46,7 @@ export function usePeekOwnTrigger({ state, myId, overlayRef, controller, localPe
 
     const fromRect = getRect('[data-discard-pile]')
     const toRect = getRect(`[data-card-id="${CSS.escape(localPeek.cardId)}"]`)
+    onCardsSelectedRef.current?.([localPeek.cardId])
     controller.runFlight({
       overlay,
       fromRect,
@@ -48,6 +55,7 @@ export function usePeekOwnTrigger({ state, myId, overlayRef, controller, localPe
       arrivalAsset: LUPA,
       box: boxFor(140, [FELIZ, LUPA]),
       onArrived: () => onArrivedRef.current(localPeek.reveal),
+      onComplete: () => onCardsUnselectedRef.current?.(),
     })
   }, [overlayRef, controller, localPeek])
 
@@ -81,6 +89,7 @@ export function usePeekOwnTrigger({ state, myId, overlayRef, controller, localPe
 
       const fromRect = getRect('[data-discard-pile]')
       const toRect = getRect(`[data-card-id="${CSS.escape(card.id)}"]`)
+      onCardsSelectedRef.current?.([card.id])
       controller.runFlight({
         overlay,
         fromRect,
@@ -88,6 +97,7 @@ export function usePeekOwnTrigger({ state, myId, overlayRef, controller, localPe
         travelAsset: FELIZ,
         arrivalAsset: LUPA,
         box: boxFor(140, [FELIZ, LUPA]),
+        onComplete: () => onCardsUnselectedRef.current?.(),
       })
     }
   }, [overlayRef, controller, state.log, state.players, myId])

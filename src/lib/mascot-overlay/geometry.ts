@@ -18,10 +18,18 @@ export function boxFor(width: number, assets: string[]): Box {
 
 /**
  * Lookup DOM rect via atributo data-*. Retorna null se elemento não existe
- * (ex: card desmontou no meio da animação).
+ * (ex: card desmontou no meio da animação) OU se todos os matches estão
+ * escondidos (rect 0x0). Esse último caso acontece porque OpponentArea
+ * renderiza branches mobile E desktop simultaneamente (Tailwind sm:hidden),
+ * e o primeiro match em DOM order pode ser o branch hidden — querySelectorAll
+ * + filtro de rect > 0 garante que a animação acerta o elemento visível.
  */
 export function getRect(selector: string): DOMRect | null {
   if (typeof document === 'undefined') return null
-  const el = document.querySelector(selector)
-  return el ? el.getBoundingClientRect() : null
+  const els = document.querySelectorAll(selector)
+  for (const el of els) {
+    const r = el.getBoundingClientRect()
+    if (r.width > 0 && r.height > 0) return r
+  }
+  return null
 }

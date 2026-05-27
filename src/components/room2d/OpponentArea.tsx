@@ -20,10 +20,17 @@ type Props = {
   highlightedIds?: Set<string>
   victimEffects?: Map<string, 'peeked' | 'swapped'>
   holdingDrawn?: boolean
+  selectedCardIds?: readonly string[]
   emote?: { id: number; key: string } | null
+  // seat controla o agrupamento das cartas na desktop view:
+  // - 'top' (default): cards em linha (flex-row)
+  // - 'left' / 'right': cards em coluna (flex-col), tipo UNO mas sem rotação
+  //   pra manter cartas legíveis
+  seat?: 'top' | 'left' | 'right'
 }
 
-export function OpponentArea({ player, isCurrent, isHost = false, isLeader = false, onCardClick, tempReveals, highlightedIds, victimEffects, holdingDrawn = false, emote = null }: Props) {
+export function OpponentArea({ player, isCurrent, isHost = false, isLeader = false, onCardClick, tempReveals, highlightedIds, victimEffects, holdingDrawn = false, selectedCardIds, emote = null, seat = 'top' }: Props) {
+  const isLateral = seat === 'left' || seat === 'right'
   const desktopFlyingRef = useRef<HTMLDivElement | null>(null)
   const mobileFlyingRef = useRef<HTMLDivElement | null>(null)
 
@@ -99,6 +106,7 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
                 tempRevealedAs={tempReveals?.get(c.id) ?? null}
                 highlighted={highlightedIds?.has(c.id) ?? false}
                 victimEffect={victimEffects?.get(c.id) ?? null}
+                selected={selectedCardIds?.includes(c.id) ?? false}
                 deckId={player.deck}
               />
             ))}
@@ -131,8 +139,8 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
           isLeader={isLeader}
           dataAttribute={{ key: 'data-opponent-nameplate', value: player.id }}
         />
-        <div className="flex gap-3 items-center">
-          <div className="flex gap-2">
+        <div className={`flex gap-3 ${isLateral ? 'flex-col items-center' : 'items-center'}`}>
+          <div className={`flex gap-2 ${isLateral ? 'flex-col' : ''}`}>
             {player.hand.map((c, i) => (
               <Card2D
                 key={c.id}
@@ -142,6 +150,7 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
                 tempRevealedAs={tempReveals?.get(c.id) ?? null}
                 highlighted={highlightedIds?.has(c.id) ?? false}
                 victimEffect={victimEffects?.get(c.id) ?? null}
+                selected={selectedCardIds?.includes(c.id) ?? false}
                 deckId={player.deck}
               />
             ))}

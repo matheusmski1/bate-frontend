@@ -25,6 +25,9 @@ type Props = {
   size?: 'sm' | 'md' | 'lg'
   draggable?: boolean
   deckId?: string | null
+  // `selected`: a carta foi escolhida pelo jogador num fluxo de seleção (swap,
+  // peek). Vira up + scale + glow dourado pra dar destaque visual.
+  selected?: boolean
 } & Omit<HTMLMotionProps<'button'>, 'onClick' | 'children'>
 
 const SIZE_CLASSES: Record<NonNullable<Props['size']>, string> = {
@@ -38,7 +41,7 @@ const VICTIM_SHADOW: Record<VictimEffect, string> = {
   swapped: '0 0 28px 8px rgba(214, 50, 50, 0.85), 5px 5px 0 #1a0e08',
 }
 
-export function Card2D({ card, tempRevealedAs = null, onClick, highlighted = false, victimEffect = null, snapHint = false, size = 'md', deckId = null, ...rest }: Props) {
+export function Card2D({ card, tempRevealedAs = null, onClick, highlighted = false, victimEffect = null, snapHint = false, size = 'md', deckId = null, selected = false, ...rest }: Props) {
   const isHidden = 'hidden' in card
   const effectiveRank: Rank | null = tempRevealedAs?.rank ?? (!isHidden ? card.rank : null)
   const showFace = !!effectiveRank
@@ -54,18 +57,22 @@ export function Card2D({ card, tempRevealedAs = null, onClick, highlighted = fal
       whileTap={onClick ? { scale: 0.97 } : undefined}
       animate={{
         rotateY: showFace ? 0 : 180,
+        y: selected ? -12 : 0,
+        scale: selected ? 1.06 : 1,
         boxShadow: victimEffect
           ? VICTIM_SHADOW[victimEffect]
-          : snapHint
-            ? ['0 0 14px 4px rgba(214, 50, 50, 0.6), 5px 5px 0 #1a0e08', '0 0 24px 8px rgba(214, 50, 50, 0.9), 5px 5px 0 #1a0e08', '0 0 14px 4px rgba(214, 50, 50, 0.6), 5px 5px 0 #1a0e08']
-            : highlighted
-              ? '0 0 18px 4px rgba(255, 184, 28, 0.7), 5px 5px 0 #1a0e08'
-              : '5px 5px 0 #1a0e08',
+          : selected
+            ? '0 14px 28px rgba(255, 184, 28, 0.55), 0 0 22px 6px rgba(255, 184, 28, 0.85), 5px 5px 0 #1a0e08'
+            : snapHint
+              ? ['0 0 14px 4px rgba(214, 50, 50, 0.6), 5px 5px 0 #1a0e08', '0 0 24px 8px rgba(214, 50, 50, 0.9), 5px 5px 0 #1a0e08', '0 0 14px 4px rgba(214, 50, 50, 0.6), 5px 5px 0 #1a0e08']
+              : highlighted
+                ? '0 0 18px 4px rgba(255, 184, 28, 0.7), 5px 5px 0 #1a0e08'
+                : '5px 5px 0 #1a0e08',
       }}
       transition={
         snapHint
           ? { rotateY: { duration: 0.45, ease: 'easeOut' }, boxShadow: { duration: 1.2, repeat: Infinity, ease: 'easeInOut' } }
-          : { rotateY: { duration: 0.45, ease: 'easeOut' }, boxShadow: { duration: 0.25 } }
+          : { rotateY: { duration: 0.45, ease: 'easeOut' }, boxShadow: { duration: 0.25 }, y: { type: 'spring', stiffness: 320, damping: 22 }, scale: { type: 'spring', stiffness: 320, damping: 22 } }
       }
       style={{ transformStyle: 'preserve-3d' }}
       className={`relative ${SIZE_CLASSES[size]} rounded-xl select-none border-[3px] border-bate-ink bg-bate-paper overflow-hidden ${onClick ? 'cursor-pointer' : 'cursor-default'} disabled:cursor-default ${victimEffect ? 'animate-pulse' : ''}`}

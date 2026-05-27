@@ -6,7 +6,10 @@ import { getPlayerId } from '@/lib/player-id'
 import { toast, confirmAsync } from '@/lib/ui-store'
 import type { RedactedState } from '@/types/shared'
 
-export function BateButton({ state, drawnExists }: { state: RedactedState; drawnExists: boolean }) {
+// `embedded`: quando true, o botão usa positioning inline (pra ficar dentro da
+// mesa). Quando false (default histórico), usa fixed pra flutuar. Real GameArea
+// e test-layout passam embedded — fixed fica como fallback.
+export function BateButton({ state, drawnExists, embedded = false }: { state: RedactedState; drawnExists: boolean; embedded?: boolean }) {
   const myId = getPlayerId()
   const isMyTurn = state.players[state.turn]?.id === myId
   const inPlayPhase = state.phase === 'playing' || state.phase === 'bate-called'
@@ -28,6 +31,10 @@ export function BateButton({ state, drawnExists }: { state: RedactedState; drawn
     })
   }
 
+  const positioningClass = embedded
+    ? 'relative'
+    : 'fixed top-2 right-24 sm:top-auto sm:bottom-1/4 sm:right-8 z-40'
+
   return (
     <motion.button
       type="button"
@@ -36,7 +43,7 @@ export function BateButton({ state, drawnExists }: { state: RedactedState; drawn
       animate={{ scale: 1, opacity: enabled ? 1 : 0.45 }}
       whileHover={enabled ? { scale: 1.08 } : undefined}
       whileTap={enabled ? { scale: 0.95 } : undefined}
-      className={`fixed top-2 right-24 sm:top-36 sm:right-6 z-40 px-3 py-1.5 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl font-display text-xs sm:text-base border-[3px] sm:border-[4px] border-bate-ink ${
+      className={`${positioningClass} px-3 py-1.5 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl font-display text-xs sm:text-base border-[3px] sm:border-[4px] border-bate-ink ${
         enabled
           ? 'bg-bate-red text-bate-paper cursor-pointer shadow-hard-lg'
           : 'bg-bate-paper text-bate-ink/60 cursor-not-allowed shadow-hard-sm'

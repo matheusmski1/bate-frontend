@@ -27,9 +27,14 @@ export type MascotOverlayProps = {
   onPeekArrived?: (reveal: { rank: Rank; suit: Suit | null }) => void
   onSnapConsumed?: () => void
   onSwapConsumed?: () => void
+  // Recebe os card.ids envolvidos numa animação (peek/swap) pra GameArea poder
+  // elevar visualmente as cartas selecionadas durante a anim. Sincronizado
+  // entre ator e observadores via os caminhos duplos dos triggers.
+  onCardsSelected?: (cardIds: string[]) => void
+  onCardsUnselected?: () => void
 }
 
-export function MascotOverlay({ state, myId, localActions, onPeekArrived, onSnapConsumed, onSwapConsumed }: MascotOverlayProps) {
+export function MascotOverlay({ state, myId, localActions, onPeekArrived, onSnapConsumed, onSwapConsumed, onCardsSelected, onCardsUnselected }: MascotOverlayProps) {
   const overlayRef = useRef<HTMLDivElement | null>(null)
   const controller = useMemo<Controller>(() => createController(), [])
 
@@ -45,6 +50,8 @@ export function MascotOverlay({ state, myId, localActions, onPeekArrived, onSnap
     controller,
     localPeek: peekOwnLocal,
     onArrived: onPeekArrived ?? (() => {}),
+    onCardsSelected,
+    onCardsUnselected,
   })
 
   usePeekOtherTrigger({
@@ -54,6 +61,8 @@ export function MascotOverlay({ state, myId, localActions, onPeekArrived, onSnap
     controller,
     localPeek: peekOtherLocal,
     onArrived: onPeekArrived ?? (() => {}),
+    onCardsSelected,
+    onCardsUnselected,
   })
 
   useSnapTrigger({
@@ -72,6 +81,8 @@ export function MascotOverlay({ state, myId, localActions, onPeekArrived, onSnap
     controller,
     localSwap: localActions.swapResolved,
     onConsumed: onSwapConsumed ?? (() => {}),
+    onCardsSelected,
+    onCardsUnselected,
   })
 
   useTempoAcabandoTrigger({ state, myId, overlayRef, controller })

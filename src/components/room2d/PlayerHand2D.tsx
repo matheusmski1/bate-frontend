@@ -15,10 +15,11 @@ type Props = {
   highlightedIds?: Set<string>
   victimEffects?: Map<string, 'peeked' | 'swapped'>
   snapHintIds?: Set<string>
+  selectedCardIds?: readonly string[]
   emote?: { id: number; key: string } | null
 }
 
-export function PlayerHand2D({ player, isCurrent, isHost = false, isLeader = false, onCardClick, tempReveals, highlightedIds, victimEffects, snapHintIds, emote = null }: Props) {
+export function PlayerHand2D({ player, isCurrent, isHost = false, isLeader = false, onCardClick, tempReveals, highlightedIds, victimEffects, snapHintIds, selectedCardIds, emote = null }: Props) {
   return (
     <div className="relative flex flex-col items-center gap-3">
       <EmoteBubble emote={emote?.key ?? null} id={emote?.id ?? 0} />
@@ -43,6 +44,7 @@ export function PlayerHand2D({ player, isCurrent, isHost = false, isLeader = fal
             highlighted={highlightedIds?.has(c.id) ?? false}
             victimEffect={victimEffects?.get(c.id) ?? null}
             snapHint={snapHintIds?.has(c.id) ?? false}
+            selected={selectedCardIds?.includes(c.id) ?? false}
             deckId={player.deck}
           />
         ))}

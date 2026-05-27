@@ -26,6 +26,8 @@ type Args = {
     targetCardIndex: number
   } | null
   onConsumed: () => void
+  onCardsSelected?: (cardIds: string[]) => void
+  onCardsUnselected?: () => void
 }
 
 function lookupSlotRects(
@@ -48,10 +50,14 @@ function lookupSlotRects(
   return { midRect, toRect }
 }
 
-export function useSwapTrigger({ state, myId, overlayRef, controller, localSwap, onConsumed }: Args) {
+export function useSwapTrigger({ state, myId, overlayRef, controller, localSwap, onConsumed, onCardsSelected, onCardsUnselected }: Args) {
   const onConsumedRef = useRef(onConsumed)
+  const onCardsSelectedRef = useRef(onCardsSelected)
+  const onCardsUnselectedRef = useRef(onCardsUnselected)
   useEffect(() => {
     onConsumedRef.current = onConsumed
+    onCardsSelectedRef.current = onCardsSelected
+    onCardsUnselectedRef.current = onCardsUnselected
   })
 
   // refs pra ler players de dentro de callbacks/effects sem incluir state.players em deps
@@ -78,6 +84,13 @@ export function useSwapTrigger({ state, myId, overlayRef, controller, localSwap,
       localSwap.targetPlayerId,
       localSwap.targetCardIndex,
     )
+    // Calcula card.ids dos slots envolvidos pra propagar selection
+    const actorPlayer = statePlayersRef.current.find((pl) => pl.id === localSwap.actorPlayerId)
+    const targetPlayer = statePlayersRef.current.find((pl) => pl.id === localSwap.targetPlayerId)
+    const actorCard = actorPlayer?.hand[localSwap.actorCardIndex]
+    const targetCard = targetPlayer?.hand[localSwap.targetCardIndex]
+    const cardIds = [actorCard?.id, targetCard?.id].filter((id): id is string => !!id)
+    if (cardIds.length) onCardsSelectedRef.current?.(cardIds)
     controller.runSwapDelivery({
       overlay,
       fromRect,
@@ -86,7 +99,10 @@ export function useSwapTrigger({ state, myId, overlayRef, controller, localSwap,
       travelAsset: FELIZ,
       carryAsset: TROCA,
       box: boxFor(140, [FELIZ, TROCA]),
-      onComplete: () => onConsumedRef.current(),
+      onComplete: () => {
+        onConsumedRef.current()
+        onCardsUnselectedRef.current?.()
+      },
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [overlayRef, controller, localSwap])
@@ -117,6 +133,12 @@ export function useSwapTrigger({ state, myId, overlayRef, controller, localSwap,
       const { midRect, toRect } = lookupSlotRects(state, entry.actorId, p.myCardIndex, p.targetPlayerId, p.targetCardIndex)
       if (!midRect || !toRect) continue
 
+      const actorPlayer = state.players.find((pl) => pl.id === entry.actorId)
+      const targetPlayer = state.players.find((pl) => pl.id === p.targetPlayerId)
+      const actorCard = actorPlayer?.hand[p.myCardIndex]
+      const targetCard = targetPlayer?.hand[p.targetCardIndex]
+      const cardIds = [actorCard?.id, targetCard?.id].filter((id): id is string => !!id)
+      if (cardIds.length) onCardsSelectedRef.current?.(cardIds)
       controller.runSwapDelivery({
         overlay,
         fromRect,
@@ -125,6 +147,7 @@ export function useSwapTrigger({ state, myId, overlayRef, controller, localSwap,
         travelAsset: FELIZ,
         carryAsset: TROCA,
         box: boxFor(140, [FELIZ, TROCA]),
+        onComplete: () => onCardsUnselectedRef.current?.(),
       })
     }
   }, [overlayRef, controller, state, state.log, myId])

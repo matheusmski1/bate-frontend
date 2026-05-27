@@ -15,12 +15,18 @@ type Args = {
   controller: Controller
   localPeek: { cardId: string; reveal: { rank: Rank; suit: Suit | null } } | null
   onArrived: (reveal: { rank: Rank; suit: Suit | null }) => void
+  onCardsSelected?: (cardIds: string[]) => void
+  onCardsUnselected?: () => void
 }
 
-export function usePeekOtherTrigger({ state, myId, overlayRef, controller, localPeek, onArrived }: Args) {
+export function usePeekOtherTrigger({ state, myId, overlayRef, controller, localPeek, onArrived, onCardsSelected, onCardsUnselected }: Args) {
   const onArrivedRef = useRef(onArrived)
+  const onCardsSelectedRef = useRef(onCardsSelected)
+  const onCardsUnselectedRef = useRef(onCardsUnselected)
   useEffect(() => {
     onArrivedRef.current = onArrived
+    onCardsSelectedRef.current = onCardsSelected
+    onCardsUnselectedRef.current = onCardsUnselected
   })
 
   // ---- caso A: EU sou o ator (espiei carta do oponente) ----
@@ -34,6 +40,7 @@ export function usePeekOtherTrigger({ state, myId, overlayRef, controller, local
 
     const fromRect = getRect('[data-discard-pile]')
     const toRect = getRect(`[data-card-id="${CSS.escape(localPeek.cardId)}"]`)
+    onCardsSelectedRef.current?.([localPeek.cardId])
     controller.runFlight({
       overlay,
       fromRect,
@@ -42,6 +49,7 @@ export function usePeekOtherTrigger({ state, myId, overlayRef, controller, local
       arrivalAsset: ESPIADINHA,
       box: boxFor(140, [FELIZ, ESPIADINHA]),
       onArrived: () => onArrivedRef.current(localPeek.reveal),
+      onComplete: () => onCardsUnselectedRef.current?.(),
     })
   }, [overlayRef, controller, localPeek])
 
@@ -76,6 +84,7 @@ export function usePeekOtherTrigger({ state, myId, overlayRef, controller, local
 
       const fromRect = getRect('[data-discard-pile]')
       const toRect = getRect(`[data-card-id="${CSS.escape(card.id)}"]`)
+      onCardsSelectedRef.current?.([card.id])
       controller.runFlight({
         overlay,
         fromRect,
@@ -83,6 +92,7 @@ export function usePeekOtherTrigger({ state, myId, overlayRef, controller, local
         travelAsset: FELIZ,
         arrivalAsset: ESPIADINHA,
         box: boxFor(140, [FELIZ, ESPIADINHA]),
+        onComplete: () => onCardsUnselectedRef.current?.(),
       })
     }
   }, [overlayRef, controller, state.log, state.players, myId])

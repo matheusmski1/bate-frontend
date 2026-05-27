@@ -15,6 +15,18 @@ function reducedMotionPreferred(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
+// Garante que o landing (toY/mineY/oppY) não empurre a caixa pra cima do viewport.
+// Considera scale-overshoot da arrival animation (até 1.22x, transformOrigin center
+// = box.height * 0.11 por cima) e translateY peak (-14px). Sem isso, alvos perto
+// do topo da tela (cartas do oponente, nameplates) recortam a animação.
+function clampLandingTop(desiredTop: number, box: Box): number {
+  if (typeof window === 'undefined') return desiredTop
+  const scaleHeadroom = box.height * 0.11
+  const translateHeadroom = 14
+  const margin = 8
+  return Math.max(margin + scaleHeadroom + translateHeadroom, desiredTop)
+}
+
 function makeMascot(src: string, x: number, y: number, box: Box): { wrap: HTMLDivElement; img: HTMLImageElement } {
   const wrap = document.createElement('div')
   wrap.style.position = 'fixed'
@@ -114,7 +126,7 @@ export function createController(): Controller {
       const fromX = fromRect.left + fromRect.width / 2 - box.width / 2
       const fromY = fromRect.top + fromRect.height / 2 - box.height / 2
       const toX = toRect.left + toRect.width / 2 - box.width / 2
-      const toY = toRect.top - box.height * 0.85
+      const toY = clampLandingTop(toRect.top - box.height * 0.85, box)
       const dx = toX - fromX
       const dy = toY - fromY
       const midY = -Math.abs(dx) * 0.18 - 30
@@ -223,9 +235,9 @@ export function createController(): Controller {
       const fromX = fromRect.left + fromRect.width / 2 - box.width / 2
       const fromY = fromRect.top + fromRect.height / 2 - box.height / 2
       const mineX = midRect.left + midRect.width / 2 - box.width / 2
-      const mineY = midRect.top - box.height * 0.85
+      const mineY = clampLandingTop(midRect.top - box.height * 0.85, box)
       const oppX = toRect.left + toRect.width / 2 - box.width / 2
-      const oppY = toRect.top - box.height * 0.85
+      const oppY = clampLandingTop(toRect.top - box.height * 0.85, box)
 
       const dxA = mineX - fromX
       const dyA = mineY - fromY
@@ -340,7 +352,7 @@ export function createController(): Controller {
       runningCount++
       const { targetRect, box, asset, variant, overlay } = opts
       const x = targetRect.left + targetRect.width / 2 - box.width / 2
-      const y = targetRect.top - box.height * 0.65
+      const y = clampLandingTop(targetRect.top - box.height * 0.65, box)
 
       const { wrap } = makeMascot(asset, x, y, box)
       overlay.appendChild(wrap)
@@ -376,18 +388,18 @@ export function createController(): Controller {
             translateX: [0, -8, 7, -5, 4, 0],
             translateY: [0, 2, -2, 1, 0],
             rotate: [-4, 5, -3, 2, 0],
-            duration: 420,
+            duration: 560,
             ease: 'inOutSine',
           })
         } else {
           tl.add(wrap, {
             scale: [1.05, 1.12, 1.05],
             rotate: [0, 4, -3, 0],
-            duration: 380,
+            duration: 520,
             ease: 'inOutSine',
           })
         }
-        tl.add(wrap, { scale: 1.05, duration: 250 })
+        tl.add(wrap, { scale: 1.05, duration: 550 })
         tl.add(wrap, {
           scale: [1.05, 0],
           opacity: [1, 0],
@@ -426,7 +438,7 @@ export function createController(): Controller {
       const x = pos === 'top-right'
         ? anchorRect.right - box.width * 0.3
         : anchorRect.left + anchorRect.width / 2 - box.width / 2
-      const y = anchorRect.top - box.height * 0.6
+      const y = clampLandingTop(anchorRect.top - box.height * 0.6, box)
 
       const { wrap } = makeMascot(asset, x, y, box)
       overlay.appendChild(wrap)

@@ -6,7 +6,6 @@ import type { RedactedPlayer, Rank, Suit } from '@/types/shared'
 import { Card2D } from './Card2D'
 import { CardBack } from './CardBack'
 import { Nameplate } from './Nameplate'
-import { Avatar } from '@/components/lobby/Avatar'
 import { EmoteBubble } from './EmoteBubble'
 import { playSound } from '@/lib/sounds'
 
@@ -86,14 +85,10 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
           } ${!player.connected ? 'opacity-60' : ''} shadow-hard-sm transition-colors`}
         >
           <div className="flex items-center gap-1 min-w-0">
-            <Avatar name={player.name} size={28} />
-            <div className="flex flex-col leading-tight min-w-0">
-              <div className="font-display text-[11px] flex items-center gap-1 truncate max-w-[80px]">
-                {isLeader && <span title="Em primeiro" className="text-[11px]">🏆</span>}
-                <span className="truncate">{player.name}</span>
-                {isHost && <span title="Host" className="text-[10px]">👑</span>}
-              </div>
-              <div className="font-body text-[9px] uppercase tracking-wider text-bate-ink/70 leading-none">{player.score}p</div>
+            <div className="font-display text-[11px] flex items-center gap-1 truncate max-w-[90px]">
+              {isLeader && <span title="Em primeiro" className="text-[11px]">🏆</span>}
+              <span className="truncate">{player.name}</span>
+              {isHost && <span title="Host" className="text-[10px]">👑</span>}
             </div>
           </div>
           <div className="flex gap-0.5 items-center">

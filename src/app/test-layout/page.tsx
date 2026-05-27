@@ -516,21 +516,21 @@ export default function TestLayoutPage() {
                 animate={{ scale: 1, y: 0, opacity: 1 }}
                 exit={{ scale: 0.7, y: 30, opacity: 0 }}
                 transition={{ type: 'spring', stiffness: 320, damping: 22 }}
-                className="bg-bate-paper rounded-3xl border-[4px] border-bate-ink shadow-hard-lg p-6 sm:p-8 flex flex-col items-center gap-4 sm:gap-6 max-w-sm w-full"
+                className="bg-bate-paper rounded-2xl sm:rounded-3xl border-[3px] sm:border-[4px] border-bate-ink shadow-hard-lg p-3 sm:p-8 flex flex-col items-center gap-2 sm:gap-6 max-w-sm w-full"
               >
                 <div className="text-center">
-                  <div className="font-display text-[10px] sm:text-xs uppercase tracking-widest text-bate-ink/60">você comprou</div>
+                  <div className="font-display text-[9px] sm:text-xs uppercase tracking-widest text-bate-ink/60">você comprou</div>
                   <h2
-                    className="font-display text-3xl sm:text-4xl text-bate-red"
+                    className="font-display text-xl sm:text-4xl text-bate-red leading-none"
                     style={{
-                      WebkitTextStroke: '2px #1a0e08',
-                      textShadow: '3px 3px 0 #1a0e08, 3px 3px 0 #ffb81c',
+                      WebkitTextStroke: '1.5px #1a0e08',
+                      textShadow: '2px 2px 0 #1a0e08, 2px 2px 0 #ffb81c',
                     }}
                   >
                     {meta.displayName ?? drawnCard.rank}
                   </h2>
                   {meta.abilityText && (
-                    <p className="text-xs sm:text-sm text-bate-ink/80 mt-2 font-body">{meta.abilityText}</p>
+                    <p className="text-[10px] sm:text-sm text-bate-ink/80 mt-1 sm:mt-2 font-body">{meta.abilityText}</p>
                   )}
                 </div>
 
@@ -538,18 +538,18 @@ export default function TestLayoutPage() {
                   initial={{ rotateY: 180, scale: 0.4 }}
                   animate={{ rotateY: 0, scale: 1 }}
                   transition={{ delay: 0.1, duration: 0.5, ease: 'easeOut' }}
-                  className="w-28 h-40 sm:w-36 sm:h-52 rounded-xl border-[3px] sm:border-[4px] border-bate-ink overflow-hidden shadow-hard"
+                  className="w-20 h-28 sm:w-36 sm:h-52 rounded-xl border-[2px] sm:border-[4px] border-bate-ink overflow-hidden shadow-hard"
                   style={{ transformStyle: 'preserve-3d' }}
                 >
                   <img src={getCardImage(drawnCard.rank, me.deck)} alt={drawnCard.rank} className="w-full h-full object-cover" draggable={false} />
                 </motion.div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 w-full">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-3 w-full">
                   {isAction && (
                     <button
                       type="button"
                       onClick={onUseDrawn}
-                      className="px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl bg-bate-gold border-[2px] sm:border-[3px] border-bate-ink shadow-hard text-bate-ink font-display uppercase text-sm sm:text-base hover:scale-105 active:scale-95 transition-transform sm:col-span-2"
+                      className="px-3 py-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-2xl bg-bate-gold border-[2px] sm:border-[3px] border-bate-ink shadow-hard text-bate-ink font-display uppercase text-xs sm:text-base hover:scale-105 active:scale-95 transition-transform sm:col-span-2"
                     >
                       🎯 USAR EFEITO
                     </button>
@@ -557,20 +557,20 @@ export default function TestLayoutPage() {
                   <button
                     type="button"
                     onClick={onSwapDrawn}
-                    className="px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl bg-bate-red text-bate-paper border-[2px] sm:border-[3px] border-bate-ink shadow-hard font-display uppercase text-sm sm:text-base hover:scale-105 active:scale-95 transition-transform"
+                    className="px-3 py-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-2xl bg-bate-red text-bate-paper border-[2px] sm:border-[3px] border-bate-ink shadow-hard font-display uppercase text-xs sm:text-base hover:scale-105 active:scale-95 transition-transform"
                   >
                     🔄 TROCAR
                   </button>
                   <button
                     type="button"
                     onClick={onDiscardDrawn}
-                    className="px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl bg-bate-paper border-[2px] sm:border-[3px] border-bate-ink shadow-hard-sm text-bate-ink font-display uppercase text-sm sm:text-base hover:scale-105 active:scale-95 transition-transform"
+                    className="px-3 py-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-2xl bg-bate-paper border-[2px] sm:border-[3px] border-bate-ink shadow-hard-sm text-bate-ink font-display uppercase text-xs sm:text-base hover:scale-105 active:scale-95 transition-transform"
                   >
                     🗑️ DESCARTAR
                   </button>
                 </div>
 
-                <div className="text-[10px] sm:text-xs text-bate-ink/60 text-center font-body leading-relaxed max-w-xs">
+                <div className="hidden sm:block text-xs text-bate-ink/60 text-center font-body leading-relaxed max-w-xs">
                   {isAction
                     ? '🎯 USAR = dispara o efeito  ·  🔄 TROCAR = põe na sua mão (uma sua vai pro descarte)  ·  🗑️ DESCARTAR = sem efeito'
                     : '🔄 TROCAR = põe na sua mão (uma sua vai pro descarte)  ·  🗑️ DESCARTAR = joga fora'}

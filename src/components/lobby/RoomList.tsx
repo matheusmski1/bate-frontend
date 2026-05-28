@@ -68,6 +68,15 @@ export function RoomList({ rooms, onJoin, onSpectate, onCreate, loaded = true }:
                   ENTRAR
                 </button>
               )}
+              {inActiveGame && !isFull && (
+                <button
+                  onClick={() => onJoin(room.roomId)}
+                  title="Você entra como espectador agora e vira jogador na próxima rodada"
+                  className="px-4 py-2 rounded-lg bg-bate-green text-bate-paper border-[3px] border-bate-ink font-display shadow-hard-sm hover:scale-105 transition-transform"
+                >
+                  ENTRAR (PRÓX.)
+                </button>
+              )}
               {inActiveGame && onSpectate && (
                 <button
                   onClick={() => onSpectate(room.roomId)}

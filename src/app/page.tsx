@@ -94,8 +94,13 @@ export default function Home() {
           socket.once('connect_error', err => { clearTimeout(t); reject(err) })
         })
       }
-      socket.emit('room:join', { roomId, playerId, playerName: name }, (res: { ok?: true; error?: string }) => {
+      socket.emit('room:join', { roomId, playerId, playerName: name }, (res: { ok?: true; error?: string; queued?: boolean }) => {
         if (res?.error) { toast.error(`Erro: ${res.error}`); return }
+        if (res?.queued) {
+          toast.info('Você entra na próxima rodada — assistindo enquanto isso')
+          router.push(`/room/${roomId}?spectate=1&pending=1`)
+          return
+        }
         router.push(`/room/${roomId}`)
       })
     } catch (err) {

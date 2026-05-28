@@ -104,4 +104,5 @@ export type RoomSummary = {
   maxPlayers: number
   phase: GamePhase
   spectatorCount: number
+  pendingJoinCount: number
 }

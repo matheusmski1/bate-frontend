@@ -105,7 +105,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
       router.replace(url.pathname + url.search)
       return
     }
-    if (room.phase === 'waiting' || room.phase === 'round-end' || room.phase === 'initial-peek') {
+    if (room.phase === 'waiting' || room.phase === 'round-end') {
       const name = getStoredName()
       ensureSocketConnected().then(socket => {
         socket.emit('room:join', { roomId, playerId: myId, playerName: name }, (res: { ok?: true; error?: string; queued?: boolean }) => {

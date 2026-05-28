@@ -21,6 +21,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
   const router = useRouter()
   const search = useSearchParams()
   const isSpectator = search.get('spectate') === '1'
+  const isPending = search.get('pending') === '1'
   const { roomId } = use(params)
   const room = useGameStore(s => s.room)
   const setRoom = useGameStore(s => s.setRoom)
@@ -92,6 +93,30 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
     }
   }, [roomId, router, setRoom, isSpectator])
 
+  useEffect(() => {
+    if (!isPending) return
+    if (!room) return
+    const myId = getPlayerId()
+    const alreadyPlayer = room.players.some(p => p.id === myId)
+    if (alreadyPlayer) {
+      const url = new URL(window.location.href)
+      url.searchParams.delete('spectate')
+      url.searchParams.delete('pending')
+      router.replace(url.pathname + url.search)
+      return
+    }
+    if (room.phase === 'waiting' || room.phase === 'round-end' || room.phase === 'initial-peek') {
+      const name = getStoredName()
+      ensureSocketConnected().then(socket => {
+        socket.emit('room:join', { roomId, playerId: myId, playerName: name }, (res: { ok?: true; error?: string; queued?: boolean }) => {
+          if (res?.error) {
+            toast.error(`Erro entrando: ${res.error}`)
+          }
+        })
+      })
+    }
+  }, [room, isPending, roomId, router])
+
   if (!room) {
     return <main className="min-h-screen flex items-center justify-center text-bate-ink font-display text-xl">CARREGANDO SALA…</main>
   }
@@ -107,7 +132,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
     <>
       {amISpectator && (
         <div className="fixed top-0 left-0 right-0 z-[55] bg-bate-ink text-bate-paper text-center py-1.5 text-[11px] sm:text-xs font-display tracking-wider shadow-hard-sm">
-          👁 ASSISTINDO • {(room.spectators?.length ?? 0)} {(room.spectators?.length ?? 0) === 1 ? 'olho' : 'olhos'} na mesa
+          {isPending ? '⏳ AGUARDANDO PRÓXIMA RODADA' : '👁 ASSISTINDO'} • {(room.spectators?.length ?? 0)} {(room.spectators?.length ?? 0) === 1 ? 'olho' : 'olhos'} na mesa
         </div>
       )}
       {view}

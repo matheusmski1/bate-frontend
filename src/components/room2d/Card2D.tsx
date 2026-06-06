@@ -5,6 +5,7 @@ import { Eye, ArrowLeftRight } from 'lucide-react'
 import type { RedactedCard, Rank, Suit } from '@/types/shared'
 import { CardBack } from './CardBack'
 import { CARD_META, formatPoints, getCardImage } from '@/lib/card-meta'
+import { EASE_OUT } from '@/lib/easings'
 
 function tooltipFor(rank: Rank): string {
   const meta = CARD_META[rank]
@@ -52,52 +53,52 @@ export function Card2D({ card, tempRevealedAs = null, onClick, highlighted = fal
       onClick={onClick}
       whileHover={onClick ? { scale: 1.08, y: -8 } : undefined}
       whileTap={onClick ? { scale: 0.97 } : undefined}
-      animate={{
-        rotateY: showFace ? 0 : 180,
-        boxShadow: victimEffect
-          ? VICTIM_SHADOW[victimEffect]
-          : snapHint
-            ? ['0 0 14px 4px rgba(214, 50, 50, 0.6), 5px 5px 0 #1a0e08', '0 0 24px 8px rgba(214, 50, 50, 0.9), 5px 5px 0 #1a0e08', '0 0 14px 4px rgba(214, 50, 50, 0.6), 5px 5px 0 #1a0e08']
-            : highlighted
-              ? '0 0 18px 4px rgba(255, 184, 28, 0.7), 5px 5px 0 #1a0e08'
-              : '5px 5px 0 #1a0e08',
-      }}
-      transition={
-        snapHint
-          ? { rotateY: { duration: 0.45, ease: 'easeOut' }, boxShadow: { duration: 1.2, repeat: Infinity, ease: 'easeInOut' } }
-          : { rotateY: { duration: 0.45, ease: 'easeOut' }, boxShadow: { duration: 0.25 } }
-      }
-      style={{ transformStyle: 'preserve-3d' }}
-      className={`relative ${SIZE_CLASSES[size]} rounded-xl select-none border-[3px] border-bate-ink bg-bate-paper overflow-hidden ${onClick ? 'cursor-pointer' : 'cursor-default'} disabled:cursor-default ${victimEffect ? 'animate-pulse' : ''}`}
+      className={`relative ${SIZE_CLASSES[size]} select-none ${onClick ? 'cursor-pointer' : 'cursor-default'} disabled:cursor-default`}
       disabled={!onClick}
       title={tooltip}
       {...rest}
     >
-      <div
-        className="absolute inset-0"
-        style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(0deg)' }}
+      <motion.div
+        animate={{
+          rotateY: showFace ? 0 : 180,
+          boxShadow: victimEffect
+            ? VICTIM_SHADOW[victimEffect]
+            : snapHint
+              ? '0 0 22px 7px rgba(214, 50, 50, 0.85), 5px 5px 0 #1a0e08'
+              : highlighted
+                ? '0 0 18px 4px rgba(255, 184, 28, 0.7), 5px 5px 0 #1a0e08'
+                : '5px 5px 0 #1a0e08',
+        }}
+        transition={{ rotateY: { duration: 0.3, ease: EASE_OUT }, boxShadow: { duration: 0.25 } }}
+        style={{ transformStyle: 'preserve-3d' }}
+        className={`absolute inset-0 rounded-xl border-[3px] border-bate-ink bg-bate-paper ${victimEffect ? 'animate-pulse' : ''}`}
       >
-        {showFace && imageSrc ? (
-          <img
-            src={imageSrc}
-            alt={effectiveRank ?? ''}
-            className="w-full h-full object-cover"
-            draggable={false}
-          />
-        ) : (
+        <div
+          className="absolute inset-0 rounded-[9px] overflow-hidden"
+          style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(0deg)' }}
+        >
+          {showFace && imageSrc ? (
+            <img
+              src={imageSrc}
+              alt={effectiveRank ?? ''}
+              className="w-full h-full object-cover"
+              draggable={false}
+            />
+          ) : (
+            <CardBack deckId={deckId} />
+          )}
+        </div>
+        <div
+          className="absolute inset-0 rounded-[9px] overflow-hidden"
+          style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+        >
           <CardBack deckId={deckId} />
-        )}
-      </div>
-      <div
-        className="absolute inset-0"
-        style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
-      >
-        <CardBack deckId={deckId} />
-      </div>
+        </div>
+      </motion.div>
       {victimEffect && (
         <motion.div
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: [0, 1.3, 1], opacity: 1 }}
+          initial={{ scale: 0.3, opacity: 0 }}
+          animate={{ scale: [0.3, 1.3, 1], opacity: 1 }}
           transition={{ duration: 0.4 }}
           className={`absolute -top-3 -right-3 w-10 h-10 rounded-full flex items-center justify-center shadow-hard-sm border-[3px] border-bate-ink z-10 ${victimEffect === 'peeked' ? 'bg-bate-gold text-bate-ink' : 'bg-bate-red text-white'}`}
         >

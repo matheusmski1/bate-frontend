@@ -9,6 +9,7 @@ import { getPlayerId } from '@/lib/player-id'
 import { CARD_META, formatPoints } from '@/lib/card-meta'
 import { getMascot } from '@/lib/mascot'
 import { Card2D } from '@/components/room2d/Card2D'
+import { EASE_OUT } from '@/lib/easings'
 import type { RedactedState, RedactedPlayer, Rank } from '@/types/shared'
 
 type Stage = 'splash' | 'analyzing' | 'reveal'
@@ -286,7 +287,7 @@ function RevealPhase({ breakdowns, bateCallerId, isHost, onNext, arenaId }: { br
               key={b.player.id}
               initial={{ x: -40, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.4 + i * 0.18, ease: 'easeOut' }}
+              transition={{ delay: 0.4 + i * 0.18, ease: EASE_OUT }}
               className={`rounded-2xl px-4 py-3 sm:px-5 sm:py-4 border-[3px] ${
                 isWinner
                   ? 'bg-bate-gold/30 border-bate-gold shadow-hard'

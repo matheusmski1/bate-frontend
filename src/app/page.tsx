@@ -220,7 +220,7 @@ export default function Home() {
                 placeholder="Seu apelido aqui..."
                 maxLength={20}
                 autoComplete="off"
-                className="w-full bg-bate-cream border-[4px] border-bate-ink shadow-hard-sm rounded-xl h-16 px-5 font-body font-bold text-xl placeholder-bate-ink/40 focus:outline-none focus:translate-y-[2px] focus:translate-x-[2px] focus:shadow-[2px_2px_0_#1a0e08] transition-all duration-200 pr-12"
+                className="w-full bg-bate-cream border-[4px] border-bate-ink shadow-hard-sm rounded-xl h-16 px-5 font-body font-bold text-xl placeholder-bate-ink/40 focus:outline-none focus:translate-y-[2px] focus:translate-x-[2px] focus:shadow-[2px_2px_0_#1a0e08] transition-[transform,box-shadow] duration-200 pr-12"
               />
               <User size={22} className="absolute right-5 top-1/2 -translate-y-1/2 text-bate-ink opacity-30" />
             </div>
@@ -228,7 +228,7 @@ export default function Home() {
             <button
               type="button"
               onClick={handleQuickPlay}
-              className="relative bg-bate-gold border-[4px] border-bate-ink shadow-hard-sm rounded-xl h-16 flex items-center justify-center gap-2 hover:-translate-y-1 hover:-translate-x-1 hover:shadow-hard active:translate-y-[4px] active:translate-x-[4px] active:shadow-none transition-all duration-200"
+              className="relative bg-bate-gold border-[4px] border-bate-ink shadow-hard-sm rounded-xl h-16 flex items-center justify-center gap-2 hover:-translate-y-1 hover:-translate-x-1 hover:shadow-hard active:translate-y-[4px] active:translate-x-[4px] active:shadow-none transition-[transform,box-shadow] duration-200"
             >
               <Play size={22} fill="currentColor" className="text-bate-ink" />
               <span className="font-display text-xl md:text-2xl uppercase tracking-wide text-bate-ink pt-1">

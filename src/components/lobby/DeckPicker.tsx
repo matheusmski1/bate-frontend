@@ -76,7 +76,7 @@ export function DeckPicker({ open, onClose }: { open: boolean; onClose: () => vo
                       type="button"
                       onClick={() => pick(deck)}
                       disabled={busy === deck.id}
-                      className={`relative flex flex-col items-center gap-2 p-3 rounded-2xl border-[3px] transition-all ${
+                      className={`relative flex flex-col items-center gap-2 p-3 rounded-2xl border-[3px] transition-[transform,box-shadow] ${
                         deck.equipped
                           ? 'bg-bate-gold border-bate-ink shadow-hard'
                           : 'bg-bate-cream border-bate-ink shadow-hard-sm hover:-translate-y-0.5 hover:shadow-hard'

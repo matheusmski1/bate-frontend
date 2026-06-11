@@ -31,7 +31,9 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
   useEffect(() => {
     const name = getStoredName()
     if (!name) {
-      router.push('/')
+      const params = new URLSearchParams({ join: roomId })
+      if (isSpectator) params.set('spectate', '1')
+      router.replace(`/?${params.toString()}`)
       return
     }
     let cancelled = false

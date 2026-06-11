@@ -85,6 +85,8 @@ function mockState(opponentCount: 1 | 2 | 3, withTimer = false): RedactedState {
     pausedRemainingMs: null,
     roundTurnCount: 3,
     roundNumber: 1,
+    roundStartedAt: Date.now() - 45000,
+    pendingJoins: [],
     spectators: [],
   }
 }

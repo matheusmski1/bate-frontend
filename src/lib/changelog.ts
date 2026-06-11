@@ -6,6 +6,16 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-06-10',
+    date: '10 jun',
+    items: [
+      'Cartas com animações mais iradas e suaaaaaves',
+      'O selo de espiada/troca não corta mais na quina',
+      'Trocou de aba e travava? Agora destrava sozinho',
+      'A mesa não fecha mais sozinha enquanto vocês tão jogando',
+    ],
+  },
+  {
     id: '2026-05-28',
     date: '28 mai',
     items: [

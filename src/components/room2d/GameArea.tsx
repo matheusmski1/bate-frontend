@@ -24,6 +24,7 @@ import { TopChrome } from './TopChrome'
 import { LeaveButton } from './LeaveButton'
 import { EmoteBar } from './EmoteBar'
 import { MascotOverlay, type LocalMascotActions } from './MascotOverlay'
+import { FinalSnapBanner } from './FinalSnapBanner'
 import { playSound } from '@/lib/sounds'
 
 const TEMP_REVEAL_MS = 3000
@@ -37,7 +38,7 @@ export function GameArea({ state }: { state: RedactedState }) {
   const opponents = state.players.filter(p => p.id !== myId)
   const currentPlayerId = state.players[state.turn]?.id
   const isMyTurn = currentPlayerId === myId
-  const isPlayPhase = state.phase === 'playing' || state.phase === 'bate-called'
+  const isPlayPhase = state.phase === 'playing' || state.phase === 'bate-called' || state.phase === 'final-snap'
   const pendingEffect = state.phase === 'effect-pending' ? state.pendingEffect : null
   const isMyEffect = pendingEffect?.playerId === myId
 
@@ -209,7 +210,7 @@ export function GameArea({ state }: { state: RedactedState }) {
 
   const canDraw = isMyTurn && isPlayPhase && !drawnCard
   const canSwapDrawn = isMyTurn && !!drawnCard
-  const canSnap = isPlayPhase && state.discard.length > 0 && (!isMyTurn || !!drawnCard)
+  const canSnap = state.discard.length > 0 && (state.phase === 'final-snap' || (isPlayPhase && (!isMyTurn || !!drawnCard)))
   const topDiscardRank = state.discard[state.discard.length - 1]?.rank ?? null
   const snapHintIds = (() => {
     if (!canSnap || !topDiscardRank || !me) return new Set<string>()
@@ -571,6 +572,7 @@ export function GameArea({ state }: { state: RedactedState }) {
         onCardsUnselected={() => setAnimationSelectedIds([])}
       />
       <ActionLog state={state} />
+      <FinalSnapBanner state={state} />
       <TopChrome state={state} />
       <LeaveButton roomId={state.roomId} inGame={state.phase !== 'waiting'} />
       <button

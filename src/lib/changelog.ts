@@ -14,7 +14,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Tem um código? Cola no campo novo do lobby e senta na mesa',
       'Salas privadas: cria escondida da lista e só entra quem tem o link',
       'Botão de sair na sala de espera — chega de assento fantasma segurando vaga',
-      'O bate agora dá um tempinho pra todo mundo ver a última jogada antes do fim da rodada',
+      'Bateu? Os segundos finais agora são vivos — dá pra cortar antes de fechar a rodada, corre que dá tempo',
       'Salve pra rapaziada do Asaz! 🍻',
     ],
   },

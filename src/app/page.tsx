@@ -2,7 +2,7 @@
 import { toast } from '@/lib/ui-store'
 
 import { useEffect, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Play, Plus, User } from 'lucide-react'
 import { getSocket, ensureSocketConnected } from '@/lib/socket-client'
 import { cachedPlayerId, ensureGuestSession } from '@/lib/auth'
@@ -42,6 +42,11 @@ export default function Home() {
   const { hasUnread: hasUnreadChangelog, markAsSeen: markChangelogSeen } = useUnreadChangelog()
   const [roomsLoaded, setRoomsLoaded] = useState(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
+  const search = useSearchParams()
+  const joinParam = search.get('join')?.toUpperCase() ?? ''
+  const joinSpectate = search.get('spectate') === '1'
+  const [code, setCode] = useState('')
+  const autoJoinRef = useRef(false)
 
   useEffect(() => {
     setName(getStoredName())
@@ -74,6 +79,16 @@ export default function Home() {
     if (!hasSeenTutorial()) setShowTutorial(true)
   }, [])
 
+  useEffect(() => {
+    if (!joinParam || autoJoinRef.current) return
+    if (joinSpectate) { autoJoinRef.current = true; handleSpectate(joinParam); return }
+    if (!getStoredName()) { inputRef.current?.focus(); return }
+    if (!name.trim()) return
+    autoJoinRef.current = true
+    handleJoin(joinParam)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [joinParam, joinSpectate, name])
+
   function requireName(): boolean {
     if (!name.trim()) {
       inputRef.current?.focus()
@@ -99,7 +114,14 @@ export default function Home() {
         })
       }
       socket.emit('room:join', { roomId, playerId, playerName: name }, (res: { ok?: true; error?: string; queued?: boolean }) => {
-        if (res?.error) { toast.error(`Erro: ${res.error}`); return }
+        if (res?.error) {
+          const friendly: Record<string, string> = {
+            ROOM_NOT_FOUND: 'Essa mesa não existe ou já fechou',
+            ROOM_FULL: 'Mesa lotada, parça',
+          }
+          toast.error(friendly[res.error] ?? `Erro: ${res.error}`)
+          return
+        }
         if (res?.queued) {
           toast.info('Você entra na próxima rodada — assistindo enquanto isso')
           router.push(`/room/${roomId}?spectate=1&pending=1`)
@@ -238,7 +260,9 @@ export default function Home() {
                 value={name}
                 onChange={e => setName(e.target.value)}
                 onKeyDown={e => {
-                  if (e.key === 'Enter' && name.trim()) handleQuickPlay()
+                  if (e.key !== 'Enter' || !name.trim()) return
+                  if (joinParam) { autoJoinRef.current = true; setStoredName(name); handleJoin(joinParam) }
+                  else handleQuickPlay()
                 }}
                 placeholder="Seu apelido aqui..."
                 maxLength={20}
@@ -258,6 +282,32 @@ export default function Home() {
                 Entrar na Sala
               </span>
             </button>
+
+            {joinParam ? (
+              <p className="text-center font-display text-sm text-bate-ink/70">
+                Convite pra sala <span className="font-mono text-bate-ink">{joinParam}</span> — bota teu apelido pra entrar
+              </p>
+            ) : (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={code}
+                  onChange={e => setCode(e.target.value.toUpperCase())}
+                  onKeyDown={e => { if (e.key === 'Enter' && code.trim()) handleJoin(code.trim()) }}
+                  placeholder="TENHO UM CÓDIGO"
+                  maxLength={12}
+                  autoComplete="off"
+                  className="flex-1 bg-bate-cream border-[3px] border-bate-ink shadow-hard-sm rounded-xl h-12 px-4 font-mono font-bold tracking-widest placeholder-bate-ink/40 focus:outline-none uppercase"
+                />
+                <button
+                  type="button"
+                  onClick={() => { if (code.trim()) handleJoin(code.trim()) }}
+                  className="px-4 h-12 rounded-xl bg-bate-paper border-[3px] border-bate-ink shadow-hard-sm font-display text-sm text-bate-ink hover:bg-bate-gold transition-colors"
+                >
+                  ENTRAR
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </section>

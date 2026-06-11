@@ -11,6 +11,7 @@ export function CreateRoomDialog({ hostName, onCreated, onClose }: { hostName: s
   const [name, setName] = useState('')
   const [maxPlayers, setMaxPlayers] = useState<2 | 3 | 4>(4)
   const [turnTimeLimitSec, setTurnTimeLimit] = useState<TurnLimit>(60)
+  const [isPrivate, setIsPrivate] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
   async function submit() {
@@ -22,7 +23,7 @@ export function CreateRoomDialog({ hostName, onCreated, onClose }: { hostName: s
       if (!hostId) { toast.error('Sessão ainda não pronta — tenta de novo'); setSubmitting(false); return }
       socket.emit(
         'room:create',
-        { name: name.trim(), hostId, hostName, maxPlayers, turnTimeLimitSec },
+        { name: name.trim(), hostId, hostName, maxPlayers, turnTimeLimitSec, private: isPrivate },
         (res: { roomId?: string; error?: string }) => {
           setSubmitting(false)
           if (res?.error) {
@@ -76,6 +77,16 @@ export function CreateRoomDialog({ hostName, onCreated, onClose }: { hostName: s
             </button>
           ))}
         </div>
+        <button
+          type="button"
+          onClick={() => setIsPrivate(p => !p)}
+          className="w-full flex items-center justify-between px-4 py-3 mb-6 rounded-xl bg-bate-paper border-[3px] border-bate-ink shadow-hard-sm"
+        >
+          <span className="font-display text-sm text-bate-ink">{isPrivate ? '🔒 SALA PRIVADA' : '🌐 SALA PÚBLICA'}</span>
+          <span className={`w-11 h-6 rounded-full border-[2px] border-bate-ink flex items-center px-0.5 transition-colors ${isPrivate ? 'bg-bate-gold justify-end' : 'bg-bate-cream justify-start'}`}>
+            <span className="w-4 h-4 rounded-full bg-bate-ink" />
+          </span>
+        </button>
         <div className="flex gap-3">
           <button
             onClick={onClose}

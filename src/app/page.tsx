@@ -1,7 +1,7 @@
 'use client'
 import { toast } from '@/lib/ui-store'
 
-import { useEffect, useRef, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Play, Plus, User } from 'lucide-react'
 import { getSocket, ensureSocketConnected } from '@/lib/socket-client'
@@ -29,7 +29,7 @@ import { useUnreadChangelog } from '@/lib/changelog-state'
 
 const QUICK_ROOM_NAMES = ['Mesa do Maizão', 'Batinho Rápido', 'Sala do Zé', 'Bate Express', 'Mesa relâmpago']
 
-export default function Home() {
+function LobbyContent() {
   const router = useRouter()
   const rooms = useGameStore(s => s.rooms)
   const setRooms = useGameStore(s => s.setRooms)
@@ -349,5 +349,13 @@ export default function Home() {
         onOpen={markChangelogSeen}
       />
     </main>
+  )
+}
+
+export default function Home() {
+  return (
+    <Suspense>
+      <LobbyContent />
+    </Suspense>
   )
 }

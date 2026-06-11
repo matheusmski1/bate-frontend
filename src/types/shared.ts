@@ -46,12 +46,6 @@ export type Player = {
   arena: string
 }
 
-export type Spectator = {
-  id: string
-  name: string
-  socketId: string | null
-}
-
 export type GameActionType =
   | 'draw' | 'discard' | 'snap' | 'snap-fail'
   | 'peek' | 'swap' | 'bate' | 'round-end' | 'join' | 'leave'
@@ -63,12 +57,19 @@ export type GameAction = {
   payload?: Record<string, unknown>
 }
 
+export type Spectator = {
+  id: string
+  name: string
+  socketId: string | null
+}
+
 export type GameState = {
   roomId: string
   name: string
   hostId: string
   maxPlayers: 2 | 3 | 4
   players: Player[]
+  pendingJoins: Player[]
   deck: Card[]
   discard: Card[]
   turn: number
@@ -85,6 +86,7 @@ export type GameState = {
   pausedRemainingMs: number | null
   roundTurnCount: number
   roundNumber: number
+  roundStartedAt: number | null
   spectators: Spectator[]
 }
 

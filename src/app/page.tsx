@@ -22,8 +22,10 @@ import { MuteToggle } from '@/components/lobby/MuteToggle'
 import { DeckPicker } from '@/components/lobby/DeckPicker'
 import { ArenaPicker } from '@/components/lobby/ArenaPicker'
 import { Tutorial, hasSeenTutorial } from '@/components/lobby/Tutorial'
-import { HelpCircle, Layers, Tent } from 'lucide-react'
+import { HelpCircle, Layers, Tent, Sparkles } from 'lucide-react'
 import { Footer } from '@/components/lobby/Footer'
+import { Changelog } from '@/components/lobby/Changelog'
+import { useUnreadChangelog } from '@/lib/changelog-state'
 
 const QUICK_ROOM_NAMES = ['Mesa do Maizão', 'Batinho Rápido', 'Sala do Zé', 'Bate Express', 'Mesa relâmpago']
 
@@ -36,6 +38,8 @@ export default function Home() {
   const [showDecks, setShowDecks] = useState(false)
   const [showArenas, setShowArenas] = useState(false)
   const [showTutorial, setShowTutorial] = useState(false)
+  const [showChangelog, setShowChangelog] = useState(false)
+  const { hasUnread: hasUnreadChangelog, markAsSeen: markChangelogSeen } = useUnreadChangelog()
   const [roomsLoaded, setRoomsLoaded] = useState(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
 
@@ -182,6 +186,20 @@ export default function Home() {
       <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
         <button
           type="button"
+          onClick={() => setShowChangelog(true)}
+          title="Novidades"
+          className="relative w-10 h-10 rounded-full bg-bate-paper border-[3px] border-bate-ink shadow-hard-sm flex items-center justify-center text-bate-ink hover:bg-bate-gold transition-colors"
+        >
+          <Sparkles size={16} strokeWidth={3} />
+          {hasUnreadChangelog && (
+            <span
+              aria-hidden
+              className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-bate-red border-2 border-bate-ink"
+            />
+          )}
+        </button>
+        <button
+          type="button"
           onClick={() => setShowTutorial(true)}
           title="Como jogar"
           className="w-10 h-10 rounded-full bg-bate-paper border-[3px] border-bate-ink shadow-hard-sm flex items-center justify-center text-bate-ink hover:bg-bate-gold transition-colors"
@@ -225,7 +243,7 @@ export default function Home() {
                 placeholder="Seu apelido aqui..."
                 maxLength={20}
                 autoComplete="off"
-                className="w-full bg-bate-cream border-[4px] border-bate-ink shadow-hard-sm rounded-xl h-16 px-5 font-body font-bold text-xl placeholder-bate-ink/40 focus:outline-none focus:translate-y-[2px] focus:translate-x-[2px] focus:shadow-[2px_2px_0_#1a0e08] transition-all duration-200 pr-12"
+                className="w-full bg-bate-cream border-[4px] border-bate-ink shadow-hard-sm rounded-xl h-16 px-5 font-body font-bold text-xl placeholder-bate-ink/40 focus:outline-none focus:translate-y-[2px] focus:translate-x-[2px] focus:shadow-[2px_2px_0_#1a0e08] transition-[transform,box-shadow] duration-200 pr-12"
               />
               <User size={22} className="absolute right-5 top-1/2 -translate-y-1/2 text-bate-ink opacity-30" />
             </div>
@@ -233,7 +251,7 @@ export default function Home() {
             <button
               type="button"
               onClick={handleQuickPlay}
-              className="relative bg-bate-gold border-[4px] border-bate-ink shadow-hard-sm rounded-xl h-16 flex items-center justify-center gap-2 hover:-translate-y-1 hover:-translate-x-1 hover:shadow-hard active:translate-y-[4px] active:translate-x-[4px] active:shadow-none transition-all duration-200"
+              className="relative bg-bate-gold border-[4px] border-bate-ink shadow-hard-sm rounded-xl h-16 flex items-center justify-center gap-2 hover:-translate-y-1 hover:-translate-x-1 hover:shadow-hard active:translate-y-[4px] active:translate-x-[4px] active:shadow-none transition-[transform,box-shadow] duration-200"
             >
               <Play size={22} fill="currentColor" className="text-bate-ink" />
               <span className="font-display text-xl md:text-2xl uppercase tracking-wide text-bate-ink pt-1">
@@ -275,6 +293,11 @@ export default function Home() {
       <DeckPicker open={showDecks} onClose={() => setShowDecks(false)} />
       <ArenaPicker open={showArenas} onClose={() => setShowArenas(false)} />
       <Tutorial open={showTutorial} onClose={() => setShowTutorial(false)} />
+      <Changelog
+        open={showChangelog}
+        onClose={() => setShowChangelog(false)}
+        onOpen={markChangelogSeen}
+      />
     </main>
   )
 }

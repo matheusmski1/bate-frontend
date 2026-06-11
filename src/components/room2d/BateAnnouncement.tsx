@@ -49,7 +49,7 @@ export function BateAnnouncement({ state }: { state: RedactedState }) {
 
     if (batinhoRef.current) {
       animate(batinhoRef.current, {
-        scale: [0, 1.15, 1],
+        scale: [0.4, 1.15, 1],
         rotate: [-180, 12, 0],
         opacity: [0, 0.55],
         duration: 900,

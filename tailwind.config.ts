@@ -2,6 +2,9 @@ import type { Config } from 'tailwindcss'
 
 const config: Config = {
   content: ['./src/**/*.{ts,tsx}'],
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
   theme: {
     extend: {
       colors: {
@@ -27,6 +30,12 @@ const config: Config = {
         'hard': '5px 5px 0 #1a0e08',
         'hard-lg': '6px 7px 0 #1a0e08',
         'hard-red': '5px 5px 0 #d63232',
+      },
+      transitionTimingFunction: {
+        DEFAULT: 'cubic-bezier(0.23, 1, 0.32, 1)',
+        snappy: 'cubic-bezier(0.23, 1, 0.32, 1)',
+        smooth: 'cubic-bezier(0.77, 0, 0.175, 1)',
+        drawer: 'cubic-bezier(0.32, 0.72, 0, 1)',
       },
     },
   },

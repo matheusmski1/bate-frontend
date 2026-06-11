@@ -8,8 +8,8 @@ let connectPromise: Promise<Socket> | null = null
 
 function createSocket(): Socket {
   return SOCKET_URL
-    ? io(SOCKET_URL, { autoConnect: true, transports: ['websocket'], withCredentials: true })
-    : io({ autoConnect: true, transports: ['websocket'], withCredentials: true })
+    ? io(SOCKET_URL, { autoConnect: true, transports: ['websocket', 'polling'], withCredentials: true })
+    : io({ autoConnect: true, transports: ['websocket', 'polling'], withCredentials: true })
 }
 
 export function getSocket(): Socket {

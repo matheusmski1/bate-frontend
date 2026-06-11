@@ -4,6 +4,7 @@ import { Fredoka, Bowlby_One, Caveat } from 'next/font/google'
 import { ToastHost } from '@/components/ui/ToastHost'
 import { ConfirmHost } from '@/components/ui/ConfirmHost'
 import { ServiceWorkerRegister } from '@/components/system/ServiceWorkerRegister'
+import { MotionProvider } from '@/components/system/MotionProvider'
 
 const fredoka = Fredoka({
   subsets: ['latin'],
@@ -72,9 +73,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR" className={`${fredoka.variable} ${bowlby.variable} ${caveat.variable}`}>
       <body className="font-body antialiased">
-        {children}
-        <ToastHost />
-        <ConfirmHost />
+        <MotionProvider>
+          {children}
+          <ToastHost />
+          <ConfirmHost />
+        </MotionProvider>
         <ServiceWorkerRegister />
       </body>
     </html>

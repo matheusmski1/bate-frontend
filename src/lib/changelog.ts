@@ -12,6 +12,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Cartas com animação mais macia',
       'O selo de espiada/troca não corta mais na quina',
       'Caiu ou trocou de aba? A gente te traz de volta pro jogo',
+      'A mesa não fecha mais sozinha enquanto vocês tão jogando',
     ],
   },
   {

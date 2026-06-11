@@ -21,7 +21,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     id: '2026-06-10',
     date: '10 jun',
     items: [
-      'Cartas com animação mais macia',
+      'Cartas com animação mais suaaaaave',
       'O selo de espiada/troca não corta mais na quina',
       'Caiu ou trocou de aba? A gente te traz de volta pro jogo',
       'A mesa não fecha mais sozinha enquanto vocês tão jogando',

@@ -39,7 +39,7 @@ export function BateButton({ state, drawnExists, embedded = false }: { state: Re
     <motion.button
       type="button"
       onClick={call}
-      initial={{ scale: 0, opacity: 0 }}
+      initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: 1, opacity: enabled ? 1 : 0.45 }}
       whileHover={enabled ? { scale: 1.08 } : undefined}
       whileTap={enabled ? { scale: 0.95 } : undefined}

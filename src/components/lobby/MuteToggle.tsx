@@ -25,7 +25,7 @@ export function MuteToggle() {
       onClick={toggle}
       aria-label={muted ? 'Ativar som' : 'Desativar som'}
       title={muted ? 'Ativar som' : 'Desativar som'}
-      className="w-10 h-10 rounded-full bg-bate-paper border-[3px] border-bate-ink shadow-hard-sm flex items-center justify-center text-bate-ink hover:bg-bate-gold hover:scale-110 transition-all"
+      className="w-10 h-10 rounded-full bg-bate-paper border-[3px] border-bate-ink shadow-hard-sm flex items-center justify-center text-bate-ink hover:bg-bate-gold hover:scale-110 transition-[transform,background-color]"
     >
       {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
     </button>

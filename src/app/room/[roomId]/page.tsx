@@ -31,7 +31,9 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
   useEffect(() => {
     const name = getStoredName()
     if (!name) {
-      router.push('/')
+      const params = new URLSearchParams({ join: roomId })
+      if (isSpectator) params.set('spectate', '1')
+      router.replace(`/?${params.toString()}`)
       return
     }
     let cancelled = false
@@ -57,25 +59,30 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
       }
       doJoin()
       socket.on('connect', doJoin)
+      const onVisible = () => {
+        if (document.visibilityState !== 'visible') return
+        if (!socket.connected) socket.connect()
+        else doJoin()
+      }
+      document.addEventListener('visibilitychange', onVisible)
+      window.addEventListener('focus', onVisible)
       const onExpired = ({ message }: { roomId: string; reason: string; message: string }) => {
         setRoom(null)
         toast.error(message)
         router.push('/')
       }
       socket.on('room:expired', onExpired)
-      let prevLogLength = 0
+      let lastActionTs = 0
       const onState = ({ state }: { state: import('@/types/shared').RedactedState }) => {
-        if (state.log.length > prevLogLength) {
-          const newest = state.log[state.log.length - 1]
-          if (newest) {
-            if (newest.type === 'discard') playSound('card-discard')
-            if (newest.type === 'snap') playSound('snap-success')
-            if (newest.type === 'snap-fail') playSound('snap-fail')
-            if (newest.type === 'bate') playSound('bate-called')
-            if (newest.type === 'round-end') playSound('victory')
-            if (newest.type === 'draw') playSound('card-flip')
-          }
-          prevLogLength = state.log.length
+        const newest = state.log[state.log.length - 1]
+        if (newest && newest.timestamp > lastActionTs) {
+          lastActionTs = newest.timestamp
+          if (newest.type === 'discard') playSound('card-discard')
+          if (newest.type === 'snap') playSound('snap-success')
+          if (newest.type === 'snap-fail') playSound('snap-fail')
+          if (newest.type === 'bate') playSound('bate-called')
+          if (newest.type === 'round-end') playSound('victory')
+          if (newest.type === 'draw') playSound('card-flip')
         }
         setRoom(state)
       }
@@ -84,6 +91,8 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
         socket.off('room:state', onState)
         socket.off('room:expired', onExpired)
         socket.off('connect', doJoin)
+        document.removeEventListener('visibilitychange', onVisible)
+        window.removeEventListener('focus', onVisible)
         setRoom(null)
       }
     })

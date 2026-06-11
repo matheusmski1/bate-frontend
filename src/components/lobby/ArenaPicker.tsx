@@ -76,7 +76,7 @@ export function ArenaPicker({ open, onClose }: { open: boolean; onClose: () => v
                       type="button"
                       onClick={() => pick(arena)}
                       disabled={busy === arena.id}
-                      className={`relative flex flex-col items-center gap-2 p-3 rounded-2xl border-[3px] transition-all ${
+                      className={`relative flex flex-col items-center gap-2 p-3 rounded-2xl border-[3px] transition-[transform,box-shadow] ${
                         arena.equipped
                           ? 'bg-bate-gold border-bate-ink shadow-hard'
                           : 'bg-bate-cream border-bate-ink shadow-hard-sm hover:-translate-y-0.5 hover:shadow-hard'

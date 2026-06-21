@@ -87,7 +87,7 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
         <div
           className={`relative flex items-center gap-1.5 px-1.5 py-1 rounded-2xl border-[2px] border-bate-ink ${
             isCurrent ? 'bg-bate-gold' : 'bg-bate-paper'
-          } ${!player.connected ? 'opacity-60' : ''} shadow-hard-sm transition-colors`}
+          } ${!(player.connected || player.isBot) ? 'opacity-60' : ''} shadow-hard-sm transition-colors`}
         >
           <Avatar name={player.name} size={26} />
           <div className="flex flex-col leading-tight min-w-0">
@@ -95,7 +95,8 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
               {isLeader && <span title="Em primeiro" className="text-[10px]">🏆</span>}
               <span className="truncate">{player.name}</span>
               {isHost && <span title="Host" className="text-[9px]">👑</span>}
-              {!player.connected && <span className="w-1.5 h-1.5 rounded-full bg-bate-red-deep shrink-0" title="Desconectado" />}
+              {player.isBot && <span title="Bot" className="text-[10px]">🤖</span>}
+              {!(player.connected || player.isBot) && <span className="w-1.5 h-1.5 rounded-full bg-bate-red-deep shrink-0" title="Desconectado" />}
             </div>
             <div className="font-body text-[9px] uppercase tracking-wider text-bate-ink/70">
               {player.score} pts
@@ -142,6 +143,7 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
           connected={player.connected}
           isHost={isHost}
           isLeader={isLeader}
+          isBot={player.isBot}
           dataAttribute={{ key: 'data-opponent-nameplate', value: player.id }}
         />
         <div className={`flex gap-3 ${isLateral ? 'flex-col items-center' : 'items-center'}`}>

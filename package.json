@@ -12,7 +12,7 @@
     "optimize-cards": "node scripts/optimize-cards.mjs"
   },
   "engines": {
-    "node": ">=22"
+    "node": "22.x"
   },
   "dependencies": {
     "animejs": "^4.4.1",

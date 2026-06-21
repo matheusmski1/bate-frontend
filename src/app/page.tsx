@@ -14,6 +14,7 @@ function getPlayerId(): string {
 import { useGameStore } from '@/lib/store'
 import { RoomList } from '@/components/lobby/RoomList'
 import { CreateRoomDialog } from '@/components/lobby/CreateRoomDialog'
+import { PracticeRoomDialog } from '@/components/lobby/PracticeRoomDialog'
 import { Hero } from '@/components/lobby/Hero'
 import { CardFan } from '@/components/lobby/CardFan'
 import { SuitBackground } from '@/components/lobby/SuitBackground'
@@ -35,6 +36,7 @@ function LobbyContent() {
   const setRooms = useGameStore(s => s.setRooms)
   const [name, setName] = useState('')
   const [showCreate, setShowCreate] = useState(false)
+  const [showPractice, setShowPractice] = useState(false)
   const [showDecks, setShowDecks] = useState(false)
   const [showArenas, setShowArenas] = useState(false)
   const [showTutorial, setShowTutorial] = useState(false)
@@ -165,6 +167,16 @@ function LobbyContent() {
   function openCreate() {
     if (!requireName()) return
     setShowCreate(true)
+  }
+
+  function openPractice() {
+    if (!requireName()) return
+    setShowPractice(true)
+  }
+
+  function handlePracticeCreated(roomId: string) {
+    setShowPractice(false)
+    handleJoin(roomId)
   }
 
   async function handleQuickPlay() {
@@ -308,6 +320,14 @@ function LobbyContent() {
                 </button>
               </div>
             )}
+
+            <button
+              type="button"
+              onClick={openPractice}
+              className="w-full py-3 rounded-xl bg-bate-green text-bate-paper border-[3px] border-bate-ink font-display shadow-hard-sm hover:scale-[1.02] transition-transform"
+            >
+              🤖 TREINAR COM BOTS
+            </button>
           </div>
         </div>
       </section>
@@ -337,6 +357,14 @@ function LobbyContent() {
           hostName={name}
           onCreated={handleCreated}
           onClose={() => setShowCreate(false)}
+        />
+      )}
+
+      {showPractice && (
+        <PracticeRoomDialog
+          hostName={name}
+          onCreated={handlePracticeCreated}
+          onClose={() => setShowPractice(false)}
         />
       )}
 

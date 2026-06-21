@@ -11,6 +11,7 @@ type Props = {
   isHost?: boolean
   isLeader?: boolean
   isMe?: boolean
+  isBot?: boolean
   dataAttribute?: { key: string; value: string }
 }
 
@@ -18,7 +19,7 @@ const ACTIVE_GLOW = '0 0 0 4px rgba(255, 184, 28, 0.55), 0 0 36px 12px rgba(255,
 const ACTIVE_GLOW_PEAK = '0 0 0 6px rgba(255, 184, 28, 0.85), 0 0 56px 20px rgba(255, 184, 28, 0.7), 7px 7px 0 #1a0e08'
 const IDLE_SHADOW = '3px 3px 0 #1a0e08'
 
-export function Nameplate({ name, score, isCurrent, connected = true, isHost = false, isLeader = false, isMe = false, dataAttribute }: Props) {
+export function Nameplate({ name, score, isCurrent, connected = true, isHost = false, isLeader = false, isMe = false, isBot = false, dataAttribute }: Props) {
   return (
     <motion.div
       {...(dataAttribute ? { [dataAttribute.key]: dataAttribute.value } : {})}
@@ -34,7 +35,7 @@ export function Nameplate({ name, score, isCurrent, connected = true, isHost = f
       }
       className={`relative inline-flex items-center gap-2.5 px-3 py-1.5 rounded-2xl border-[3px] border-bate-ink ${
         isCurrent ? 'bg-bate-gold text-bate-ink' : 'bg-bate-paper text-bate-ink'
-      } ${!connected ? 'opacity-60' : ''}`}
+      } ${!(connected || isBot) ? 'opacity-60' : ''}`}
     >
       <Avatar name={name} size={28} />
       <div className="flex flex-col leading-tight pr-1">
@@ -42,7 +43,8 @@ export function Nameplate({ name, score, isCurrent, connected = true, isHost = f
           {isLeader && <span title="Em primeiro" className="text-[14px]">🏆</span>}
           {name}
           {isHost && <span title="Host" className="text-[11px]">👑</span>}
-          {!connected && <span className="w-1.5 h-1.5 rounded-full bg-bate-red-deep" title="Desconectado" />}
+          {isBot && <span title="Bot" className="text-[12px]">🤖</span>}
+          {!(connected || isBot) && <span className="w-1.5 h-1.5 rounded-full bg-bate-red-deep" title="Desconectado" />}
         </div>
         <div className="font-body text-[10px] uppercase tracking-wider text-bate-ink/70">
           {score} pts{isMe ? ' • você' : ''}

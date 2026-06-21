@@ -12,6 +12,7 @@ export function WaitingRoom({ state }: { state: RedactedState }) {
   const playerId = getPlayerId()
   const isHost = state.hostId === playerId
   const canStart = isHost && state.players.length >= 2
+  const isPractice = state.players.some(p => p.isBot)
   const router = useRouter()
 
   async function copyInvite() {
@@ -71,15 +72,15 @@ export function WaitingRoom({ state }: { state: RedactedState }) {
             <li key={p.id} className="bg-bate-cream rounded-lg px-4 py-3 flex justify-between items-center border-[2px] border-bate-ink shadow-hard-sm">
               <span className="font-display text-sm text-bate-ink flex items-center gap-2">
                 <Avatar name={p.name} size={28} />
-                {p.name}{p.id === state.hostId && ' 👑'}
+                {p.isBot ? '🤖 ' : ''}{p.name}{p.id === state.hostId && ' 👑'}
               </span>
-              <span className={`font-display text-xs ${p.connected ? 'text-bate-green' : 'text-bate-red'}`}>
-                {p.connected ? 'ONLINE' : 'OFFLINE'}
+              <span className={`font-display text-xs ${(p.connected || p.isBot) ? 'text-bate-green' : 'text-bate-red'}`}>
+                {(p.connected || p.isBot) ? 'ONLINE' : 'OFFLINE'}
               </span>
             </li>
           ))}
         </ul>
-        {isHost ? (
+        {!isPractice && (isHost ? (
           <button
             onClick={start}
             disabled={!canStart}
@@ -89,7 +90,7 @@ export function WaitingRoom({ state }: { state: RedactedState }) {
           </button>
         ) : (
           <div className="text-center text-bate-ink/70 py-4 font-display">AGUARDANDO HOST INICIAR…</div>
-        )}
+        ))}
       </div>
     </main>
   )

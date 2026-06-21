@@ -1,0 +1,6 @@
+packages:
+  - .
+allowBuilds:
+  sharp: true
+overrides:
+  ws: '^8.21.0'

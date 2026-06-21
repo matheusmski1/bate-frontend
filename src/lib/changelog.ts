@@ -6,6 +6,16 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-06-21',
+    date: '21 jun',
+    items: [
+      'MODO TREINO chegou: joga contra bots sem precisar chamar ninguém',
+      'Escolhe de 1 a 3 bots e a dificuldade — Fácil, Médio ou Difícil',
+      'O Difícil é casca grossa: lembra das cartas, corta na hora e bate cedo',
+      'Pega o jeito do Bate sem pressão, a qualquer hora 🤖',
+    ],
+  },
+  {
     id: '2026-06-11',
     date: '11 jun',
     items: [

@@ -22,7 +22,7 @@ export function InstructionBar({ text }: { text: string | null }) {
         </AnimatePresence>
       </div>
       {/* Desktop: canto inferior esquerdo */}
-      <div className="hidden sm:block fixed sm:bottom-4 sm:left-16 z-30 pointer-events-none sm:max-w-[360px]">
+      <div className="hidden sm:block fixed sm:bottom-4 sm:left-[7.5rem] z-30 pointer-events-none sm:max-w-[360px]">
         <AnimatePresence>
           {text && (
             <motion.div

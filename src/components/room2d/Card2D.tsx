@@ -32,7 +32,7 @@ type Props = {
 } & Omit<HTMLMotionProps<'button'>, 'onClick' | 'children'>
 
 const SIZE_CLASSES: Record<NonNullable<Props['size']>, string> = {
-  sm: 'w-10 h-14 sm:w-14 sm:h-20',
+  sm: 'w-11 h-14 sm:w-14 sm:h-20',
   md: 'w-14 h-20 sm:w-20 sm:h-28',
   lg: 'w-20 h-28 sm:w-28 sm:h-40',
 }

@@ -102,7 +102,7 @@ export function OpponentArea({ player, isCurrent, isHost = false, isLeader = fal
               {player.score} pts
             </div>
           </div>
-          <div className="flex gap-0.5 items-center ml-2">
+          <div className="flex gap-1.5 items-center ml-2">
             {player.hand.map((c, i) => (
               <Card2D
                 key={c.id}

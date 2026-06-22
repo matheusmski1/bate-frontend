@@ -47,7 +47,7 @@ export function ActionLog({ state }: { state: RedactedState }) {
     <>
       <button
         onClick={() => setOpen(v => !v)}
-        className="fixed bottom-2 left-12 sm:bottom-4 sm:left-16 z-50 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-bate-paper/90 backdrop-blur text-bate-red text-base sm:text-xl shadow-2xl hover:scale-110 transition-transform border border-bate-ink/40 flex items-center justify-center"
+        className="fixed bottom-2 left-12 sm:bottom-4 sm:left-16 z-50 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-bate-paper/90 backdrop-blur text-bate-red text-base sm:text-xl shadow-2xl hover:scale-110 transition-transform border border-bate-ink/40 flex items-center justify-center"
         title="Histórico"
       >
         {open ? '✕' : '📜'}
@@ -68,7 +68,7 @@ export function ActionLog({ state }: { state: RedactedState }) {
         ) : (
           <ul className="space-y-1 text-sm">
             {recent.map((a, i) => (
-              <li key={i} className={COLORS[a.type] ?? 'text-white'}>
+              <li key={i} className={COLORS[a.type] ?? 'text-bate-ink'}>
                 {describe(a, state)}
               </li>
             ))}

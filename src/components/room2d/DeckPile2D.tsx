@@ -25,8 +25,8 @@ export function DeckPile2D({ count, onClick, viewerDeckId = null }: { count: num
           </div>
         ))}
         {onClick && (
-          <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 text-xs font-bold text-bate-red whitespace-nowrap animate-pulse">
-            ↑ Comprar
+          <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-2.5 py-1 rounded-full bg-bate-paper/95 border-[2px] border-bate-ink shadow-hard-sm font-display text-[10px] sm:text-xs text-bate-red whitespace-nowrap animate-pulse pointer-events-none">
+            Comprar
           </span>
         )}
       </motion.button>

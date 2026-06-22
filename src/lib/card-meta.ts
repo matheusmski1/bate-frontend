@@ -57,7 +57,7 @@ export function getCardImage(rank: Rank, deckId: string | null | undefined = 'de
 
 export function getCardBack(deckId: string | null | undefined = 'default'): string {
   const id = deckId || 'default'
-  if (id === 'default') return '/cards/back.webp?v=2'
+  if (id === 'default') return '/cards/back.webp?v=3'
   return `/cards/${id}/back.webp`
 }
 

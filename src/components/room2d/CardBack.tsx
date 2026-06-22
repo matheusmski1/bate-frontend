@@ -8,7 +8,6 @@ export function CardBack({ deckId = null }: { deckId?: string | null }) {
       src={getCardBack(deckId)}
       alt=""
       className="w-full h-full object-cover"
-      style={{ transform: 'scaleX(-1)' }}
       draggable={false}
     />
   )

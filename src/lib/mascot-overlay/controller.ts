@@ -105,11 +105,6 @@ let runningCount = 0
 export function createController(): Controller {
   return {
     runFlight(opts) {
-      if (runningCount > 0) {
-        opts.onArrived?.()
-        opts.onComplete?.()
-        return NOOP
-      }
       if (!opts.fromRect || !opts.toRect) {
         opts.onArrived?.()
         opts.onComplete?.()
@@ -214,11 +209,6 @@ export function createController(): Controller {
     },
 
     runSwapDelivery(opts) {
-      if (runningCount > 0) {
-        opts.onSwapped?.()
-        opts.onComplete?.()
-        return NOOP
-      }
       if (!opts.fromRect || !opts.midRect || !opts.toRect) {
         opts.onSwapped?.()
         opts.onComplete?.()
@@ -336,10 +326,6 @@ export function createController(): Controller {
     },
 
     popOnCard(opts) {
-      if (runningCount > 0) {
-        opts.onComplete?.()
-        return NOOP
-      }
       if (!opts.targetRect) {
         opts.onComplete?.()
         return NOOP

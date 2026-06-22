@@ -119,7 +119,7 @@ export function SnapToast({ state }: { state: RedactedState }) {
             {toast.kind === 'snap' ? (
               <span>
                 {toast.name} CORTOU
-                {toast.rank ? <> <span className="ml-1">{CARD_META[toast.rank].displayName ?? toast.rank}</span></> : ''}!
+                {toast.rank ? <> <span className="ml-1">{CARD_META[toast.rank]?.displayName ?? toast.rank}</span></> : ''}!
               </span>
             ) : (
               <span>😬 {toast.name} CORTOU ERRADO (+1 carta)</span>

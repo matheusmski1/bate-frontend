@@ -50,6 +50,13 @@ function lookupSlotRects(
   return { midRect, toRect }
 }
 
+function nameplateRectFor(playerId: string): DOMRect | null {
+  return (
+    getRect(`[data-opponent-nameplate="${CSS.escape(playerId)}"]`) ??
+    getRect(`[data-player-nameplate="${CSS.escape(playerId)}"]`)
+  )
+}
+
 export function useSwapTrigger({ state, myId, overlayRef, controller, localSwap, onConsumed, onCardsSelected, onCardsUnselected }: Args) {
   const onConsumedRef = useRef(onConsumed)
   const onCardsSelectedRef = useRef(onCardsSelected)
@@ -77,13 +84,15 @@ export function useSwapTrigger({ state, myId, overlayRef, controller, localSwap,
     lastLocalKeyRef.current = key
 
     const fromRect = getRect('[data-discard-pile]')
-    const { midRect, toRect } = lookupSlotRects(
+    const slots = lookupSlotRects(
       { ...state, players: statePlayersRef.current } as RedactedState,
       localSwap.actorPlayerId,
       localSwap.actorCardIndex,
       localSwap.targetPlayerId,
       localSwap.targetCardIndex,
     )
+    const midRect = slots.midRect ?? nameplateRectFor(localSwap.actorPlayerId)
+    const toRect = slots.toRect ?? nameplateRectFor(localSwap.targetPlayerId)
     // Calcula card.ids dos slots envolvidos pra propagar selection
     const actorPlayer = statePlayersRef.current.find((pl) => pl.id === localSwap.actorPlayerId)
     const targetPlayer = statePlayersRef.current.find((pl) => pl.id === localSwap.targetPlayerId)
@@ -130,7 +139,9 @@ export function useSwapTrigger({ state, myId, overlayRef, controller, localSwap,
       if (!p || p.targetPlayerId === undefined || p.targetCardIndex === undefined || p.myCardIndex === undefined) continue
 
       const fromRect = getRect('[data-discard-pile]')
-      const { midRect, toRect } = lookupSlotRects(state, entry.actorId, p.myCardIndex, p.targetPlayerId, p.targetCardIndex)
+      const slots = lookupSlotRects(state, entry.actorId, p.myCardIndex, p.targetPlayerId, p.targetCardIndex)
+      const midRect = slots.midRect ?? nameplateRectFor(entry.actorId)
+      const toRect = slots.toRect ?? nameplateRectFor(p.targetPlayerId)
       if (!midRect || !toRect) continue
 
       const actorPlayer = state.players.find((pl) => pl.id === entry.actorId)

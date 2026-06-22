@@ -98,7 +98,7 @@ export function CardFan() {
   }, [])
 
   return (
-    <section className="relative z-30 w-full max-w-[900px] mx-auto mt-2 md:mt-4 mb-6 md:mb-10 flex justify-center items-center h-[180px] sm:h-[230px] md:h-[280px] lg:h-[320px]">
+    <section className="relative z-overlay w-full max-w-[900px] mx-auto mt-2 md:mt-4 mb-6 md:mb-10 flex justify-center items-center h-[180px] sm:h-[230px] md:h-[280px] lg:h-[320px]">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-full bg-bate-gold/10 blur-[100px] rounded-full z-0 pointer-events-none" />
       <div ref={containerRef} className="relative w-[78px] sm:w-[110px] md:w-[140px] lg:w-[170px] h-[110px] sm:h-[154px] md:h-[196px] lg:h-[238px] flex justify-center items-center">
         {FAN.map((slot) => (

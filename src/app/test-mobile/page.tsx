@@ -166,7 +166,7 @@ export default function TestMobilePage() {
             maxHeight: 'calc(100vh - 48px)',
           }}
         >
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-bate-ink rounded-b-2xl z-50 pointer-events-none" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-bate-ink rounded-b-2xl z-float pointer-events-none" />
           <iframe
             ref={iframeRef}
             key={`${device.id}-${reloadKey}`}

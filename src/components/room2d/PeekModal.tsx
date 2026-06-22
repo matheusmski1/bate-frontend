@@ -25,7 +25,7 @@ export function PeekModal({ reveal, onClose }: { reveal: { rank: Rank; suit: Sui
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center cursor-pointer"
+          className="fixed inset-0 bg-black/75 backdrop-blur-sm z-float flex items-center justify-center cursor-pointer"
           onClick={onClose}
         >
           <div ref={cardRef} className="relative w-44 h-64 rounded-xl border-[4px] border-bate-ink overflow-hidden shadow-hard-lg" style={{ transformStyle: 'preserve-3d' }}>

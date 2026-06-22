@@ -3,6 +3,7 @@ import { toast } from '@/lib/ui-store'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { X, RefreshCw } from 'lucide-react'
 import type { RedactedState, Card, Rank, Suit } from '@/types/shared'
 import { getPlayerId } from '@/lib/player-id'
 import { getSocket } from '@/lib/socket-client'
@@ -421,7 +422,7 @@ export function GameArea({ state }: { state: RedactedState }) {
       />
 
       {opponents.map((p, i) => (
-        <div key={p.id} className={`absolute z-20 ${opponentPos(i)}`}>
+        <div key={p.id} className={`absolute z-mid ${opponentPos(i)}`}>
           <OpponentArea
             player={p}
             isCurrent={p.id === currentPlayerId}
@@ -442,7 +443,7 @@ export function GameArea({ state }: { state: RedactedState }) {
 
       {/* Tabs mobile: troca qual oponente fica em destaque */}
       {opponents.length > 1 && (
-        <div className="sm:hidden absolute top-12 left-2 right-2 z-30 flex gap-1.5">
+        <div className="sm:hidden absolute top-12 left-2 right-2 z-overlay flex gap-1.5">
           {opponents.map((p, i) => (
             <button
               key={p.id}
@@ -460,7 +461,7 @@ export function GameArea({ state }: { state: RedactedState }) {
         </div>
       )}
 
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-card">
         <div className={`relative max-w-[calc(100vw-1rem)] px-2 sm:px-12 py-2 sm:py-8 rounded-2xl sm:rounded-3xl border-[3px] sm:border-[4px] border-bate-ink bg-bate-paper/70 shadow-hard sm:shadow-hard-lg backdrop-blur-sm table-surface table-surface-${arenaId}`}>
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-bate-ink text-bate-gold font-display text-[10px] tracking-[0.25em] uppercase whitespace-nowrap shadow-hard-sm rotate-[-1deg]">
             ✦ MESA ✦
@@ -515,19 +516,19 @@ export function GameArea({ state }: { state: RedactedState }) {
                   }}
                   className="px-3 py-2 rounded-xl bg-bate-paper border-[2px] border-bate-ink shadow-hard-sm text-bate-ink/80 text-[10px] sm:text-xs font-display whitespace-nowrap"
                 >
-                  ✕ pular ação
+                  <X size={12} strokeWidth={3} className="inline" /> pular ação
                 </motion.button>
               ) : null}
             </AnimatePresence>
             <DiscardPile2D discard={state.discard} players={state.players} />
           </div>
-          <div className="hidden sm:block absolute left-full top-1/2 -translate-y-1/2 ml-4 z-40">
+          <div className="hidden sm:block absolute left-full top-1/2 -translate-y-1/2 ml-4 z-hud">
             <BateButton state={state} drawnExists={!!drawnCard} embedded />
           </div>
         </div>
       </div>
 
-      <div className="absolute bottom-16 sm:bottom-8 left-1/2 -translate-x-1/2 z-20">
+      <div className="absolute bottom-16 sm:bottom-8 left-1/2 -translate-x-1/2 z-mid">
         {me && (() => {
           // Combina cartas selecionadas pela animação (sync entre players) com
           // a carta picada localmente no swap (antes de clicar oponente)
@@ -585,9 +586,9 @@ export function GameArea({ state }: { state: RedactedState }) {
           })
         }}
         title="Forçar resync com o servidor (se algo travar)"
-        className="fixed bottom-2 left-2 sm:bottom-4 sm:left-4 z-40 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-bate-paper border-[2px] sm:border-[3px] border-bate-ink shadow-hard-sm flex items-center justify-center text-bate-ink hover:bg-bate-gold text-sm"
+        className="fixed bottom-2 left-2 sm:bottom-4 sm:left-4 z-hud w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-bate-paper border-[2px] sm:border-[3px] border-bate-ink shadow-hard-sm flex items-center justify-center text-bate-ink hover:bg-bate-gold text-sm"
       >
-        🔄
+        <RefreshCw size={16} strokeWidth={3} />
       </button>
       <SnapToast state={state} />
       <PenaltyPreview state={state} />

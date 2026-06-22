@@ -23,7 +23,7 @@ export function TurnBanner({ state, isMyTurn, myId }: { state: RedactedState; is
   const highlight = state.phase === 'initial-peek' || isMyTurn || state.pendingEffect?.playerId === myId
 
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-40 pointer-events-none">
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-hud pointer-events-none">
       <AnimatePresence mode="wait">
         <motion.div
           key={label}

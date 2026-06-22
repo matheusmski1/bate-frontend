@@ -6,7 +6,7 @@ export function InstructionBar({ text }: { text: string | null }) {
   return (
     <>
       {/* Mobile: entre oponente e mesa */}
-      <div className="sm:hidden absolute top-[30%] left-4 right-4 z-30 pointer-events-none">
+      <div className="sm:hidden absolute top-[30%] left-4 right-4 z-overlay pointer-events-none">
         <AnimatePresence>
           {text && (
             <motion.div
@@ -22,7 +22,7 @@ export function InstructionBar({ text }: { text: string | null }) {
         </AnimatePresence>
       </div>
       {/* Desktop: canto inferior esquerdo */}
-      <div className="hidden sm:block fixed sm:bottom-4 sm:left-[7.5rem] z-30 pointer-events-none sm:max-w-[360px]">
+      <div className="hidden sm:block fixed sm:bottom-4 sm:left-[7.5rem] z-overlay pointer-events-none sm:max-w-[360px]">
         <AnimatePresence>
           {text && (
             <motion.div

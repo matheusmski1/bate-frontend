@@ -87,5 +87,5 @@ export function MascotOverlay({ state, myId, localActions, onPeekArrived, onSnap
 
   useTempoAcabandoTrigger({ state, myId, overlayRef, controller })
 
-  return <div ref={overlayRef} className="fixed inset-0 pointer-events-none z-40" aria-hidden />
+  return <div ref={overlayRef} className="fixed inset-0 pointer-events-none z-hud" aria-hidden />
 }

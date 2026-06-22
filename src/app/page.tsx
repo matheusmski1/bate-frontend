@@ -217,7 +217,7 @@ function LobbyContent() {
     <main className="relative min-h-screen overflow-x-hidden flex flex-col items-center text-bate-ink selection:bg-bate-red selection:text-bate-paper">
       <SuitBackground />
 
-      <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+      <div className="fixed top-4 right-4 z-float flex items-center gap-2">
         <button
           type="button"
           onClick={() => setShowChangelog(true)}
@@ -262,7 +262,7 @@ function LobbyContent() {
       <Hero />
       <CardFan />
 
-      <section className="relative z-40 w-full max-w-md px-4 -mt-2 mb-10">
+      <section className="relative z-hud w-full max-w-md px-4 -mt-2 mb-10">
         <div className="bg-bate-paper border-[4px] border-bate-ink shadow-hard-lg rounded-2xl p-6 md:p-8" style={{ transform: 'rotate(-1deg)' }}>
           <div className="flex flex-col gap-5">
             <div className="relative">
@@ -332,7 +332,7 @@ function LobbyContent() {
         </div>
       </section>
 
-      <section className="relative z-40 w-full max-w-md px-4 pb-20 space-y-6">
+      <section className="relative z-hud w-full max-w-md px-4 pb-20 space-y-6">
         <QuickRules />
 
         <div>

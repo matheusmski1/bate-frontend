@@ -19,7 +19,7 @@ export function DeckPile2D({ count, onClick, viewerDeckId = null }: { count: num
           <div
             key={i}
             className="absolute inset-0 rounded-xl overflow-hidden shadow-[0_6px_16px_rgba(0,0,0,0.5)]"
-            style={{ transform: `translate(${i * 1.5}px, ${-i * 1.5}px) scaleX(-1)`, zIndex: i }}
+            style={{ transform: `translate(${i * 1.5}px, ${-i * 1.5}px)`, zIndex: i }}
           >
             <CardBack deckId={viewerDeckId} />
           </div>

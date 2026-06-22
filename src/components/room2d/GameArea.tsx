@@ -387,7 +387,7 @@ export function GameArea({ state }: { state: RedactedState }) {
     // Mobile: todos opponents na mesma slot (tabs controlam qual aparece).
     // top-24 deixa espaço pra TopChrome (top-2) + tabs (top-12)
     const mobileSlot = 'top-24 left-2 right-2'
-    if (seat === 'top') return `${mobileSlot} sm:top-8 sm:left-1/2 sm:right-auto sm:-translate-x-1/2`
+    if (seat === 'top') return `${mobileSlot} sm:top-16 sm:left-1/2 sm:right-auto sm:-translate-x-1/2`
     if (seat === 'left') return `${mobileSlot} sm:top-1/2 sm:left-8 sm:right-auto sm:-translate-y-1/2`
     return `${mobileSlot} sm:top-1/2 sm:right-8 sm:left-auto sm:-translate-y-1/2`
   }

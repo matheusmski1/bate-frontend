@@ -140,7 +140,7 @@ export default function RoomPage({ params }: { params: Promise<{ roomId: string 
   return (
     <>
       {amISpectator && (
-        <div className="fixed top-0 left-0 right-0 z-[55] bg-bate-ink text-bate-paper text-center py-1.5 text-[11px] sm:text-xs font-display tracking-wider shadow-hard-sm">
+        <div className="fixed top-0 left-0 right-0 z-snap bg-bate-ink text-bate-paper text-center py-1.5 text-[11px] sm:text-xs font-display tracking-wider shadow-hard-sm">
           {isPending ? '⏳ AGUARDANDO PRÓXIMA RODADA' : '👁 ASSISTINDO'} • {(room.spectators?.length ?? 0)} {(room.spectators?.length ?? 0) === 1 ? 'olho' : 'olhos'} na mesa
         </div>
       )}

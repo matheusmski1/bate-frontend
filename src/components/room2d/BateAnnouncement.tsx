@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createTimeline, animate } from 'animejs'
 import { AnimatePresence, motion } from 'framer-motion'
+import { Zap } from 'lucide-react'
 import type { RedactedState } from '@/types/shared'
 import { getMascot } from '@/lib/mascot'
 import { getPlayerId } from '@/lib/player-id'
@@ -74,7 +75,7 @@ export function BateAnnouncement({ state }: { state: RedactedState }) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm pointer-events-none"
+          className="fixed inset-0 z-banner flex items-center justify-center bg-black/70 backdrop-blur-sm pointer-events-none"
         >
           {stage === 'announce' ? (
             <div className="relative">
@@ -98,7 +99,7 @@ export function BateAnnouncement({ state }: { state: RedactedState }) {
                   BATE!
                 </div>
                 <div className="font-display text-2xl sm:text-4xl text-bate-paper mt-6 tracking-widest uppercase">
-                  🎯 {callerName} chamou
+                  <Zap size={28} strokeWidth={3} className="inline" /> {callerName} chamou
                 </div>
               </div>
             </div>

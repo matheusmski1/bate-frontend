@@ -401,7 +401,7 @@ export default function TestLayoutPage() {
       {/* Toolbar fora do stage — fica em tamanho real (não escala). Escondida
           em modo bare (controlado externamente via postMessage) */}
       {!isBare && (
-      <div className="fixed top-2 left-2 z-50 flex flex-col gap-2 bg-bate-paper border-[2px] border-bate-ink rounded-xl p-2 shadow-hard-sm">
+      <div className="fixed top-2 left-2 z-float flex flex-col gap-2 bg-bate-paper border-[2px] border-bate-ink rounded-xl p-2 shadow-hard-sm">
         <div className="flex gap-2 items-center">
           <span className="font-display text-xs text-bate-ink/80 self-center w-20">Oponentes:</span>
           {[1, 2, 3].map((n) => (
@@ -487,7 +487,7 @@ export default function TestLayoutPage() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -40, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 320, damping: 22 }}
-            className="fixed top-[22%] sm:top-20 left-1/2 -translate-x-1/2 z-40 pointer-events-auto"
+            className="fixed top-[22%] sm:top-20 left-1/2 -translate-x-1/2 z-hud pointer-events-auto"
           >
             <div className="flex items-center gap-2 px-2.5 py-1 sm:px-5 sm:py-3 rounded-xl sm:rounded-full bg-bate-gold border-[2px] sm:border-[3px] border-bate-ink shadow-hard-sm sm:shadow-hard-lg">
               <span className="font-display text-[10px] sm:text-base text-bate-ink uppercase tracking-wider text-center">{selectionHint}</span>
@@ -504,7 +504,7 @@ export default function TestLayoutPage() {
       </AnimatePresence>
 
       {/* Overlay onde os mascotes são renderizados (fora do stage scale, fixed inset-0) */}
-      <div ref={overlayRef} className="fixed inset-0 pointer-events-none z-40" aria-hidden />
+      <div ref={overlayRef} className="fixed inset-0 pointer-events-none z-hud" aria-hidden />
 
 
       {/* Wizard: carta comprada — modal centralizado com USE/DISCARD */}
@@ -519,7 +519,7 @@ export default function TestLayoutPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.18 }}
-              className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+              className="fixed inset-0 bg-black/70 backdrop-blur-sm z-float flex items-center justify-center p-4"
             >
               <motion.div
                 initial={{ scale: 0.6, y: 30, opacity: 0 }}
@@ -639,7 +639,7 @@ export default function TestLayoutPage() {
             const seat = seatFor(i, opponents.length)
             const canClick = selection.mode === 'peek-other' || selection.mode === 'swap-target'
             return (
-              <div key={p.id} className={`absolute z-20 ${opponentPosUno(seat)}`}>
+              <div key={p.id} className={`absolute z-mid ${opponentPosUno(seat)}`}>
                 <OpponentArea
                   player={p}
                   isCurrent={i === 0}
@@ -656,7 +656,7 @@ export default function TestLayoutPage() {
 
           {/* Tabs mobile: troca qual oponente fica visível em destaque */}
           {opponents.length > 1 && (
-            <div className="sm:hidden absolute top-12 left-2 right-2 z-30 flex gap-1.5">
+            <div className="sm:hidden absolute top-12 left-2 right-2 z-overlay flex gap-1.5">
               {opponents.map((p, i) => (
                 <button
                   key={p.id}
@@ -674,7 +674,7 @@ export default function TestLayoutPage() {
             </div>
           )}
 
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-card">
             <div className={`relative max-w-[calc(100vw-1rem)] px-2 sm:px-12 py-2 sm:py-8 rounded-2xl sm:rounded-3xl border-[3px] sm:border-[4px] border-bate-ink bg-bate-paper/70 shadow-hard sm:shadow-hard-lg backdrop-blur-sm table-surface table-surface-${arenaId}`}>
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-bate-ink text-bate-gold font-display text-[10px] tracking-[0.25em] uppercase whitespace-nowrap shadow-hard-sm rotate-[-1deg]">
                 ✦ MESA ✦
@@ -689,7 +689,7 @@ export default function TestLayoutPage() {
             </div>
           </div>
 
-          <div className="absolute bottom-16 sm:bottom-8 left-1/2 -translate-x-1/2 z-20">
+          <div className="absolute bottom-16 sm:bottom-8 left-1/2 -translate-x-1/2 z-mid">
             <PlayerHand2D
               player={me}
               isCurrent

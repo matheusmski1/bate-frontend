@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { animate } from 'animejs'
+import { Zap, Trash2, ArrowLeftRight } from 'lucide-react'
 import type { Card as CardType } from '@/types/shared'
 import { Card2D } from './Card2D'
 import { CARD_META } from '@/lib/card-meta'
@@ -59,7 +60,7 @@ export function DrawnCard2D({
             onClick={onUseAction}
             className="drawn-card-btn opacity-0 order-2 sm:order-1 px-2 py-1.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl bg-bate-gold border-[2px] sm:border-[3px] border-bate-ink shadow-hard sm:shadow-hard-lg text-bate-ink font-display uppercase whitespace-nowrap text-center leading-tight hover:scale-105 hover:-translate-y-1 active:scale-95 transition-transform"
           >
-            <div className="text-[11px] sm:text-sm">🎯 USAR {meta.displayName}</div>
+            <div className="text-[11px] sm:text-sm"><Zap size={14} strokeWidth={3} className="inline" /> USAR {meta.displayName}</div>
           </button>
         )}
 
@@ -81,12 +82,12 @@ export function DrawnCard2D({
           onClick={onDiscard}
           className="drawn-card-btn opacity-0 order-3 sm:order-3 px-2 py-1.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl bg-bate-paper border-[2px] sm:border-[3px] border-bate-ink shadow-hard-sm sm:shadow-hard text-bate-ink font-display uppercase whitespace-nowrap text-center leading-tight hover:scale-105 hover:-translate-y-1 active:scale-95 transition-transform"
         >
-          <div className="text-[11px] sm:text-sm">🗑️ DESCARTAR{isAction && <span className="font-normal text-bate-ink/60"> sem ação</span>}</div>
+          <div className="text-[11px] sm:text-sm"><Trash2 size={14} strokeWidth={3} className="inline" /> DESCARTAR{isAction && <span className="font-normal text-bate-ink/60"> sem ação</span>}</div>
         </button>
       </div>
 
       <div className="drawn-card-btn opacity-0 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-bate-paper border-[2px] border-bate-ink shadow-hard-sm font-display text-[9px] sm:text-[11px] text-bate-ink uppercase text-center max-w-[280px] sm:max-w-none sm:whitespace-nowrap">
-        🔄 OU TROCA: clica uma carta SUA pra colocar esta no lugar
+        <ArrowLeftRight size={12} strokeWidth={3} className="inline" /> OU TROCA: clica uma carta SUA pra colocar esta no lugar
       </div>
     </div>
   )

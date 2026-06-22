@@ -8,7 +8,7 @@ export function ToastHost() {
   const dismiss = useUIStore(s => s.dismissToast)
 
   return (
-    <div className="fixed top-16 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 pointer-events-none max-w-[90vw]">
+    <div className="fixed top-16 left-1/2 -translate-x-1/2 z-global-toast flex flex-col gap-2 pointer-events-none max-w-[90vw]">
       <AnimatePresence>
         {toasts.map(t => (
           <motion.div

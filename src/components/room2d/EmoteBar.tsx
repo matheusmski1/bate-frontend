@@ -1,18 +1,20 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { Clock, X } from 'lucide-react'
 import { getSocket } from '@/lib/socket-client'
 import { getPlayerId } from '@/lib/player-id'
 
-const EMOTES = [
+const EMOTES: ReadonlyArray<{ key: string; char: ReactNode; label: string }> = [
   { key: 'clap', char: '👏', label: 'Boa!' },
   { key: 'shock', char: '🤯', label: 'Que isso!' },
   { key: 'cry', char: '😭', label: 'Nooo' },
   { key: 'fire', char: '🔥', label: 'Brabo!' },
-  { key: 'clock', char: '⏰', label: 'Vai' },
+  { key: 'clock', char: <Clock size={20} strokeWidth={3} className="inline" />, label: 'Vai' },
   { key: 'brain', char: '🧠', label: 'Lembrei' },
-] as const
+]
 
 const COOLDOWN_MS = 2600
 
@@ -31,7 +33,7 @@ export function EmoteBar({ roomId }: { roomId: string }) {
   const onCooldown = Date.now() - lastSentAt < COOLDOWN_MS
 
   return (
-    <div className="fixed bottom-2 right-1/2 translate-x-1/2 sm:translate-x-0 sm:bottom-6 sm:right-4 z-40">
+    <div className="fixed bottom-2 right-1/2 translate-x-1/2 sm:translate-x-0 sm:bottom-6 sm:right-4 z-hud">
       <div className="hidden sm:block">
         {!expanded ? (
           <motion.button
@@ -57,7 +59,7 @@ export function EmoteBar({ roomId }: { roomId: string }) {
               className="w-10 h-10 rounded-xl border-[2px] border-bate-ink bg-bate-cream flex items-center justify-center text-sm text-bate-ink/60 hover:bg-bate-paper cursor-pointer"
               title="Fechar"
             >
-              ✕
+              <X size={16} strokeWidth={3} />
             </button>
             {EMOTES.map(e => (
               <motion.button
@@ -101,7 +103,7 @@ export function EmoteBar({ roomId }: { roomId: string }) {
               className="w-8 h-8 rounded-lg border-[2px] border-bate-ink bg-bate-cream flex items-center justify-center text-sm text-bate-ink/60 hover:bg-bate-paper cursor-pointer"
               title="Fechar"
             >
-              ✕
+              <X size={14} strokeWidth={3} />
             </button>
             {EMOTES.map(e => (
               <motion.button

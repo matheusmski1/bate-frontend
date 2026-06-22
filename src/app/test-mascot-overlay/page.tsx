@@ -187,7 +187,7 @@ export default function TestMascotOverlay() {
 
       <div
         ref={overlayRef}
-        className="fixed inset-0 pointer-events-none z-50"
+        className="fixed inset-0 pointer-events-none z-float"
         aria-hidden
       />
 

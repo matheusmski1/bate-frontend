@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { ScrollText, X } from 'lucide-react'
 import type { GameAction, RedactedState, Rank } from '@/types/shared'
 import { CARD_META } from '@/lib/card-meta'
 
@@ -47,10 +48,10 @@ export function ActionLog({ state }: { state: RedactedState }) {
     <>
       <button
         onClick={() => setOpen(v => !v)}
-        className="fixed bottom-2 left-12 sm:bottom-4 sm:left-16 z-50 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-bate-paper/90 backdrop-blur text-bate-red text-base sm:text-xl shadow-2xl hover:scale-110 transition-transform border border-bate-ink/40 flex items-center justify-center"
+        className="fixed bottom-2 left-12 sm:bottom-4 sm:left-16 z-float w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-bate-paper/90 backdrop-blur text-bate-red text-base sm:text-xl shadow-2xl hover:scale-110 transition-transform border border-bate-ink/40 flex items-center justify-center"
         title="Histórico"
       >
-        {open ? '✕' : '📜'}
+        {open ? <X size={18} strokeWidth={3} /> : <ScrollText size={18} strokeWidth={3} />}
         {!open && count > 0 && (
           <span className="absolute -top-1 -right-1 bg-bate-red text-white text-[10px] font-bold rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center">
             {count > 99 ? '99+' : count}
@@ -58,7 +59,7 @@ export function ActionLog({ state }: { state: RedactedState }) {
         )}
       </button>
       <div
-        className={`fixed top-0 left-0 h-screen w-72 bg-bate-paper/95 backdrop-blur z-40 shadow-2xl overflow-y-auto p-4 pt-20 transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-screen w-72 bg-bate-paper/95 backdrop-blur z-hud shadow-2xl overflow-y-auto p-4 pt-20 transition-transform duration-300 ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -68,7 +69,7 @@ export function ActionLog({ state }: { state: RedactedState }) {
         ) : (
           <ul className="space-y-1 text-sm">
             {recent.map((a, i) => (
-              <li key={i} className={COLORS[a.type] ?? 'text-white'}>
+              <li key={i} className={COLORS[a.type] ?? 'text-bate-ink'}>
                 {describe(a, state)}
               </li>
             ))}

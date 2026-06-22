@@ -41,7 +41,7 @@ export function CreateRoomDialog({ hostName, onCreated, onClose }: { hostName: s
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-float p-4" onClick={onClose}>
       <div className="bg-bate-cream rounded-2xl p-7 w-full max-w-md border-[4px] border-bate-ink shadow-hard-lg" onClick={e => e.stopPropagation()}>
         <h3 className="font-display text-2xl text-bate-red mb-6">CRIAR SALA</h3>
         <label className="block mb-2 text-sm font-display text-bate-ink">NOME DA SALA</label>

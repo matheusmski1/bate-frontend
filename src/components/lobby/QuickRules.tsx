@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, Zap, ArrowLeftRight } from 'lucide-react'
 import { CARD_META, formatPoints, getCardImage } from '@/lib/card-meta'
 import type { Rank } from '@/types/shared'
 
@@ -35,7 +35,7 @@ export function QuickRules() {
           >
             <div className="px-5 pb-5 space-y-5 text-sm text-bate-ink border-t-[3px] border-bate-ink/20 pt-4">
               <section>
-                <h4 className="font-display text-bate-red mb-2">🎯 OBJETIVO</h4>
+                <h4 className="font-display text-bate-red mb-2"><Zap size={14} strokeWidth={3} className="inline" /> OBJETIVO</h4>
                 <p>
                   Ter a <strong>menor pontuação</strong> ao chamar BATE. Cartas valem o número impresso; <span className="font-bold text-bate-red">PRATA vale −3</span> e <span className="font-bold text-bate-red">OURO vale −6</span>.
                 </p>
@@ -70,7 +70,7 @@ export function QuickRules() {
               </section>
 
               <section>
-                <h4 className="font-display text-bate-red mb-2">🔄 SEU TURNO</h4>
+                <h4 className="font-display text-bate-red mb-2"><ArrowLeftRight size={14} strokeWidth={3} className="inline" /> SEU TURNO</h4>
                 <ol className="space-y-1 list-decimal list-inside text-bate-ink/80">
                   <li><strong>Compra</strong> uma carta do baralho</li>
                   <li><strong>Decide</strong>: descartar (usando o efeito se for especial) ou trocar com uma das suas 4</li>

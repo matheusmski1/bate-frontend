@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { Zap } from 'lucide-react'
 import { getSocket } from '@/lib/socket-client'
 import { getPlayerId } from '@/lib/player-id'
 import { toast, confirmAsync } from '@/lib/ui-store'
@@ -33,7 +34,7 @@ export function BateButton({ state, drawnExists, embedded = false }: { state: Re
 
   const positioningClass = embedded
     ? 'relative'
-    : 'fixed top-2 right-24 sm:top-auto sm:bottom-1/4 sm:right-8 z-40'
+    : 'fixed top-2 right-24 sm:top-auto sm:bottom-1/4 sm:right-8 z-hud'
 
   return (
     <motion.button
@@ -51,7 +52,7 @@ export function BateButton({ state, drawnExists, embedded = false }: { state: Re
       title={disabledReason ?? 'Chamar BATE'}
       disabled={!enabled}
     >
-      🎯 BATE!
+      <Zap size={16} strokeWidth={3} className="inline" /> BATE!
       {disabledReason && (
         <span className="block text-[10px] font-normal mt-0.5 opacity-80">{disabledReason}</span>
       )}

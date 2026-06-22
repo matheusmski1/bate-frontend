@@ -113,7 +113,7 @@ export function SnapToast({ state }: { state: RedactedState }) {
               src={toast.kind === 'snap' ? getMascot('feliz', arenaId) : getMascot('confuso', arenaId)}
               alt=""
               aria-hidden
-              className="w-10 h-10 sm:w-12 sm:h-12 select-none"
+              className="h-10 sm:h-12 w-auto object-contain select-none"
               style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.35))' }}
             />
             {toast.kind === 'snap' ? (

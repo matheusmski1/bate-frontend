@@ -23,7 +23,11 @@ function describe(action: GameAction, state: RedactedState): string {
   }
   if (action.type === 'snap-fail') return `😬 ${actor} cortou errado (+1 carta)`
   if (action.type === 'peek') return `${actor} espiou uma carta`
-  if (action.type === 'swap') return `${actor} trocou cartas`
+  if (action.type === 'swap') {
+    const targetId = (action.payload as { targetPlayerId?: string } | undefined)?.targetPlayerId
+    const target = state.players.find(p => p.id === targetId)?.name
+    return target ? `${actor} trocou com ${target}` : `${actor} trocou cartas`
+  }
   if (action.type === 'bate') return `${actor} chamou BATE!`
   if (action.type === 'round-end') return 'Fim da rodada'
   if (action.type === 'join') return `${actor} entrou`

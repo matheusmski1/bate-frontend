@@ -182,10 +182,13 @@ export function GameArea({ state }: { state: RedactedState }) {
         const p = entry.payload as { targetPlayerId?: string; targetCardIndex?: number; myCardIndex?: number } | undefined
         if (!p || p.targetPlayerId === undefined || p.targetCardIndex === undefined) continue
         const targetPlayer = state.players.find(pl => pl.id === p.targetPlayerId)
+        const actorPlayer = state.players.find(pl => pl.id === entry.actorId)
+        const actorName = actorPlayer?.name ?? 'Alguém'
+        const targetName = p.targetPlayerId === myId ? 'você' : (targetPlayer?.name ?? 'alguém')
+        toast.info(`${actorName} trocou uma carta com ${targetName}`)
         const card = targetPlayer?.hand[p.targetCardIndex]
         if (card) markVictimEffect(card.id, 'swapped')
         if (p.myCardIndex !== undefined) {
-          const actorPlayer = state.players.find(pl => pl.id === entry.actorId)
           const actorCard = actorPlayer?.hand[p.myCardIndex]
           if (actorCard) markVictimEffect(actorCard.id, 'swapped')
         }

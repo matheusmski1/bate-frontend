@@ -1,9 +1,11 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Clock } from 'lucide-react'
 
-const EMOTE_CHAR: Record<string, string> = {
-  clap: '👏', shock: '🤯', cry: '😭', fire: '🔥', clock: '⏰', brain: '🧠',
+const EMOTE_CHAR: Record<string, ReactNode> = {
+  clap: '👏', shock: '🤯', cry: '😭', fire: '🔥', clock: <Clock size={24} strokeWidth={3} className="inline" />, brain: '🧠',
 }
 
 export function EmoteBubble({ emote, id }: { emote: string | null; id: number }) {
@@ -16,7 +18,7 @@ export function EmoteBubble({ emote, id }: { emote: string | null; id: number })
           animate={{ opacity: 1, scale: [0.4, 1.3, 1], y: -6 }}
           exit={{ opacity: 0, y: -30, scale: 0.7 }}
           transition={{ duration: 0.4, ease: [0.34, 1.56, 0.64, 1] }}
-          className="absolute -top-12 left-1/2 -translate-x-1/2 z-30 bg-bate-paper border-[3px] border-bate-ink rounded-2xl shadow-hard-sm px-3 py-1 text-2xl pointer-events-none whitespace-nowrap"
+          className="absolute -top-12 left-1/2 -translate-x-1/2 z-overlay bg-bate-paper border-[3px] border-bate-ink rounded-2xl shadow-hard-sm px-3 py-1 text-2xl pointer-events-none whitespace-nowrap"
         >
           {EMOTE_CHAR[emote] ?? '👍'}
         </motion.div>

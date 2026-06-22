@@ -75,7 +75,7 @@ export function Tutorial({ open, onClose }: { open: boolean; onClose: () => void
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[120] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-modal bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
           onClick={close}
         >
           <motion.div

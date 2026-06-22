@@ -7,7 +7,7 @@ import type { RedactedState } from '@/types/shared'
 export function TurnCounter({ state }: { state: RedactedState }) {
   if (state.phase !== 'playing' && state.phase !== 'bate-called' && state.phase !== 'effect-pending') return null
   return (
-    <div className="fixed top-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5">
+    <div className="fixed top-2 left-1/2 -translate-x-1/2 z-overlay flex items-center gap-1.5">
       <motion.div
         key={`r-${state.roundNumber}`}
         initial={{ scale: 0.85, opacity: 0.5 }}

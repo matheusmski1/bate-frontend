@@ -93,7 +93,7 @@ export function SnapToast({ state }: { state: RedactedState }) {
   }, [toast])
 
   return (
-    <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[55] pointer-events-none">
+    <div className="fixed top-28 left-1/2 -translate-x-1/2 z-snap pointer-events-none">
       <div ref={particleRef} className="absolute top-1/2 left-1/2 w-0 h-0 pointer-events-none" />
       <AnimatePresence>
         {toast && (
@@ -113,7 +113,7 @@ export function SnapToast({ state }: { state: RedactedState }) {
               src={toast.kind === 'snap' ? getMascot('feliz', arenaId) : getMascot('confuso', arenaId)}
               alt=""
               aria-hidden
-              className="w-10 h-10 sm:w-12 sm:h-12 select-none"
+              className="h-10 sm:h-12 w-auto object-contain select-none"
               style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.35))' }}
             />
             {toast.kind === 'snap' ? (

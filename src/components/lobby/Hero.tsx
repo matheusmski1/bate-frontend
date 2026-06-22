@@ -28,9 +28,9 @@ export function Hero() {
   }, [])
 
   return (
-    <header className="relative z-20 w-full max-w-5xl mx-auto px-4 pt-10 md:pt-16 flex flex-col items-center text-center">
+    <header className="relative z-mid w-full max-w-5xl mx-auto px-4 pt-10 md:pt-16 flex flex-col items-center text-center">
       <div className="relative w-full flex items-center justify-center">
-        <h1 className="font-display text-[56px] sm:text-[84px] md:text-[120px] lg:text-[160px] text-bate-red uppercase leading-none tracking-tighter text-stamped select-none relative z-10">
+        <h1 className="font-display text-[56px] sm:text-[84px] md:text-[120px] lg:text-[160px] text-bate-red uppercase leading-none tracking-tighter text-stamped select-none relative z-card">
           BATINHO
         </h1>
         <img

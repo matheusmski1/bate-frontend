@@ -32,7 +32,7 @@ type Props = {
 } & Omit<HTMLMotionProps<'button'>, 'onClick' | 'children'>
 
 const SIZE_CLASSES: Record<NonNullable<Props['size']>, string> = {
-  sm: 'w-10 h-14 sm:w-14 sm:h-20',
+  sm: 'w-11 h-14 sm:w-14 sm:h-20',
   md: 'w-14 h-20 sm:w-20 sm:h-28',
   lg: 'w-20 h-28 sm:w-28 sm:h-40',
 }
@@ -113,7 +113,7 @@ export function Card2D({ card, tempRevealedAs = null, onClick, highlighted = fal
           initial={{ scale: 0.3, opacity: 0 }}
           animate={{ scale: [0.3, 1.3, 1], opacity: 1 }}
           transition={{ duration: 0.4 }}
-          className={`absolute -top-3 -right-3 w-10 h-10 rounded-full flex items-center justify-center shadow-hard-sm border-[3px] border-bate-ink z-10 ${victimEffect === 'peeked' ? 'bg-bate-gold text-bate-ink' : 'bg-bate-red text-white'}`}
+          className={`absolute -top-3 -right-3 w-10 h-10 rounded-full flex items-center justify-center shadow-hard-sm border-[3px] border-bate-ink z-card ${victimEffect === 'peeked' ? 'bg-bate-gold text-bate-ink' : 'bg-bate-red text-white'}`}
         >
           {victimEffect === 'peeked' ? <Eye size={18} strokeWidth={3} /> : <ArrowLeftRight size={18} strokeWidth={3} />}
         </motion.div>
@@ -123,7 +123,7 @@ export function Card2D({ card, tempRevealedAs = null, onClick, highlighted = fal
           initial={{ y: -4, opacity: 0 }}
           animate={{ y: [-4, -8, -4], opacity: 1, scale: [1, 1.05, 1] }}
           transition={{ y: { duration: 0.9, repeat: Infinity, ease: 'easeInOut' }, scale: { duration: 0.9, repeat: Infinity, ease: 'easeInOut' }, opacity: { duration: 0.3 } }}
-          className="absolute -top-6 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-md bg-bate-red text-bate-paper font-display text-[10px] tracking-wider whitespace-nowrap shadow-hard-sm border-[2px] border-bate-ink z-10"
+          className="absolute -top-6 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-md bg-bate-red text-bate-paper font-display text-[10px] tracking-wider whitespace-nowrap shadow-hard-sm border-[2px] border-bate-ink z-card"
         >
           CORTA!!!
         </motion.div>

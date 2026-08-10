@@ -14,25 +14,25 @@
     "node": "22.x"
   },
   "dependencies": {
-    "animejs": "^4.4.1",
+    "animejs": "^4.5.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.40.0",
     "lottie-react": "^2.4.1",
     "lottie-web": "^5.13.0",
-    "lucide-react": "^1.16.0",
+    "lucide-react": "^1.30.0",
     "next": "^15.5.18",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "socket.io-client": "^4.8.3",
     "tailwind-merge": "^3.6.0",
-    "zustand": "^5.0.13"
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@types/animejs": "^3.1.13",
     "@types/node": "^25.9.1",
-    "@types/react": "^19.2.15",
-    "@types/react-dom": "^19.2.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
     "autoprefixer": "^10.5.0",
     "postcss": "^8.5.15",
     "sharp": "^0.34.5",
